@@ -1041,7 +1041,7 @@
     <div class="sidebar-stats">
       <div class="stat-grid">
         <div class="stat-box"><div class="num">83</div><div class="label">Questions</div></div>
-        <div class="stat-box"><div class="num">40</div><div class="label">MCQs</div></div>
+        <div class="stat-box"><div class="num" id="sidebar-mcq-count">105</div><div class="label">MCQs</div></div>
         <div class="stat-box"><div class="num">8</div><div class="label">Chapters</div></div>
         <div class="stat-box"><div class="num" id="mcq-score-sidebar">0%</div><div class="label">MCQ Score</div></div>
       </div>
@@ -1440,8 +1440,12 @@ function navigate(view, el) {
   if(el) el.classList.add('active');
   currentView = view;
   renderView(view);
-  document.getElementById('content-area').style.animation = 'none';
-  setTimeout(() => { document.getElementById('content-area').style.animation = 'fadeIn 0.25s ease'; }, 10);
+  // Scroll content area to top on every navigation
+  const area = document.getElementById('content-area');
+  if(area) area.scrollTop = 0;
+  window.scrollTo(0, 0);
+  area.style.animation = 'none';
+  setTimeout(() => { if(area) area.style.animation = 'fadeIn 0.25s ease'; }, 10);
 }
 
 function renderView(view) {
@@ -1555,8 +1559,6 @@ function filterMcqYear(year, el) {
     container.innerHTML = html;
   }
 }
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  el.classList.add('active');
 function filterMcq(filter, el) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   el.classList.add('active');
@@ -1600,7 +1602,7 @@ function renderOverview() {
           <div style="font-size:11px;color:var(--text3);margin-top:2px;">Total Questions</div>
         </div>
         <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 20px;text-align:center;">
-          <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:var(--green);">40</div>
+          <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:var(--green);">${mcqData.length}</div>
           <div style="font-size:11px;color:var(--text3);margin-top:2px;">Practice MCQs</div>
         </div>
         <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 20px;text-align:center;">
@@ -1640,7 +1642,7 @@ function renderOverview() {
       <div style="background:var(--surface);border:1px solid rgba(52,211,153,0.2);border-radius:12px;padding:18px 20px;cursor:pointer;" onclick="navigate('mcq', document.querySelectorAll('.sidebar-item')[13])">
         <div style="font-size:20px;margin-bottom:8px;">📝</div>
         <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px;">MCQ Practice Quiz</div>
-        <div style="font-size:12px;color:var(--text2);">40 questions with answers & explanations.</div>
+        <div style="font-size:12px;color:var(--text2);">${mcqData.length} questions from all 6 past exam papers.</div>
         <div style="margin-top:10px;font-size:12px;color:var(--green);">→ Start Quiz</div>
       </div>
       <div style="background:var(--surface);border:1px solid rgba(251,191,36,0.2);border-radius:12px;padding:18px 20px;cursor:pointer;" onclick="navigate('flashcards', document.querySelectorAll('.sidebar-item')[14])">
@@ -2183,6 +2185,7 @@ function answerMcq(idx, chosen) {
 
   const card = document.getElementById(`mcq-${idx}`);
   const exp = document.getElementById(`exp-${idx}`);
+  if(!card || !exp) return;
   const options = card.querySelectorAll('.mcq-option');
   const isCorrect = chosen === mcqData[idx].correct;
 
@@ -2193,18 +2196,32 @@ function answerMcq(idx, chosen) {
     if(oi === chosen && isCorrect) opt.classList.add('selected-correct');
   });
 
-  // Fix: set explanation text correctly based on isCorrect
+  // Set explanation text correctly based on isCorrect
   exp.innerHTML = `<strong>${isCorrect ? '✅ Correct!' : '❌ Incorrect.'}</strong> ${mcqData[idx].explain}`;
   exp.classList.add('show');
   card.classList.add('answered');
+
+  // Add result badge next to year tag
+  const header = card.querySelector('.mcq-num');
+  if(header) {
+    const existing = card.querySelector('.result-badge');
+    if(!existing) {
+      const badge = document.createElement('span');
+      badge.className = 'result-badge';
+      badge.style.cssText = `font-size:10px;padding:2px 8px;border-radius:10px;font-family:'JetBrains Mono',monospace;background:${isCorrect?'rgba(52,211,153,0.15)':'rgba(248,113,113,0.15)'};color:${isCorrect?'var(--green)':'var(--red)'};border:1px solid ${isCorrect?'rgba(52,211,153,0.3)':'rgba(248,113,113,0.3)'};margin-left:4px;`;
+      badge.textContent = isCorrect ? '✅ Correct' : '❌ Wrong';
+      header.parentElement.appendChild(badge);
+    }
+  }
 
   // Update all score boxes live
   const totalAnswered = Object.keys(mcqAnswers).length;
   const totalCorrect = Object.keys(mcqAnswers).filter(k => mcqAnswers[parseInt(k)] === mcqData[parseInt(k)].correct).length;
   const pct = Math.round(totalCorrect / totalAnswered * 100);
 
-  // Update sidebar
-  document.getElementById('mcq-score-sidebar').textContent = pct + '%';
+  // Update sidebar score (null-safe)
+  const sidebarScore = document.getElementById('mcq-score-sidebar');
+  if(sidebarScore) sidebarScore.textContent = pct + '%';
 
   // Update score boxes inside MCQ page
   const attemptedEl = document.getElementById('score-attempted');
@@ -2230,8 +2247,7 @@ function toggleSection(header) {
   block.classList.toggle('open');
 }
 
-// ===== INIT =====
-navigate('overview', document.querySelector('.sidebar-item.active'));
+// ===== INIT — deferred to after all scripts load =====
 </script>
 <!-- ANSWER MODAL -->
 <div class="ans-overlay" id="ans-overlay" onclick="closeAns(event)">
@@ -3472,7 +3488,7 @@ function renderSearch() {
       <span class="search-icon">🔍</span>
       <input class="search-input" id="search-box" type="text" placeholder="Type to search — e.g. 'eccentric', 'Sommerfeld', 'endurance limit'..." oninput="doSearch(this.value)" autofocus>
     </div>
-    <div id="search-results"><div class="search-empty">Start typing to search across 83 questions, 40 MCQs, 27 flashcards, and all formulas.</div></div>
+    <div id="search-results"><div class="search-empty">Start typing to search across 83 questions, ${mcqData.length} MCQs, 27 flashcards, and all formulas.</div></div>
   `;
 }
 
@@ -3607,11 +3623,14 @@ function toggleMobileMenu() {
 const _origNavigate = navigate;
 window.navigate = function(view, el) {
   _origNavigate(view, el);
+  // Update MCQ count badge on every navigate
+  const mcqCountEl = document.getElementById('sidebar-mcq-count');
+  if(mcqCountEl) mcqCountEl.textContent = mcqData.length;
   const sidebar = document.querySelector('.sidebar');
   const overlay = document.getElementById('mob-overlay');
-  if(sidebar.classList.contains('open')) {
+  if(sidebar && sidebar.classList.contains('open')) {
     sidebar.classList.remove('open');
-    overlay.classList.remove('show');
+    if(overlay) overlay.classList.remove('show');
   }
 };
 
@@ -3621,6 +3640,9 @@ function updateSidebarStats() {
   const viewed = Object.keys(p.viewed || {}).length;
   const total = Object.values(chapters).reduce((s,c) => s+c.theory.length, 0);
   const pct = Math.round(viewed/total*100);
+  // Update sidebar MCQ count
+  const mcqEl = document.getElementById('sidebar-mcq-count');
+  if(mcqEl) mcqEl.textContent = mcqData.length;
   const statsEl = document.querySelector('.stat-grid');
   if(statsEl) {
     statsEl.innerHTML = `
@@ -3632,8 +3654,17 @@ function updateSidebarStats() {
   }
 }
 
+// Update sidebar MCQ count dynamically
+document.addEventListener('DOMContentLoaded', function() {
+  const el = document.getElementById('sidebar-mcq-count');
+  if(el) el.textContent = mcqData.length;
+});
+
 // Update stats on load
 setTimeout(updateSidebarStats, 300);
+
+// ===== INIT — runs after both script blocks are parsed =====
+navigate('overview', document.querySelector('.sidebar-item.active'));
 
 // Close on Escape key
 document.addEventListener('keydown', e => { if(e.key === 'Escape') { closeAnsBtn(); } });
