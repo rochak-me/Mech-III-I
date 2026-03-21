@@ -3,52 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
-    <title>MEEG 315 Interactive</title>
+    <title>Study Hub UI</title>
+    <style>
+        /* Add your styles here */
+        @media (max-width: 900px) {
+            /* Styles for mobile sidebar toggle */
+            .sidebar {
+                position: absolute;
+                transition: all 0.3s;
+                transform: translateX(-100%);
+            }
+            .sidebar.active {
+                transform: translateX(0);
+            }
+        }
+        .focus-visible {
+            outline: 2px solid blue;
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <h1>MEEG 315 Interactive</h1>
-        <button id="toggleSidebar" aria-expanded="false">Toggle Sidebar</button>
-    </header>
-    <aside id="sidebar" aria-hidden="true">
-        <nav>
-            <ul>
-                <li><a href="#section1">Section 1</a></li>
-                <li><a href="#section2">Section 2</a></li>
-            </ul>
-        </nav>
-    </aside>
-    <main>
-        <section id="section1">
-            <h2>Section 1</h2>
-            <div tabindex="0" role="button" aria-label="Select answer" onclick="answerMcq(1)">Answer 1</div>
-            <div tabindex="0" role="button" aria-label="Select answer" onclick="answerMcq(2)">Answer 2</div>
-        </section>
-        <section id="section2">
-            <h2>Section 2</h2>
-            <p>Your score: <span id="summaryBox">0</span></p>
-        </section>
-    </main>
+    <div class="topbar">
+        <button aria-controls="sidebar" id="sidebar-toggle">Toggle Sidebar</button>
+    </div>
+    <div class="sidebar" id="sidebar">
+        <button class="sidebar-item" aria-current="true">Item 1</button>
+        <button class="sidebar-item">Item 2</button>
+    </div>
+    <div class="content">
+        <h2 tabindex="0">Section Header</h2>
+        <p>Your content here...</p>
+    </div>
     <script>
-        const toggleSidebar = document.getElementById('toggleSidebar');
-        const sidebar = document.getElementById('sidebar');
-
-        toggleSidebar.addEventListener('click', () => {
-            const isExpanded = toggleSidebar.getAttribute('aria-expanded') === 'true';
-            toggleSidebar.setAttribute('aria-expanded', !isExpanded);
-            sidebar.setAttribute('aria-hidden', isExpanded);
+        // JavaScript for toggle button
+        document.getElementById('sidebar-toggle').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('active');
         });
 
-        function answerMcq(answer) {
-            // Logic for updating score...
-            const score = calculateScore(answer);
-            document.getElementById('summaryBox').innerText = score;
-        }
+        // Make section headers and MCQ options keyboard accessible
+        const sectionHeaders = document.querySelectorAll('.topbar h2');
+        sectionHeaders.forEach(header => {
+            header.addEventListener('keydown', function(event) {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    header.click();
+                }
+            });
+        });
 
-        function calculateScore(answer) {
-            // Your scoring logic here, updated to include necessary operations
-            return answer === 1 ? 10 : 0; // Example logic
+        // Other necessary logic for MCQ score updates
+        function answerMcq(option) {
+            // Update score logic here
+            // Ensure you don't query nonexistent .content-area
         }
     </script>
 </body>
