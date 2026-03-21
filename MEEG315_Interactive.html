@@ -1,341 +1,37 @@
+<!DOCTYPE html>
 <html>
 <head>
-    <title>MEEG 315 - Study Hub</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-        
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            overflow: hidden;
-        }
-        
-        header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
-            text-align: center;
-        }
-        
-        header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-        
-        .nav-tabs {
-            display: flex;
-            border-bottom: 2px solid #e0e0e0;
-            background: #f5f5f5;
-        }
-        
-        .nav-tabs button {
-            flex: 1;
-            padding: 15px;
-            border: none;
-            background: none;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 500;
-            color: #666;
-            transition: all 0.3s ease;
-            border-bottom: 3px solid transparent;
-        }
-        
-        .nav-tabs button:hover {
-            background: #f0f0f0;
-            color: #667eea;
-        }
-        
-        .nav-tabs button.active {
-            color: #667eea;
-            border-bottom-color: #667eea;
-        }
-        
-        .content {
-            padding: 30px;
-        }
-        
-        .tab-content {
-            display: none;
-        }
-        
-        .tab-content.active {
-            display: block;
-            animation: fadeIn 0.3s ease;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        .mcq-container {
-            margin-bottom: 30px;
-            padding: 20px;
-            background: #f9f9f9;
-            border-left: 4px solid #667eea;
-            border-radius: 5px;
-        }
-        
-        .mcq-container h3 {
-            color: #333;
-            margin-bottom: 15px;
-            font-size: 1.2em;
-        }
-        
-        .mcq-options {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        
-        .mcq-option {
-            padding: 12px 15px;
-            background: white;
-            border: 2px solid #ddd;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: left;
-            font-size: 16px;
-        }
-        
-        .mcq-option:hover {
-            border-color: #667eea;
-            background: #f0f0f7;
-        }
-        
-        .mcq-option.selected {
-            border-color: #667eea;
-            background: #e8eaf6;
-            color: #667eea;
-            font-weight: 600;
-        }
-        
-        .mcq-option.correct {
-            border-color: #4caf50;
-            background: #c8e6c9;
-            color: #2e7d32;
-            font-weight: 600;
-        }
-        
-        .mcq-option.incorrect {
-            border-color: #f44336;
-            background: #ffcdd2;
-            color: #c62828;
-            font-weight: 600;
-        }
-        
-        .feedback {
-            margin-top: 15px;
-            padding: 15px;
-            border-radius: 5px;
-            display: none;
-            font-weight: 600;
-        }
-        
-        .feedback.show {
-            display: block;
-        }
-        
-        .feedback.correct {
-            background: #c8e6c9;
-            color: #2e7d32;
-            border-left: 4px solid #4caf50;
-        }
-        
-        .feedback.incorrect {
-            background: #ffcdd2;
-            color: #c62828;
-            border-left: 4px solid #f44336;
-        }
-        
-        .reset-btn {
-            margin-top: 10px;
-            padding: 10px 20px;
-            background: #667eea;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: background 0.3s ease;
-        }
-        
-        .reset-btn:hover {
-            background: #764ba2;
-        }
-        
-        @media (max-width: 768px) {
-            .nav-tabs {
-                flex-wrap: wrap;
-            }
-            
-            .nav-tabs button {
-                flex: 0 1 50%;
-                padding: 12px;
-            }
-            
-            header h1 {
-                font-size: 1.8em;
-            }
-            
-            .content {
-                padding: 20px;
-            }
-        }
-    </style>
+    <title>MEEG 315 Interactive</title>
+    <!-- Other head elements -->
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>MEEG 315 - Study Hub</h1>
-            <p>Interactive Learning Module</p>
-        </header>
-        
-        <div class="nav-tabs">
-            <button class="tab-btn active" data-tab="mcq">MCQ Questions</button>
-            <button class="tab-btn" data-tab="notes">Notes</button>
-            <button class="tab-btn" data-tab="resources">Resources</button>
-        </div>
-        
-        <div class="content">
-            <div id="mcq" class="tab-content active">
-                <h2>Multiple Choice Questions</h2>
-                
-                <div class="mcq-container">
-                    <h3>Question 1: What is the capital of France?</h3>
-                    <div class="mcq-options">
-                        <button class="mcq-option" data-qid="q1" data-answer="false">London</button>
-                        <button class="mcq-option" data-qid="q1" data-answer="true">Paris</button>
-                        <button class="mcq-option" data-qid="q1" data-answer="false">Berlin</button>
-                        <button class="mcq-option" data-qid="q1" data-answer="false">Madrid</button>
-                    </div>
-                    <div class="feedback" id="feedback-q1"></div>
-                    <button class="reset-btn" onclick="resetQuestion('q1')">Reset</button>
-                </div>
-                
-                <div class="mcq-container">
-                    <h3>Question 2: Which planet is the largest in our solar system?</h3>
-                    <div class="mcq-options">
-                        <button class="mcq-option" data-qid="q2" data-answer="false">Saturn</button>
-                        <button class="mcq-option" data-qid="q2" data-answer="true">Jupiter</button>
-                        <button class="mcq-option" data-qid="q2" data-answer="false">Neptune</button>
-                        <button class="mcq-option" data-qid="q2" data-answer="false">Earth</button>
-                    </div>
-                    <div class="feedback" id="feedback-q2"></div>
-                    <button class="reset-btn" onclick="resetQuestion('q2')">Reset</button>
-                </div>
-                
-                <div class="mcq-container">
-                    <h3>Question 3: What is the chemical symbol for Gold?</h3>
-                    <div class="mcq-options">
-                        <button class="mcq-option" data-qid="q3" data-answer="true">Au</button>
-                        <button class="mcq-option" data-qid="q3" data-answer="false">Ag</button>
-                        <button class="mcq-option" data-qid="q3" data-answer="false">Go</button>
-                        <button class="mcq-option" data-qid="q3" data-answer="false">Gd</button>
-                    </div>
-                    <div class="feedback" id="feedback-q3"></div>
-                    <button class="reset-btn" onclick="resetQuestion('q3')">Reset</button>
-                </div>
+    <div class="mcq">
+        <h2>Multiple Choice Questions</h2>
+        <form>
+            <div class="question" data-answer="B">
+                <p>What is the capital of France?</p>
+                <input type="radio" name="q1" value="A"> A) London<br>
+                <input type="radio" name="q1" value="B"> B) Paris<br>
+                <input type="radio" name="q1" value="C"> C) Berlin<br>
             </div>
-            
-            <div id="notes" class="tab-content">
-                <h2>Study Notes</h2>
-                <p>Notes content will be added here.</p>
+            <div class="question" data-answer="A">
+                <p>What is 2 + 2?</p>
+                <input type="radio" name="q2" value="A"> A) 4<br>
+                <input type="radio" name="q2" value="B"> B) 3<br>
+                <input type="radio" name="q2" value="C"> C) 5<br>
             </div>
-            
-            <div id="resources" class="tab-content">
-                <h2>Resources</h2>
-                <p>Resources content will be added here.</p>
+            <div class="question" data-answer="C">
+                <p>Which planet is known as the Red Planet?</p>
+                <input type="radio" name="q3" value="A"> A) Venus<br>
+                <input type="radio" name="q3" value="B"> B) Jupiter<br>
+                <input type="radio" name="q3" value="C"> C) Mars<br>
             </div>
-        </div>
+            <!-- Add more questions as needed -->
+            <button type="submit">Submit</button>
+        </form>
     </div>
-    
     <script>
-        // MCQ Validation Logic
-        document.querySelectorAll('.mcq-option').forEach(button => {
-            button.addEventListener('click', function() {
-                const questionId = this.getAttribute('data-qid');
-                const isCorrect = this.getAttribute('data-answer') === 'true';
-                const container = this.closest('.mcq-container');
-                const feedbackDiv = container.querySelector('[id^="feedback-"]');
-                
-                // Remove previous states from all options in this question
-                container.querySelectorAll('.mcq-option').forEach(btn => {
-                    btn.classList.remove('selected', 'correct', 'incorrect');
-                });
-                
-                // Add classes based on answer
-                if (isCorrect) {
-                    this.classList.add('correct');
-                    feedbackDiv.textContent = '✓ Correct Answer!';
-                    feedbackDiv.classList.remove('incorrect');
-                    feedbackDiv.classList.add('correct', 'show');
-                } else {
-                    this.classList.add('incorrect');
-                    feedbackDiv.textContent = '✗ Incorrect! Try again.';
-                    feedbackDiv.classList.remove('correct');
-                    feedbackDiv.classList.add('incorrect', 'show');
-                }
-                
-                // Disable all options after selection
-                container.querySelectorAll('.mcq-option').forEach(btn => {
-                    btn.style.pointerEvents = 'none';
-                    btn.style.opacity = '0.7';
-                });
-            });
-        });
-        
-        // Tab Navigation
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const tabId = this.getAttribute('data-tab');
-                
-                // Hide all tabs
-                document.querySelectorAll('.tab-content').forEach(tab => {
-                    tab.classList.remove('active');
-                });
-                
-                // Remove active class from all buttons
-                document.querySelectorAll('.tab-btn').forEach(b => {
-                    b.classList.remove('active');
-                });
-                
-                // Show selected tab and mark button as active
-                document.getElementById(tabId).classList.add('active');
-                this.classList.add('active');
-            });
-        });
-        
-        // Reset question function
-        function resetQuestion(questionId) {
-            const container = document.querySelector(`[id="feedback-${questionId}"]`).closest('.mcq-container');
-            
-            container.querySelectorAll('.mcq-option').forEach(btn => {
-                btn.classList.remove('correct', 'incorrect', 'selected');
-                btn.style.pointerEvents = 'auto';
-                btn.style.opacity = '1';
-            });
-            
-            const feedbackDiv = container.querySelector('[id^="feedback-"]');
-            feedbackDiv.classList.remove('show', 'correct', 'incorrect');
-            feedbackDiv.textContent = '';
-        }
+        // JavaScript for handling the quiz logic
     </script>
 </body>
 </html>
