@@ -2891,19 +2891,28 @@ T₁ = 4000×23×tan(11.7°) = 19,099 N·mm
 T₂ = 4000×14.5×tan(4.76°) = 4,826 N·mm
 T_total = 23,925 N·mm = 23.9 N·m
 η = W×(L₁-L₂)/(2π×T_total) = 4000×2/(2π×23925) = 5.3%</div><div class="wp">Very low efficiency — but very high mechanical advantage. Used for precision jacking of heavy loads.</div>` },
-  'ch6b_2': { marks:4, source:'KU Past Exam Apr/May 2023', content:`<h4>Composite Spring (Series) — 10kN</h4><div class="fml">D=50-5=45mm, C=45/5=9
-Kw=(35/32)+0.0683=1.162
-Series: each spring carries same load = 10,000N
-τ = Kw×8FD/(πd³) = 1.162×8×10000×45/(π×125)
-τ = 1.162×3,600,000/392.7 = 10,651 MPa</div><div class="wp">This is extremely high — compare to τ_allow from data book for the wire material. If insufficient, use larger wire diameter.</div>` },
-  'ch6b_3': { marks:6, source:'KU Past Exam Jun/Jul 2024', content:`<h4>Safety Valve Spring Design</h4><div class="fml">A_valve = π/4×65² = 3318mm²
-F₁ = 0.70×3318 = 2323N, F₂ = 0.73×3318 = 2422N
-k = (F₂-F₁)/δ = 99/3.2 = 30.9 N/mm
-C=6 → D=6d, Kw=1.253
-Music wire 0.85%C: τ_ult≈1050MPa, τ_allow=1050/3=350MPa
-τ = Kw×8F₂D/(πd³) ≤ 350 → solve: d≥5mm
-D = 6×5 = 30mm
-n = G×d⁴/(8×D³×k) = 80000×5⁴/(8×30³×30.9) ≈ 7.5 → 8 coils</div>` },
+    'ch6b_2': { marks:2, source:'Bhandari (2010), KU Lecture Notes',
+    content:`<h4>Variable Pitch Spring — Definition and Primary Advantage</h4>
+<h4>What is a Variable Pitch Spring?</h4>
+<p>A variable pitch spring has unequal spacing between coils — the pitch varies progressively from tight coils at one end to open coils at the other end (or in any other pattern).</p>
+<h4>Primary Advantage: Progressive (Non-Linear) Stiffness</h4>
+<p>As the spring is compressed, the <strong>closer-spaced coils touch and become inactive first</strong>, leaving fewer active coils. With fewer active coils, k = Gd⁴/(8D³n) increases (n decreases → k increases). The spring becomes <strong>progressively stiffer</strong> as compression increases.</p>
+<div class="fml">At light load: all coils active → low k → soft, comfortable response
+At heavy load: some coils inactive → fewer n → high k → stiff, prevents bottoming out</div>
+<h4>Advantages Over Constant Pitch Spring</h4>
+<ul><li>Soft under light loads (comfort, small shock absorption)</li><li>Stiff under heavy loads (prevents collapse/bottoming out)</li><li>Can handle a wider range of loads without resonance issues</li></ul>
+<h4>Applications</h4>
+<ul><li><strong>Automotive suspension:</strong> Soft ride for normal road, stiff under heavy cornering or load</li><li><strong>Safety valves:</strong> Open softly, close with increasing force</li><li><strong>Recoil mechanisms</strong> in firearms</li></ul>
+<div class="kp">Key exam point: Variable pitch = non-linear (progressive) load-deflection curve. Constant pitch = linear curve (k is constant). Choosing variable pitch prevents sudden "bottoming out" under overload.</div>` },
+    'ch6b_3': { marks:2, source:'Mott (2013), Bhandari (2010), KU Lecture Notes',
+    content:`<h4>Multi-Leaf Spring — Main Advantage Over Single-Leaf Spring</h4>
+<h4>Main Advantage: Inter-Leaf Friction Damping</h4>
+<p>The primary advantage of a multi-leaf spring over a single-leaf spring is its <strong>built-in damping</strong> due to friction between the leaves. When the spring deflects under a load, the individual leaves slide against each other, generating frictional forces that absorb and dissipate energy from road shocks and vibrations.</p>
+<h4>Additional Advantages</h4>
+<ul><li><strong>Higher load capacity:</strong> Multiple leaves distribute the bending stress across a larger cross-sectional area — the spring can carry much heavier loads than a single leaf of the same overall dimensions</li><li><strong>Progressive stiffness:</strong> Shorter leaves progressively engage as deflection increases → spring becomes stiffer under heavier loads → prevents bottoming out</li><li><strong>Fail-safe design:</strong> If one leaf cracks or breaks, the remaining leaves still support the load — no sudden total failure</li><li><strong>Easy manufacture and replacement:</strong> Individual leaves can be replaced without replacing the entire assembly</li></ul>
+<h4>Why Preferred in Heavy Vehicle Suspensions</h4>
+<ul><li>Trucks, buses, and railway wagons experience very heavy, variable loads — multi-leaf springs provide high load capacity with progressive stiffening</li><li>The inter-leaf friction provides passive damping — reducing need for separate shock absorbers in simple designs</li><li>Robust, durable, proven in harsh conditions (off-road, mining, construction)</li></ul>
+<div class="kp">Single-leaf (tapered plate) springs are used in modern passenger cars where weight saving is more important than damping. Multi-leaf springs are chosen wherever load capacity, durability, and built-in damping matter more than weight.</div>` },
   'ch7_1': { marks:3, source:'KU Lecture Notes, Design Data Handbook', content:`<h4>6205 vs 6305</h4><div class="step"><strong>6205 (light series 02):</strong> OD=52mm, C≈14kN — use for light/moderate loads, limited space, high speed, low noise</div><div class="step"><strong>6305 (medium series 03):</strong> OD=62mm, C≈22.5kN — use for heavier loads, more space available</div><p>Both have 25mm bore, same type (deep groove ball). Select based on C_required from bearing life calculation: if C_req ≤ 14kN → 6205; if C_req ≤ 22.5kN → 6305.</p>` },
   'ch7_2': { marks:3, source:'KU Lecture Notes, Bhandari (2010)', content:`<h4>Spherical Roller Bearings for Conveyor Shafts</h4><ul><li><strong>High radial capacity:</strong> Heavy belt tension and material weight require high radial load rating</li><li><strong>Misalignment tolerance:</strong> Shaft deflection and imprecise mounting cause 1–2.5° misalignment — spherical raceways self-align without load increase</li><li><strong>Combined loads:</strong> Axial loads from inclined conveyors or misalignment handled efficiently</li><li><strong>Durability:</strong> Heavy industrial environment — spherical rollers are robust and long-lived</li></ul>` },
   'ch7_3': { marks:2, source:'KU Lecture Notes', content:`<h4>Small Diameter + Low Noise → Deep Groove Ball Bearing</h4><p>Ball bearings: available from 1mm bore, point contact minimises noise/vibration, highest speed capability, available in precision grades (P4, P2) for ultra-low-noise applications (motors, instruments, fans, hard drives).</p>` },
@@ -3488,25 +3497,16 @@ T_raise = 42,500 × 0.2355 = 10,009 N·mm = 10.0 N·m</div>
 <div class="step"><strong>Parallel-series combination:</strong> Both load and deflection increase proportionally. Used in heavy-duty applications.</div>
 <div class="kp">Key feature: Disc springs can be designed for progressive or even near-constant load characteristics by choosing the h/t ratio (disc height to thickness). For h/t ≈ 2.83 → almost constant force over deflection range.</div>` },
 
-  'ch6b_1': { marks:5, source:'KU Past Exam, Bhandari (2010)',
-    content:`<h4>Helical Compression Spring: 500N, Solid Height=50mm, Min Clearance=10mm, Max Free Length</h4>
-<p><strong>Given:</strong> F=500N, solid length L_s=50mm, min clearance=10mm when under load, find max free length and number of coils.</p>
-<h4>Step 1 — Spring Index and Wire Diameter</h4>
-<div class="fml">Assume C=8 (typical), wire material: find allowable τ from data book
-Wahl factor: Kw = (4×8-1)/(4×8-4) + 0.615/8 = 31/28 + 0.077 = 1.184
-τ = Kw × 8FD/(πd³) ≤ τ_allow
-Solve for d (wire diameter)</div>
-<h4>Step 2 — Mean Coil Diameter</h4>
-<div class="fml">D = C × d</div>
-<h4>Step 3 — Number of Active Coils</h4>
-<div class="fml">From solid length: L_s = n_t × d = 50mm → n_t = 50/d
-For squared & ground ends: n_inactive = 2 → n = n_t - 2</div>
-<h4>Step 4 — Deflection at Solid</h4>
-<div class="fml">y_s = 8FD³n/(Gd⁴)   (deflection to reach solid height)</div>
-<h4>Step 5 — Free Length</h4>
-<div class="fml">L_f_max = L_s + y_s + clearance
-where clearance = min 10mm (= (n_t-1) × gap per coil)</div>
-<div class="kp">The maximum free length is limited by buckling: L_f/D ≤ 2.63 for fixed-fixed ends. Verify this condition. Use exact values from data book for G and τ_allow for the specified wire material.</div>` },
+    'ch6b_1': { marks:2, source:'KU Past Exam Jun/Jul 2024, Bhandari (2010)',
+    content:`<h4>Conical Spring Replaced by Helical Compression Spring — Evaluation</h4>
+<h4>Key Differences Between Conical and Helical Springs</h4>
+<ul><li><strong>Conical spring:</strong> Variable coil diameter (large at base, small at top). Coils nest inside each other when compressed → can compress to nearly zero height (solid height ≈ one wire diameter). Ideal for compact spaces.</li><li><strong>Helical compression spring:</strong> Constant coil diameter. Solid length = n_t × d. Cannot collapse as flat as conical.</li></ul>
+<h4>Evaluation of the Design Change</h4>
+<div class="step"><strong>Same stiffness ✓:</strong> Both have k = 1.667 N/m (given). Spring force and battery contact force are maintained — electrical performance unaffected.</div>
+<div class="step"><strong>Same material ✓:</strong> No change to material properties — corrosion resistance, fatigue life unchanged.</div>
+<div class="step"><strong>Space concern ✗:</strong> The helical spring will have a larger solid length than the conical spring. In a compact battery casing, this may mean the casing needs to be made slightly deeper to accommodate the helical spring when fully compressed — a potential redesign issue.</div>
+<div class="step"><strong>Manufacturing ✓:</strong> Helical springs are cheaper and easier to manufacture than conical springs — cost reduction benefit.</div>
+<div class="kp">Conclusion: The design change is acceptable IF the casing depth can accommodate the larger solid length of the helical spring. If space is very tight, the conical spring is superior despite its higher cost. Verify solid length of new helical spring fits within casing before approving the change.</div>` },
 
   // CH7
   'ch7_0': { marks:3, source:'KU Lecture Notes Ch.7, Design Data Handbook',
