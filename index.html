@@ -777,6 +777,40 @@
     padding: 3px 10px;
     border-radius: 20px;
   }
+  /* FLASHCARD */
+  .fc-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:16px; }
+  .fc-card { perspective:1000px; height:200px; cursor:pointer; }
+  .fc-inner { position:relative; width:100%; height:100%; transition:transform 0.5s; transform-style:preserve-3d; }
+  .fc-card.flipped .fc-inner { transform:rotateY(180deg); }
+  .fc-front,.fc-back { position:absolute; inset:0; backface-visibility:hidden; border-radius:12px; padding:16px 18px; display:flex; flex-direction:column; justify-content:center; }
+  .fc-front { background:var(--surface2); border:1px solid var(--border); }
+  .fc-back { background:linear-gradient(135deg,rgba(108,99,255,0.08),rgba(56,189,248,0.04)); border:1px solid rgba(108,99,255,0.25); transform:rotateY(180deg); }
+  .fc-label { font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--accent); background:rgba(108,99,255,0.1); border:1px solid rgba(108,99,255,0.2); padding:2px 7px; border-radius:4px; margin-bottom:10px; display:inline-block; }
+  .fc-q { font-size:13px; color:var(--text); line-height:1.5; font-weight:500; }
+  .fc-a { font-size:12.5px; color:var(--text2); line-height:1.6; }
+  .fc-a .fml { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--accent3); background:rgba(56,189,248,0.07); padding:6px 10px; border-radius:5px; margin-top:6px; display:block; white-space:pre-wrap; }
+  .fc-hint { font-size:10px; color:var(--text3); margin-top:8px; }
+
+  /* EXAM SIMULATOR */
+  .exam-header { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:20px 24px; margin-bottom:20px; }
+  .exam-timer { font-family:'Syne',sans-serif; font-size:32px; font-weight:800; color:var(--text); }
+  .exam-timer.warn { color:var(--yellow); }
+  .exam-timer.danger { color:var(--red); animation:pulse 1s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+  .exam-progress-bar { height:4px; background:var(--border); border-radius:2px; margin-top:12px; overflow:hidden; }
+  .exam-progress-fill { height:100%; background:var(--accent); transition:width 0.3s; border-radius:2px; }
+  .exam-result { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:32px; text-align:center; }
+  .exam-score-big { font-family:'Syne',sans-serif; font-size:64px; font-weight:800; }
+  .score-a { color:var(--green); }
+  .score-b { color:var(--yellow); }
+  .score-c { color:var(--red); }
+
+  /* PROGRESS */
+  .prog-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:18px 20px; margin-bottom:12px; }
+  .prog-bar-wrap { height:8px; background:var(--border); border-radius:4px; margin-top:10px; overflow:hidden; }
+  .prog-bar-fill { height:100%; border-radius:4px; transition:width 0.6s ease; }
+  .prog-stat { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text3); margin-top:4px; }
+
 </style>
 </head>
 <body>
@@ -824,6 +858,15 @@
     <div class="sidebar-section-label">Practice</div>
     <div class="sidebar-item" onclick="navigate('mcq', this)">
       <div class="dot"></div> MCQ Practice Quiz
+    </div>
+    <div class="sidebar-item" onclick="navigate('flashcards', this)">
+      <div class="dot"></div> Flashcards
+    </div>
+    <div class="sidebar-item" onclick="navigate('exam', this)">
+      <div class="dot"></div> Exam Simulator
+    </div>
+    <div class="sidebar-item" onclick="navigate('progress', this)">
+      <div class="dot"></div> My Progress
     </div>
     <div class="sidebar-item" onclick="navigate('formulas', this)">
       <div class="dot"></div> Formula Sheet
@@ -1177,6 +1220,15 @@ function renderView(view) {
     tabBar.innerHTML = `<button class="tab-btn active" onclick="filterMcq('all', this)">All (${mcqData.length})</button>` +
       chapters_mcq.map(c => `<button class="tab-btn" onclick="filterMcq('${c}', this)">${c.split('—')[0].trim()}</button>`).join('');
     area.innerHTML = renderMcq('all');
+  } else if(view === 'flashcards') {
+    bc.textContent = 'Flashcards';
+    area.innerHTML = renderFlashcards();
+  } else if(view === 'exam') {
+    bc.textContent = 'Exam Simulator';
+    area.innerHTML = renderExamSetup();
+  } else if(view === 'progress') {
+    bc.textContent = 'My Progress';
+    area.innerHTML = renderProgress();
   } else if(view === 'formulas') {
     bc.textContent = 'Formula Sheet';
     area.innerHTML = renderFormulas();
@@ -1282,16 +1334,28 @@ function renderOverview() {
     </div>
 
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;">
-      <div style="background:var(--surface);border:1px solid rgba(52,211,153,0.2);border-radius:12px;padding:18px 20px;cursor:pointer;" onclick="navigate('mcq', document.querySelectorAll('.sidebar-item')[10])">
+      <div style="background:var(--surface);border:1px solid rgba(52,211,153,0.2);border-radius:12px;padding:18px 20px;cursor:pointer;" onclick="navigate('mcq', document.querySelectorAll('.sidebar-item')[11])">
         <div style="font-size:20px;margin-bottom:8px;">📝</div>
         <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px;">MCQ Practice Quiz</div>
-        <div style="font-size:12px;color:var(--text2);">40 questions with answers & explanations. Click to test yourself.</div>
+        <div style="font-size:12px;color:var(--text2);">40 questions with answers & explanations.</div>
         <div style="margin-top:10px;font-size:12px;color:var(--green);">→ Start Quiz</div>
       </div>
-      <div style="background:var(--surface);border:1px solid rgba(56,189,248,0.2);border-radius:12px;padding:18px 20px;cursor:pointer;" onclick="navigate('formulas', document.querySelectorAll('.sidebar-item')[11])">
+      <div style="background:var(--surface);border:1px solid rgba(251,191,36,0.2);border-radius:12px;padding:18px 20px;cursor:pointer;" onclick="navigate('flashcards', document.querySelectorAll('.sidebar-item')[12])">
+        <div style="font-size:20px;margin-bottom:8px;">🃏</div>
+        <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px;">Flashcards</div>
+        <div style="font-size:12px;color:var(--text2);">28 flip cards covering key formulas & concepts.</div>
+        <div style="margin-top:10px;font-size:12px;color:var(--yellow);">→ Study Cards</div>
+      </div>
+      <div style="background:var(--surface);border:1px solid rgba(251,146,60,0.2);border-radius:12px;padding:18px 20px;cursor:pointer;" onclick="navigate('exam', document.querySelectorAll('.sidebar-item')[13])">
+        <div style="font-size:20px;margin-bottom:8px;">⏱️</div>
+        <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px;">Exam Simulator</div>
+        <div style="font-size:12px;color:var(--text2);">Timed exam with MCQ + theory. Score & review.</div>
+        <div style="margin-top:10px;font-size:12px;color:var(--orange);">→ Start Exam</div>
+      </div>
+      <div style="background:var(--surface);border:1px solid rgba(56,189,248,0.2);border-radius:12px;padding:18px 20px;cursor:pointer;" onclick="navigate('formulas', document.querySelectorAll('.sidebar-item')[15])">
         <div style="font-size:20px;margin-bottom:8px;">⚡</div>
         <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px;">Formula Quick Reference</div>
-        <div style="font-size:12px;color:var(--text2);">All critical formulas organized by chapter. For last-minute revision.</div>
+        <div style="font-size:12px;color:var(--text2);">All critical formulas organized by chapter.</div>
         <div style="margin-top:10px;font-size:12px;color:var(--accent3);">→ View Formulas</div>
       </div>
     </div>
@@ -2053,9 +2117,201 @@ Oil film pressure generated ONLY by rotation — no pump
 In hydrostatic: oil film maintained by EXTERNAL supply under pressure</div>
 <div class="kp"><strong>MCQ tip:</strong> "Load capacity independent of speed" → Hydrostatic. "Oil film generated only by journal rotation" → Hydrodynamic.</div>`
   },
+
+  'ch1_6': { marks:2, source:'Collins et al. (2009)', content:`<h4>Preliminary vs Detailed Design</h4><p>Preliminary design converts abstract concepts into rough engineering proposals — approximate sizing, rough sketches, order-of-magnitude analysis, feasibility checks. Fast and inexpensive.</p><p>Detailed design produces precise dimensions, full stress/fatigue analysis, tolerance specifications, CAD models, and manufacturing drawings ready for production.</p><div class="kp">Preliminary = "back-of-envelope" viability check. Detailed = complete engineering specification. You cannot skip preliminary design — it filters out bad concepts before expensive detailed analysis is invested.</div>` },
+  'ch1_7': { marks:2, source:'Mott (2013)', content:`<h4>Feedback from Manufacturer and User</h4><p>Early feedback prevents costly redesigns later.</p><ul><li><strong>Manufacturer feedback:</strong> Reveals manufacturing constraints, achievable tolerances, assembly difficulties, material sourcing issues</li><li><strong>User feedback:</strong> Reveals actual usage patterns, ergonomic issues, missing features, real functional requirements</li></ul><div class="kp">Changes cost 10–100× more late in the design cycle than early. A design that cannot be manufactured or used comfortably fails regardless of its technical elegance.</div>` },
+  'ch1_8': { marks:2, source:'KU Lecture Notes', content:`<h4>Iterative Design Process</h4><p>Iterative means designers cycle back to earlier stages as new information is discovered — analysis may show the design fails stress requirements, triggering a return to concept generation; manufacturing planning may reveal impractical geometry.</p><div class="kp">Each iteration improves the design. Most real designs require 3–10 iterations before reaching a producible solution. This is why design projects always need schedule contingency — iteration cannot be fully predicted in advance.</div>` },
+  'ch2_1': { marks:3, source:'KU Lecture Notes Ch.4, Mott (2013)', content:`<h4>Experimental Methods in Stress Concentration Analysis</h4><ul><li><strong>Photoelasticity:</strong> Transparent model loaded under polarised light — stress fringe patterns visible. Best for complex shapes.</li><li><strong>Strain gauges:</strong> Direct strain measurement near stress raisers. Accurate but point-specific.</li><li><strong>Digital Image Correlation:</strong> Full-field strain mapping from camera images.</li></ul><h4>Simulation vs. Experiment</h4><div class="step"><strong>FEA advantages:</strong> No prototype, fast, parametric studies easy</div><div class="step"><strong>FEA limitations:</strong> Mesh-dependent, requires validation, misses manufacturing defects</div><div class="step"><strong>Experimental advantages:</strong> Real material behaviour, actual boundary conditions</div><div class="kp">Best practice: Use FEA for design exploration, validate with experiments for critical components.</div>` },
+  'ch2_2': { marks:3, source:'Mott (2013), KU Lecture Notes', content:`<h4>Shaft Keyway — Reducing Stress Concentration</h4><p>A shaft keyway is a classic high-Kt component (Kt = 2–3 for bending).</p><h4>Reduction Methods</h4><ul><li><strong>Add fillet at keyway end:</strong> Semicircular end reduces Kt from ~3.0 to ~1.6</li><li><strong>Woodruff key seat:</strong> Circular seat has smoother transitions and lower Kt</li><li><strong>Shot peening:</strong> Compressive residual stresses reduce effective fatigue stress amplitude</li><li><strong>Better surface finish:</strong> Polishing reduces ka modification factor</li></ul><p>These modifications reduce Kt by removing abrupt geometric transitions. A fillet distributes stress flow lines over a larger area rather than concentrating them at a sharp corner.</p>` },
+  'ch2_4': { marks:2, source:'Mott (2013)', content:`<h4>Surface Crack Effect on Fatigue Life</h4><p>A surface crack <strong>significantly decreases fatigue life</strong> — it acts as a pre-existing stress raiser of extreme severity, skipping the crack initiation phase entirely and proceeding directly to propagation.</p><div class="fml">Crack growth: da/dN = C(ΔK)^m  (Paris Law)
+ΔK = Δσ√(πa) — increases as crack grows → accelerating failure</div><div class="kp">This is why surface finish is a critical modification factor (ka). Ground and polished surfaces have ka near 1.0; rough as-cast surfaces have ka as low as 0.5 — a 50% reduction in endurance limit.</div>` },
+  'ch2_5': { marks:2, source:'Mott (2013)', content:`<h4>Higher Endurance Limit → Longer Fatigue Life</h4><p>Higher Se raises the stress level below which infinite life is theoretically achievable. For a given operating stress σ_a: if σ_a < Se → infinite life. The higher Se is, the more "safety margin" exists above operating stress.</p><div class="kp">Caveat: High-strength steels have higher Se but also higher notch sensitivity (q→1). This offsets the Se benefit in the presence of stress raisers. Surface finishing and generous fillets remain essential even for high-strength steels.</div>` },
+  'ch2_7': { marks:5, source:'KU Numerical Practice 4.3', content:`<h4>Stepped Shaft — SAE 1045 Water Quenched</h4><p><strong>Given:</strong> d=42mm, D=63mm, r=6.5mm, F=14,000N, arm=48mm</p><h4>Step 1 — Bending Moment</h4><div class="fml">M = F × arm = 14,000 × 48 = 672,000 N·mm</div><h4>Step 2 — Nominal Stress at d=42mm</h4><div class="fml">I = πd⁴/64 = π×42⁴/64 = 152,745 mm⁴
+σ_nom = M×c/I = 672,000×21/152,745 = 92.3 MPa</div><h4>Step 3 — Kt from Data Book</h4><div class="fml">D/d=1.5, r/d=0.155 → From Fig 2.23 Mahadevan: Kt≈1.43</div><h4>Step 4 — Maximum Stress</h4><div class="fml">σ_max = Kt×σ_nom = 1.43×92.3 = 132 MPa</div><h4>Step 5 — FOS</h4><div class="fml">SAE 1045 WQ: Sy=635MPa → FOS = 635/132 = 4.8</div>` },
+  'ch2_8': { marks:4, source:'KU Numerical Practice 4.4', content:`<h4>Does Enlarging Make it Stronger? — NO</h4><p><strong>Given:</strong> d1=20mm straight vs d2=25mm enlarged (Kt=1.74), σ_allow=80MPa</p><h4>Straight Bar (no Kt)</h4><div class="fml">P1 = 80 × π/4×20² = 80×314.2 = 25,130 N</div><h4>Enlarged Bar (Kt at fillet governs)</h4><div class="fml">P2 = 80×314.2/1.74 = 14,440 N</div><div class="kp"><strong>NO — enlarging REDUCES strength from 25.1kN to 14.4kN (43% reduction)!</strong> The fillet stress concentration governs. This demonstrates why stress raisers must always be considered — increasing diameter while ignoring fillet geometry weakens the component.</div>` },
+  'ch5a_1': { marks:2, source:'Bhandari (2010), KU Lecture Notes', content:`<h4>Riveted Joints in Aircraft</h4><ul><li><strong>Material:</strong> Aircraft aluminium alloys (2024, 7075) lose strength in weld HAZ — riveting avoids this</li><li><strong>Inspection:</strong> Rivets individually visible and replaceable without dismantling; critical for airworthiness certification</li><li><strong>Fatigue:</strong> Cold-worked rivet holes develop compressive residual stresses → better fatigue performance in thin aluminium sheets</li><li><strong>Damage tolerance:</strong> Cracks grow slowly between rivet holes (detectable); weld cracks propagate rapidly (catastrophic)</li></ul><div class="kp">Boeing 747: over 3 million fasteners, primarily rivets. Modern composites use bolted joints, but aluminium sections remain riveted.</div>` },
+  'ch5a_2': { marks:2, source:'Bhandari (2010)', content:`<h4>Riveted Joints and Vibration</h4><p>Riveted joints resist vibration better than welded joints due to their <strong>damping properties</strong>. The clamped joint interface dissipates vibration energy through micro-slip and friction at the contact surfaces (frictional damping). Unlike welded rigid joints, riveted connections allow very slight relative movement that absorbs vibration energy, preventing resonance fatigue crack initiation.</p>` },
+  'ch5a_3': { marks:2, source:'Bhandari (2010)', content:`<h4>Gusset Plate in Eccentric Loading</h4><p>A gusset plate distributes the eccentric load over a larger area, reducing the moment arm (eccentricity e), stiffening the connection, and providing sufficient area to accommodate a rivet group pattern. Without it, the full eccentric load concentrates at a small area creating very uneven rivet loading.</p>` },
+  'ch5a_4': { marks:2, source:'Bhandari (2010)', content:`<h4>Fullering vs Caulking</h4><div class="step"><strong>Fullering:</strong> Tool hammered against rivet shank edge to fill gap between rivet and hole — seals rivet-hole interface</div><div class="step"><strong>Caulking:</strong> Tool hammered against plate edge along the joint line — seals the plate-plate interface</div><p>Both introduce compressive residual stresses at the joint, improving fatigue resistance. Used together for pressure-tight joints (boilers, pressure vessels).</p>` },
+  'ch5a_6': { marks:2, source:'Bhandari (2010)', content:`<h4>Snap Head Rivet for Boilers</h4><p><strong>Snap (pan/round) head</strong> is preferred because: (1) Largest head cross-section → highest shear and pull-through resistance, (2) Large bearing area → better seal with caulking, (3) Prominent head → easy visual inspection, (4) Standardised by IS 1148 for pressure vessels.</p>` },
+  'ch5a_7': { marks:2, source:'KU Lecture Notes', content:`<h4>Eccentric Loading Examples</h4><ul><li>Wall/shelf bracket: load acts at horizontal distance from wall fastener group</li><li>Crane hook attachment: hook load offset from connection point</li><li>Machine tool mounting: cutting forces create moment on mounting bolts</li></ul><h4>Management Techniques</h4><ul><li>Position rivet centroid close to load line to minimise eccentricity e</li><li>Use gusset plates to stiffen and reduce eccentricity</li><li>Combine direct + torsional shear vectorially → design for critical (max force) rivet</li></ul>` },
+  'ch5a_9': { marks:6, source:'KU Past Exam Apr/May 2023, Bhandari (2010)', content:`<h4>Triple Riveted Double-Strap Butt Joint — Boiler Design</h4><p><strong>Given:</strong> D=1.5m=1500mm, p=2.4N/mm², σt=80, τ=60, σc=120 N/mm², η≥80%</p><h4>Step 1 — Plate Thickness</h4><div class="fml">t = p×D/(2×σt×η) = 2.4×1500/(2×80×0.80) = 3600/128 = 28.1mm → use t=30mm (+CA)</div><h4>Step 2 — Rivet Diameter</h4><div class="fml">d = 6√t = 6√30 = 32.9mm → use d=33mm (standard)</div><h4>Step 3 — Pitch (outer row)</h4><div class="fml">Equate shear of 6 rivets (3 rows × 2 shear planes per butt joint) to tearing:
+(p-d)×t×σt = n×2×(π/4×d²)×τ
+Solve for p (outer row pitch)</div><h4>Step 4 — Check Efficiency</h4><div class="fml">η = min(Pt,Ps,Pc)/(p×t×σt) ≥ 80%</div><div class="kp">For triple riveted double-strap: outer row has pitch p, inner rows have pitch p/2. Sketch must show both cover straps, three rows of rivets, zigzag pattern, and all dimensions d, p, pt, m, strap thickness.</div>` },
+  'ch5a_10': { marks:6, source:'KU Past Exam Dec 2024', content:`<h4>Double Riveted Butt Joint — Boiler 1.5m, 0.95 N/mm²</h4><p><strong>Given:</strong> D=1500mm, p=0.95N/mm², η=75%, σt=90MPa, σc=140MPa, τ=56MPa</p><h4>Step 1 — Plate Thickness</h4><div class="fml">t = p×D/(2×σt×η) = 0.95×1500/(2×90×0.75) = 1425/135 = 10.6mm → t=12mm</div><h4>Step 2 — Rivet Diameter</h4><div class="fml">d = 6√t = 6√12 = 20.8mm → d=22mm</div><h4>Step 3 — Pitch</h4><div class="fml">Optimum pitch from tearing = crushing equated to shearing
+Pt=Ps: (p-d)×t×σt = 4×(π/4×d²)×τ (double riveted, double shear)
+p = 4×π/4×22²×56/(t×σt) + d</div><h4>Step 4 — Strap Thickness</h4><div class="fml">t_strap = 0.625×t = 0.625×12 = 7.5mm (equal cover plates)</div><div class="kp">Always check all three failure modes and verify efficiency ≥ specified value. Provide neat sketch with all dimensions labeled.</div>` },
+  'ch5a_11': { marks:6, source:'KU Past Exam Jun/Jul 2024', content:`<h4>Double Riveted Double-Strap Butt Joint — Boiler 1.0m, 2.5 N/mm²</h4><p><strong>Given:</strong> D=1000mm, p=2.5N/mm², σt=80, τ=60, σc=120 N/mm², η≥70%</p><h4>Step 1 — Plate Thickness</h4><div class="fml">t = p×D/(2×σt×η) = 2.5×1000/(2×80×0.70) = 2500/112 = 22.3mm → t=24mm</div><h4>Step 2 — Rivet Diameter</h4><div class="fml">d = 6√24 = 29.4mm → d=30mm</div><h4>Step 3 — Outer Row Pitch (zigzag, outer=2×inner pitch)</h4><div class="fml">Equate shear of 4 rivets in double shear to tearing of outer row:
+4×2×(π/4×30²)×60 = (p-30)×24×80
+Solve for p</div><h4>Transverse Pitch and Margin</h4><div class="fml">pt = 0.33p + 0.67d (between outer and inner rows)
+m = 1.5d = 45mm</div><div class="kp">Sketch must show double cover plates (equal straps), 2 rows per side, zigzag pattern, outer row pitch = 2× inner row pitch.</div>` },
+  'ch5a_12': { marks:4, source:'KU Past Exam Jul/Aug 2024', content:`<h4>4-Rivet Bracket — 100kN at 150mm, FOS=1.5</h4><p><strong>Given:</strong> 4 rivets A,B,C,D at 60mm spacing vertically. P=100kN at 150mm from centroid E.</p><h4>Distances from Centroid E (midpoint BC)</h4><div class="fml">rA=rD=90mm, rB=rC=30mm
+Σr² = 2(90²)+2(30²) = 16200+1800 = 18000 mm²</div><h4>Direct Shear</h4><div class="fml">Fs = 100,000/4 = 25,000 N (downward)</div><h4>Torsional Shear (critical at A or D)</h4><div class="fml">T = 100,000×150 = 15,000,000 N·mm
+Ft = T×rA/Σr² = 15,000,000×90/18,000 = 75,000 N (horizontal)</div><h4>Resultant and Diameter</h4><div class="fml">F = √(25000²+75000²) = 79,057 N
+τ_allow = 240/1.5 = 160 MPa
+d = √(4×79057/(π×160)) = 25.1mm → use 26mm</div>` },
+  'ch5a_13': { marks:3, source:'KU Past Exam Jul/Aug 2024', content:`<h4>Effect of 30° Angled Load</h4><p>When load acts at 30° CCW from horizontal, the effective eccentricity moment changes. The horizontal component P·cos30° and vertical component P·sin30° create modified direct shear in each direction. The torsional moment T = P×e_perp where e_perp = perpendicular distance from load line to centroid.</p><p>For 30° load with same geometry: the resultant on the critical rivet will be different (generally reduced compared to purely vertical load due to changed vector addition), resulting in a slightly smaller required rivet diameter.</p>` },
+  'ch5a_14': { marks:3, source:'KU Past Exam Jun/Jul 2024', content:`<h4>4-Rivet Eccentric Joint — 5kN, SAE 1045, FOS=3</h4><div class="fml">SAE 1045 annealed: Sy=310MPa, τ_allow=0.577×310/3=59.6MPa
+Fs = 5000/4 = 1250 N per rivet
+T = P×e (e from exam figure)
+Ft = T×r_max/Σr² (critical rivet)
+F_max = √(Fs²+Ft²)
+d = √(4×F_max/(π×59.6))</div>` },
+  'ch5a_15': { marks:4, source:'KU Past Exam Jul/Aug 2024', content:`<h4>Boiler Circumferential Joints — p=2.5N/mm², D=1.6m</h4><div class="fml">t = p×D/(2×σt×η_long) ≈ 2.5×1600/(2×75×0.80) = 33.3mm → 36mm
+d = 6√36 = 36mm
+N = p×(π/4×D²)/(π/4×d²×τ) = 2.5×(π/4×1600²)/(π/4×36²×60)
+N = 5,026,548/61,073 ≈ 83 rivets total
+Arrange in rows with circumferential pitch satisfying ηc ≥ 62%</div>` },
+  'ch5b_1': { marks:2, source:'Bhandari (2010)', content:`<h4>Why Welding Replaces Riveting</h4><ul><li>No material removed for holes → higher structural efficiency, lighter weight</li><li>Continuous bead → leak-proof without caulking</li><li>Complex geometry easily joined</li><li>Faster automated production (MIG/TIG/robotic)</li><li>No cover plates, gusset plates, or additional material</li></ul><div class="wp">Rivets remain preferred in aircraft aluminium and where heat input would damage material.</div>` },
+  'ch5b_2': { marks:3, source:'KU Lecture Notes, Bhandari (2010)', content:`<h4>Weld Reinforcement</h4><p><strong>Benefits:</strong> Increases throat area → higher load capacity; compensates for slight fit-up imperfections.</p><p><strong>Drawbacks:</strong> Creates stress concentration at weld toe (Kt=1.5–3.0) — primary fatigue crack initiation site. Increases weight.</p><div class="kp">For fatigue applications: grind reinforcement flush with plate surface. This single operation improves fatigue life by 50–100% by eliminating the weld toe stress raiser.</div>` },
+  'ch5b_3': { marks:2, source:'KU Lecture Notes, Bhandari (2010)', content:`<h4>Figure II is Better</h4><p>Transverse weld (⊥ to load) provides direct load transfer and is ~30% stronger than parallel fillet weld of same size:</p><div class="fml">P_transverse = 0.828×s×l×τ
+P_parallel   = 0.707×s×l×τ
+Ratio = 0.828/0.707 = 1.17 (17–30% stronger)</div><p>Figure I (weld parallel to load) acts in pure shear — less efficient load path, introduces eccentricity.</p>` },
+  'ch5b_4': { marks:5, source:'KU Past Exam Apr/May 2023', content:`<h4>Eccentric Weld — 10kN at 30mm</h4><h4>Out-of-Plane (Bending)</h4><div class="fml">τ_direct = P/A = P/(0.707×s×2l)
+M = P×e = 10,000×30 = 300,000 N·mm
+σ_bending = M/(0.707s×l²/3)
+σ_max = √(σ²+4τ²) ≤ Sy/FOS</div><h4>In-Plane (Torsional)</h4><div class="fml">q_direct = P/(total length)
+q_torsional = T×r/Ip (Ip=polar moment of weld group)
+q_max = √(q_d²+q_t²+2q_d×q_t×cosθ)
+s = q_max/(0.707×τ_allow)</div>` },
+  'ch5b_5': { marks:4, source:'KU Past Exam Jan/Feb 2024', content:`<h4>Single Transverse + Double Parallel — 150kN</h4><p>From KU lecture notes formula for combination welds:</p><div class="fml">P = 0.707×s×l₁×σ_t + 1.414×s×l₂×τ
+where l₁ = width (transverse), l₂ = each parallel weld length
+
+Given allowable shear = 300N/mm (= 0.707×s×τ per mm):
+P_transverse = 300×w (where w = plate width from figure)
+P_parallel_total = P - P_transverse = 150,000 - 300w
+L (each parallel) = P_parallel_total/(2×300)</div>` },
+  'ch5b_6': { marks:4, source:'KU Past Exam Apr/May 2023', content:`<h4>ISA Angle Weld — 200×150×20mm, 15kN</h4><div class="fml">For ISA 200×150×20: centroid at y₁≈56mm (from 150mm leg), y₂=150-56=94mm
+l_total = P/(0.707×s×τ) = 15,000/(0.707×20×70) = 15.15mm (for s=20mm min)
+
+Distribution:
+l₁ (at 150mm leg, far from centroid) = l_total×y₁/(y₁+y₂)
+l₂ (at 200mm leg) = l_total×y₂/(y₁+y₂)
+Check: l₁×y₁ = l₂×y₂ (moment balance ✓)</div>` },
+  'ch5b_7': { marks:6, source:'KU Past Exam Jan/Feb 2024', content:`<h4>Rectangular Bar Fillet Weld — 30kN</h4><p>Treat weld as line, find unit loads, then size from allowable stress.</p><div class="fml">Total weld length = perimeter of bar = 2(b+d)
+For cast steel hard: σ_allow = 75MPa, τ_allow = 55MPa (from data book)
+Direct shear: τ = P/(0.707s×perimeter)
+If bending also present: σ = M/(0.707s×Z_weld)
+Combined: σ_max = √(σ²+3τ²) ≤ σ_allow → solve for s</div>` },
+  'ch5b_8': { marks:5, source:'KU Past Exam Dec 2024', content:`<h4>Fillet Weld Varying Loads — Plate 100×12.5mm</h4><div class="wp">For varying loads: use τ_allow=56N/mm² for BOTH transverse and parallel welds</div><div class="fml">Weld size from plate: s_min ≈ 8mm (for 12.5mm plate, data book)
+P_transverse = 0.707×s×100×τ = 0.707×s×100×56 = 3959s N
+P_parallel = 2×0.707×s×L×τ = 79.2sL N
+P_total = P_transverse + P_parallel → solve for L given total load</div>` },
+  'ch5b_9': { marks:6, source:'KU Past Exam Jun/Jul 2024', content:`<h4>Circular Beam Fillet Weld — 10kN, FOS=2</h4><div class="fml">Weld length = π×d (circular weld)
+Throat area A = 0.707×s×πd
+Section modulus Z = πd²/4
+τ = P/(0.707s×πd)
+σ = M×c/(0.707s×Z) if bending present
+For cast steel hard: τ_allow = 100/FOS = 50MPa
+Solve for s from σ_max = √(σ²+3τ²) ≤ σ_allow</div>` },
+  'ch5b_10': { marks:4, source:'KU Past Exam Jul/Aug 2024', content:`<h4>Double Parallel + Single Transverse — 100kN</h4><div class="fml">Throat = 0.707×h = 0.707×8 = 5.656mm
+i. Parallel weld length L:
+P_par = 2×5.656×L×τ = 2×5.656×L×150 = 1697L N
+ii. Transverse weld (width w):
+P_trans = 5.656×w×τ = 5.656×w×150 = 848.5w N
+P_par + P_trans = 100,000 → solve system given w from plate width
+iii. Throat = 5.656mm (minimum required throat thickness)</div>` },
+  'ch6a_2': { marks:3, source:'Bhandari (2010)', content:`<h4>Ceiling Projector — Use STUDS</h4><p>Studs (permanently fixed in ceiling with exposed nut end) are best because: (1) Repeated maintenance/lamp replacement possible without wearing out ceiling tapped hole; (2) Nut (cheap) wears, not expensive structural support; (3) Works well under tensile (gravity) loading; (4) Pre-installed from above, simplified below-ceiling installation.</p>` },
+  'ch6a_3': { marks:2, source:'Bhandari (2010)', content:`<h4>Locking by Friction</h4><p><strong>Split lock washer</strong> — spring-like ends bite into bolt head and surface, increasing friction to resist loosening. Also <strong>nylon insert lock nut</strong> — nylon grips thread flanks through friction. Cotter pin and castle nut are positive locks (mechanical interlocking), not friction. Thread locker is adhesive-based.</p>` },
+  'ch6a_5': { marks:5, source:'KU Lecture Notes, Bhandari (2010)', content:`<h4>Power Screw — 2000kg, Square Thread</h4><div class="fml">W = 2000×9.81 = 19,620N
+λ = arctan(5/(π×25)) = 3.65°, φ = arctan(0.15) = 8.53°
+T = W×(dm/2)×tan(λ+φ) = 19620×12.5×tan(12.18°)
+T = 19620×12.5×0.2158 = 52,930 N·mm = 52.93 N·m
+η = tanλ/tan(λ+φ) = 0.0637/0.2158 = 29.5%
+Self-locking check: tanλ=0.064 < μ=0.15 → Self-locking ✓</div>` },
+  'ch6a_6': { marks:5, source:'KU Past Exam Jun/Jul 2024', content:`<h4>Lathe Lead Screw ACME with Collar</h4><div class="fml">d_mean = 50-5 = 45mm, d_collar = (110+55)/2 = 82.5mm
+λ = arctan(10/(π×45)) = 4.05°
+μ'_thread = 0.15/cos14.5° = 0.1548, φ' = 8.8°
+T_thread = 3000×22.5×tan(12.85°) = 15,410 N·mm
+T_collar = 0.12×3000×41.25 = 14,850 N·mm
+T_total = 30,260 N·mm = 30.26 N·m
+Power = T×ω = 30.26×3.14 = 95 W
+η = F×L/(2π×T_total) = 3000×10/(2π×30260) = 15.8%</div>` },
+  'ch6a_7': { marks:5, source:'KU Past Exam Dec 2024', content:`<h4>Differential Screw Jack</h4><div class="fml">Net lift/rev = p₁-p₂ = 8-6 = 2mm
+λ₁=3.17°, λ₂=3.77°, φ=8.53°
+T₁ = 4000×23×tan(11.7°) = 19,099 N·mm
+T₂ = 4000×14.5×tan(4.76°) = 4,826 N·mm
+T_total = 23,925 N·mm = 23.9 N·m
+η = W×(L₁-L₂)/(2π×T_total) = 4000×2/(2π×23925) = 5.3%</div><div class="wp">Very low efficiency — but very high mechanical advantage. Used for precision jacking of heavy loads.</div>` },
+  'ch6b_1': { marks:2, source:'Bhandari (2010)', content:`<h4>Variable Pitch Spring Advantage</h4><p>Variable pitch springs have progressive (non-linear) stiffness: as compression increases, closer-spaced coils bottom out progressively, reducing active coils and increasing effective stiffness. Soft under light load (comfortable), stiff under heavy load (prevents bottoming out). Applications: automotive suspension, safety valves, recoil mechanisms.</p>` },
+  'ch6b_2': { marks:2, source:'Mott (2013)', content:`<h4>Multi-Leaf vs Single-Leaf</h4><p>Multi-leaf springs provide: higher load capacity (distributed over many leaves), inter-leaf friction damping (absorbs shock energy), progressive stiffening under load, fail-safe redundancy (one broken leaf doesn't cause total failure). Used in heavy vehicle (truck, railway) suspensions.</p>` },
+  'ch6b_3': { marks:3, source:'Bhandari (2010)', content:`<h4>Changing Spring Index — Effect on Wahl Factor</h4><div class="fml">Spring 1: C=10, Kw=(39/36)+0.0615=1.145
+Spring 2: C=5,  Kw=(19/16)+0.123=1.311</div><p>Lower C (tighter coils) → higher Kw → 14.5% more stress for same load. Replacing Spring 1 with Spring 2 increases wire stress by 14.5%. Either use larger wire diameter or reduce load to compensate. C < 6 is generally avoided in design.</p>` },
+  'ch6b_4': { marks:2, source:'Bhandari (2010)', content:`<h4>Concentric Springs — Opposite Helix Hands</h4><p>Opposite helix directions (one LH, one RH) prevent: (1) intermeshing of coils during compression, (2) tangling under torsional oscillation, (3) torsional twist of the central loading member (opposite torque reactions cancel). Standard requirement in IS 7906.</p>` },
+  'ch6b_6': { marks:4, source:'KU Past Exam Apr/May 2023', content:`<h4>Composite Spring (Series) — 10kN</h4><div class="fml">D=50-5=45mm, C=45/5=9
+Kw=(35/32)+0.0683=1.162
+Series: each spring carries same load = 10,000N
+τ = Kw×8FD/(πd³) = 1.162×8×10000×45/(π×125)
+τ = 1.162×3,600,000/392.7 = 10,651 MPa</div><div class="wp">This is extremely high — compare to τ_allow from data book for the wire material. If insufficient, use larger wire diameter.</div>` },
+  'ch6b_7': { marks:6, source:'KU Past Exam Jun/Jul 2024', content:`<h4>Safety Valve Spring Design</h4><div class="fml">A_valve = π/4×65² = 3318mm²
+F₁ = 0.70×3318 = 2323N, F₂ = 0.73×3318 = 2422N
+k = (F₂-F₁)/δ = 99/3.2 = 30.9 N/mm
+C=6 → D=6d, Kw=1.253
+Music wire 0.85%C: τ_ult≈1050MPa, τ_allow=1050/3=350MPa
+τ = Kw×8F₂D/(πd³) ≤ 350 → solve: d≥5mm
+D = 6×5 = 30mm
+n = G×d⁴/(8×D³×k) = 80000×5⁴/(8×30³×30.9) ≈ 7.5 → 8 coils</div>` },
+  'ch7_1': { marks:3, source:'KU Lecture Notes, Design Data Handbook', content:`<h4>6205 vs 6305</h4><div class="step"><strong>6205 (light series 02):</strong> OD=52mm, C≈14kN — use for light/moderate loads, limited space, high speed, low noise</div><div class="step"><strong>6305 (medium series 03):</strong> OD=62mm, C≈22.5kN — use for heavier loads, more space available</div><p>Both have 25mm bore, same type (deep groove ball). Select based on C_required from bearing life calculation: if C_req ≤ 14kN → 6205; if C_req ≤ 22.5kN → 6305.</p>` },
+  'ch7_2': { marks:3, source:'KU Lecture Notes, Bhandari (2010)', content:`<h4>Spherical Roller Bearings for Conveyor Shafts</h4><ul><li><strong>High radial capacity:</strong> Heavy belt tension and material weight require high radial load rating</li><li><strong>Misalignment tolerance:</strong> Shaft deflection and imprecise mounting cause 1–2.5° misalignment — spherical raceways self-align without load increase</li><li><strong>Combined loads:</strong> Axial loads from inclined conveyors or misalignment handled efficiently</li><li><strong>Durability:</strong> Heavy industrial environment — spherical rollers are robust and long-lived</li></ul>` },
+  'ch7_3': { marks:2, source:'KU Lecture Notes', content:`<h4>Small Diameter + Low Noise → Deep Groove Ball Bearing</h4><p>Ball bearings: available from 1mm bore, point contact minimises noise/vibration, highest speed capability, available in precision grades (P4, P2) for ultra-low-noise applications (motors, instruments, fans, hard drives).</p>` },
+  'ch7_4': { marks:3, source:'KU Lecture Notes, Bhandari (2010)', content:`<h4>Bearings for Combined Radial + Axial Loads</h4><div class="step"><strong>Deep groove ball (Type 6):</strong> Radial + moderate axial both directions. High speed, low noise. Example: motors.</div><div class="step"><strong>Tapered roller (Type 3):</strong> Heavy radial + heavy axial one direction. Used in pairs. Vehicle wheel hubs.</div><div class="step"><strong>Angular contact ball (Type 7):</strong> Defined contact angle, higher axial than deep groove. Machine tool spindles.</div>` },
+  'ch7_6': { marks:5, source:'KU Past Exam Dec 2024', content:`<h4>Bearing Selection — 1500rpm, 6000N/3500N, 1000hrs</h4><div class="fml">L10 = 60×1500×1000/10⁶ = 90 million rev
+Try 6210 (d=50mm): C=35,100N, C₀=22,000N
+Fa/C₀=0.159→e≈0.30; Fa/Fr=0.583>e → X=0.56,Y=1.56
+P=0.56×6000+1.56×3500=3360+5460=8820N
+C_req=8820×(90)^(1/3)=8820×4.48=39,500N=39.5kN
+6210 C=35.1kN < 39.5kN → Upgrade to 6310 (C=61.8kN) ✓</div>` },
+  'ch7_7': { marks:4, source:'KU Past Exam Jul/Aug 2024', content:`<h4>Deep Groove Ball Bearing — 5kN/2kN, 3000rpm, 20000hrs</h4><div class="fml">L10=60×3000×20000/10⁶=3600 million rev
+Fa/C₀≈0.10→X=0.56,Y=1.80
+P=0.56×5000+1.80×2000=6400N
+C_req=6400×(3600)^(1/3)=6400×15.33=98,100N≈98kN
+Select heavy-series bearing with C≥98kN and compatible bore</div>` },
+  'ch7_8': { marks:5, source:'KU Past Exam Jun/Jul 2024', content:`<h4>Deep Groove Ball Bearing — 5kN/2kN, 760rpm, 22000hrs, d≥50mm</h4><div class="fml">L10=60×760×22000/10⁶=1003 million rev
+Try 6210: C=35.1kN, C₀=22kN
+Fa/C₀=0.091→e≈0.24; X=0.56,Y=1.99
+P=0.56×5000+1.99×2000=2800+3980=6780N
+C_req=6780×(1003)^(1/3)=6780×10.01=67,850N
+6210 C=35.1kN insufficient; 6310 C=61.8kN insufficient
+→ Select 6410 (heavy series, 50mm bore): C≈87.1kN ≥ 67.85kN ✓</div>` },
+  'ch8_2': { marks:2, source:'KU Lecture Notes Ch.8, Mott (2013)', content:`<h4>Petroff's Law Factors</h4><div class="fml">T = 2π²×μ×N×R³×L/c</div><p>Directly influences T: μ (viscosity), N (speed), R (radius, cubic effect), L (length), c (clearance).</p><div class="kp">Bearing material, surface finish, and axial load do NOT appear in Petroff's equation — they don't directly influence frictional torque under full-film lubrication. For exam MCQs: "radial clearance" DOES influence T (it's in the denominator).</div>` },
+  'ch8_4': { marks:2, source:'Mott (2013)', content:`<h4>Heat Dissipation from Journal Bearings</h4><p>Heat dissipated by: conduction through housing, convection by oil flow, radiation (minor). Most practical systems use circulating oil with external cooler.</p><div class="fml">At equilibrium: Hg = Hd
+Hg = f×W×V (friction power, watts)
+Hd = C_d×A×(T_op - T_amb)
+Solve for T_op ≤ 70°C target</div>` },
+  'ch8_5': { marks:1, source:'Mott (2013)', content:`<h4>Least Friction Bearing</h4><p><strong>Hydrodynamic journal bearing</strong> (under full-film operating conditions) achieves f ≈ 0.001–0.005, comparable to rolling contact bearings. Hydrostatic bearing has similar low friction but with startup advantage (no boundary lubrication phase). Boundary-lubricated bearings have f = 0.08–0.14 (highest friction).</p>` },
+  'ch8_6': { marks:4, source:'KU Past Exam Apr/May 2023', content:`<h4>Journal Bearing — 3000rpm, 1000N, D=150mm</h4><div class="fml">P=1000/(300×150)=0.0222 N/mm²=22,200Pa
+R/c=75/0.05=1500, Ns=50 rev/s
+S=(0.02×50/22200)×1500²=101.4
+From Chart 3, L/D=2: ho/c≈0.90→h₀=0.045mm
+Required: h₀_min=0.00025×150=0.0375mm
+0.045>0.0375 → Bearing adequate ✓</div>` },
+  'ch8_7': { marks:5, source:'KU Past Exam Dec 2024', content:`<h4>Journal Bearing Design — 5500N at 800rpm</h4><div class="fml">Try D=60mm, L=60mm (L/D=1)
+P=5500/(60×60)=1.528 MPa ✓ (in 1.4-3.4 range)
+c=0.0025×60=0.15mm, R/c=30/0.15=200
+μ=ν×ρ=10.2e-6×900=0.00918 Pa·s, Ns=800/60=13.33
+S=(0.00918×13.33/1,528,000)×200²=3.2
+From Chart 4 (L/D=1): f(R/c)≈5.5→f=5.5/200=0.0275
+Friction force=0.0275×5500=151N
+V=π×0.06×800/60=2.51m/s
+Heat=151×2.51=380W</div>` },
+  'ch8_8': { marks:5, source:'KU Past Exam Jul/Aug 2024', content:`<h4>Sommerfeld Number — 10kN, 1500rpm</h4><div class="fml">P=10,000/(75×50)=2,667,000Pa
+R/c=1/0.001=1000, Ns=25rev/s
+S=(0.02×25/2,667,000)×1000²=0.1875
+L/D=75/50=1.5, from Chart 3: ho/c≈0.27
+h₀=0.27×0.025=6.75μm
+h₀_min=0.00025×50=12.5μm
+h₀<h₀_min → INADEQUATE. Increase D or use higher viscosity oil.</div>` },
+  'ch8_9': { marks:4, source:'KU Past Exam Jun/Jul 2024', content:`<h4>Friction Coefficient from Charts — 1500N, 1800rpm</h4><div class="fml">P=1500/(30×35)=1,429,000Pa
+R/c=700, Ns=30rev/s
+S=(0.03×30/1,429,000)×700²=0.309
+L/D=30/35≈1.0; From Chart 4: f(R/c)≈4.5
+f=4.5/700=0.00643
+Friction force=0.00643×1500=9.65N
+V=π×0.035×30=3.30m/s → Power loss=9.65×3.30=31.8W</div><div class="kp">Read f(R/c) from Chart 4 in the data book/appendix — the value depends on both S and L/D ratio from the chart.</div>` },
 };
 
 // ===== ANSWER FUNCTIONS =====
+
 function showAnswer(chKey, qIdx) {
   const ansKey = `${chKey}_${qIdx}`;
   const ch = chapters[chKey];
@@ -2070,7 +2326,7 @@ function showAnswer(chKey, qIdx) {
 
   qbadge.textContent = `${ch.tag} · Q${qIdx+1}`;
   // Strip SVG from question text for the modal title
-  const plainQ = q.q.replace(/<br>.*$/s, '').replace(/<[^>]+>/g, '');
+  const plainQ = q.q.replace(/<br>[\s\S]*$/, '').replace(/<[^>]+>/g, '');
   qtitle.textContent = plainQ.length > 120 ? plainQ.slice(0,120)+'…' : plainQ;
 
   if(ans) {
@@ -2106,6 +2362,456 @@ function closeAns(e) {
 function closeAnsBtn() {
   document.getElementById('ans-overlay').classList.remove('open');
   document.body.style.overflow = '';
+}
+
+// ===== FLASHCARD DATA =====
+const flashcards = [
+  // Ch1
+  { ch:'Ch 1', q:'What are the 8 stages of the mechanical design cycle?', a:'1.Recognition of Need 2.Problem Definition 3.Information Gathering 4.Concept Generation 5.Evaluation of Alternatives 6.Detailed Design 7.Planning for Manufacture 8.Feedback/Revision' },
+  { ch:'Ch 1', q:'What is the key difference between Brainstorming and Mind Mapping?', a:'Brainstorming = free-flowing, divergent, no criticism allowed. Mind Mapping = structured, hierarchical, visual — organises ideas around a central node.' },
+  { ch:'Ch 1', q:'Define Goals vs. Constraints in engineering design.', a:'Goals = desired outcomes to achieve (optimisable). Constraints = non-negotiable limitations that must be satisfied (e.g. max stress ≤ Sy/FOS). Violating constraints = invalid design.' },
+  { ch:'Ch 1', q:'What is "Design by Experience"?', a:'Using hands-on practical knowledge from previous engineering work to inform design decisions, supplementing analytical calculations. Captures real-world behaviour not modelled by theory.' },
+  // Ch2
+  { ch:'Ch 2/4', q:'What is the Stress Concentration Factor Kt?', a:'Kt = σ_max / σ_nom\nDimensionless factor quantifying how much a geometric discontinuity (hole, notch, fillet, keyway) amplifies stress above nominal. Kt = 1 for no discontinuity.' },
+  { ch:'Ch 2/4', q:'What is Notch Sensitivity q and how is it used?', a:'q = (Kf−1)/(Kt−1)\nRanges 0→1. q=0: material insensitive to notches (Kf=1). q=1: fully sensitive (Kf=Kt). Used to find fatigue stress concentration factor Kf for endurance limit calculations.' },
+  { ch:'Ch 2/4', q:'What is the Modified Endurance Limit formula?', a:'Se = ka × kb × kc × kd × ke × kf × Se\'\nka=surface, kb=size, kc=loading, kd=temperature, ke=reliability, kf=stress conc.\nSe\' ≈ 0.5×Sut for steels (Sut ≤ 1400MPa)' },
+  { ch:'Ch 2/4', q:'What is the S-N diagram and what is special about ferrous metals?', a:'S-N plot: stress amplitude vs. cycles to failure. Ferrous metals show a distinct horizontal line (endurance limit Se) at ~10⁶ cycles — stress below Se → infinite life. Non-ferrous (Al, Cu) have no true endurance limit — curve keeps decreasing.' },
+  // Ch5A
+  { ch:'Ch 5A', q:'What are the 4 modes of failure in riveted joints?', a:'1.Plate tearing at row: Pt=(p−d)×t×σt\n2.Rivet shear: Ps=n×(π/4×d²)×τ [×2 double shear]\n3.Rivet/plate crushing: Pc=n×d×t×σc\n4.Plate tearing at margin: m≥1.5d' },
+  { ch:'Ch 5A', q:'Formula for Joint Efficiency of a riveted joint?', a:'η = min(Pt, Ps, Pc) / (p × t × σt) × 100%\nWhere p=pitch, t=thickness, d=rivet dia, n=number of rivets per pitch' },
+  { ch:'Ch 5A', q:'How is eccentric loading handled in a riveted joint?', a:'Direct shear: Fs = P/n (equal on all rivets)\nTorsional shear: Ft = T×r/Σr² (where T=P×e)\nResultant: F=√(Fs²+Ft²+2FsFt·cosθ)\nDesign for critical rivet (largest resultant F)' },
+  { ch:'Ch 5A', q:'Empirical formula for rivet diameter in boiler design?', a:'d = 6√t (Unwin\'s formula, for t ≥ 8mm)\nwhere t = plate thickness in mm, d = rivet diameter in mm\nFor t < 8mm: equate shear resistance to crushing resistance' },
+  // Ch5B
+  { ch:'Ch 5B', q:'Throat thickness of a fillet weld — formula and meaning?', a:'Throat t = 0.707 × s (s = leg/size of weld)\nFor a 45° isoceles fillet, the minimum cross-section (throat) governs strength.\nP = 0.707 × s × l × τ (parallel weld in shear)' },
+  { ch:'Ch 5B', q:'How to distribute weld lengths for an unsymmetric angle section?', a:'l₁ × y₁ = l₂ × y₂\n(Moment equilibrium about centroid of angle section)\nLonger weld goes on the flange CLOSER to the centroid.\nTotal length: l₁+l₂ = P/(0.707×s×τ)' },
+  { ch:'Ch 5B', q:'Transverse vs Parallel fillet weld — which is stronger?', a:'Transverse (⊥ to load): P = 0.828×s×l×τ\nParallel (∥ to load): P = 0.707×s×l×τ\nTransverse is ~17-30% stronger than parallel for same size.\nFor combination: P = 0.707s×l₁×σ + 1.414s×l₂×τ' },
+  // Ch6A
+  { ch:'Ch 6A', q:'Torque to RAISE a load using a square thread power screw?', a:'T = W × (dm/2) × (tanλ + μ)/(1 − μ·tanλ)\nwhere λ=helix angle, μ=friction coeff., dm=mean diameter\nFor ACME: replace μ with μ\'=μ/cos(half-angle)' },
+  { ch:'Ch 6A', q:'Self-locking condition for a power screw?', a:'Self-locking when: tan λ ≤ μ\n(helix angle ≤ friction angle)\nBetter achieved by: DECREASING λ AND INCREASING μ\nEfficiency when self-locking: η < 50%' },
+  { ch:'Ch 6A', q:'Efficiency formula for power screw (square thread)?', a:'η = tan λ / tan(λ + φ)\nwhere φ = arctan(μ) = friction angle\nHigher λ = higher efficiency but less self-locking\nMax efficiency (square) ~50% at λ=45°−φ/2' },
+  // Ch6B
+  { ch:'Ch 6B', q:'Spring Index C, Wahl Factor Kw — formulas?', a:'C = D/d (mean coil dia / wire dia)\nKw = (4C−1)/(4C−4) + 0.615/C\nShear stress: τ = Kw × 8FD/(πd³)\nLower C → higher Kw → more stress (C<6 avoided)' },
+  { ch:'Ch 6B', q:'Spring stiffness formula and series/parallel combinations?', a:'k = G×d⁴/(8×D³×n)\nSeries: 1/k_t = 1/k₁ + 1/k₂ → less stiff\nParallel: k_t = k₁ + k₂ → stiffer\nDeflection: δ = 8×F×D³×n/(G×d⁴)' },
+  { ch:'Ch 6B', q:'Disc spring stacking — effects of series vs parallel?', a:'Series: same load, deflection multiplies (n×δ)\nParallel: same deflection, load multiplies (n×F)\nParallel-series: both load and deflection increase\nOpposite-hand winding prevents nesting in concentric springs' },
+  // Ch7
+  { ch:'Ch 7', q:'Bearing designation 6205 — what does each digit mean?', a:'6 = Deep groove ball bearing type\n2 = Light series (02) — smaller OD\n05 = Bore code: 05×5 = 25mm bore\n6305: same bore, medium series (03), larger OD, higher capacity\nException codes: 00=10,01=12,02=15,03=17mm' },
+  { ch:'Ch 7', q:'Equivalent dynamic load and L10 life formulas?', a:'P = X×Fr + Y×Fa (X,Y from data book tables)\nL10 = (C/P)³ × 10⁶ rev (ball bearings)\nL10 = (C/P)^(10/3) × 10⁶ rev (roller)\nLh = L10/(60×n)\nC_req = P×(Lh×60×n/10⁶)^(1/3)' },
+  { ch:'Ch 7', q:'Why are spherical roller bearings used in conveyor shafts?', a:'High radial load capacity for heavy belt/material loads\nSelf-aligning (1–2.5° tolerance) for shaft deflection/misalignment\nHandles combined radial+axial loads\nDurable in heavy industrial environments' },
+  // Ch8
+  { ch:'Ch 8', q:'Sommerfeld Number — formula and significance?', a:'S = (μ×N/P) × (R/c)²\nμ=viscosity(Pa·s), N=speed(rev/s), P=W/(LD), R/c=clearance ratio\nHigh S → good film → low friction\nUsed with Raimondi-Boyd charts to find ho and friction coeff.' },
+  { ch:'Ch 8', q:'Hydrodynamic vs Hydrostatic bearing — key differences?', a:'Hydrodynamic: film from journal rotation+wedge; no pump needed; capacity ∝ speed; fails at startup\nHydrostatic: film from external pump; capacity independent of speed; no startup wear; expensive\nBoundary: actual metal contact; slow/intermittent use' },
+  { ch:'Ch 8', q:'Petroff\'s law — frictional torque formula?', a:'T = 2π²×μ×N×R³×L/c\nDepends on: μ,N,R,L,c (all in formula)\nNOT on: bearing material, surface finish (under full film)\nCoeff of friction: f = 0.001–0.005 (full film)\nf = 0.08–0.14 (boundary lubrication)' },
+];
+
+// ===== EXAM SIMULATOR DATA =====
+const examQuestions = [
+  // Theory questions for exam simulator (short answer format)
+  { type:'theory', ch:'Ch 1', q:'List and briefly explain the 8 stages of the mechanical design cycle.', marks:3, hint:'Recognition → Definition → Information → Concepts → Evaluation → Detailed → Manufacture → Feedback' },
+  { type:'theory', ch:'Ch 1', q:'Differentiate between brainstorming and mind mapping with an example application.', marks:3, hint:'Free-flowing vs. structured; divergent vs. hierarchical' },
+  { type:'theory', ch:'Ch 2/4', q:'Explain stress concentration. State the formula for Kt and give two ways to reduce it in a shaft design.', marks:3, hint:'Kt = σmax/σnom; reduce by: fillet radius, better surface finish' },
+  { type:'theory', ch:'Ch 2/4', q:'State all modification factors for endurance limit and explain any three of them.', marks:3, hint:'ka,kb,kc,kd,ke,kf — surface, size, load, temperature, reliability, stress conc.' },
+  { type:'theory', ch:'Ch 5A', q:'Describe the four modes of failure in riveted joints and state the strength formula for each.', marks:3, hint:'Tearing(Pt), Shearing(Ps), Crushing(Pc), Margin failure' },
+  { type:'theory', ch:'Ch 5A', q:'Why are riveted joints preferred over welded joints in aircraft structures? Give at least 3 technical reasons.', marks:3, hint:'Al alloy welding problems, inspection, damage tolerance, fatigue' },
+  { type:'theory', ch:'Ch 5B', q:'What is weld reinforcement? Explain its benefits and drawbacks especially under fatigue loading.', marks:3, hint:'Extra weld metal above surface; increases throat but causes stress concentration at toe' },
+  { type:'theory', ch:'Ch 5B', q:'Compare Figure I (weld parallel to load) and Figure II (weld perpendicular to load). Which is better and why?', marks:2, hint:'Fig II better — transverse weld 30% stronger, direct load path' },
+  { type:'theory', ch:'Ch 6A', q:'Explain the self-locking condition in a power screw. How is it best achieved? When is it desirable?', marks:3, hint:'tanλ ≤ μ; decrease λ AND increase μ; screw jacks, vices' },
+  { type:'theory', ch:'Ch 6A', q:'What is a buttress thread? How does it differ from square and ACME threads? Give an application.', marks:3, hint:'One flat flank, one angled; one-directional load; artillery, presses' },
+  { type:'theory', ch:'Ch 6B', q:'Explain disc spring stacking in series, parallel, and parallel-series configurations with effect on load and deflection.', marks:3, hint:'Series: +deflection; Parallel: +load; Combined: both' },
+  { type:'theory', ch:'Ch 7', q:'Explain the bearing designation system for 6205. What does each digit represent?', marks:3, hint:'6=deep groove ball, 2=light series, 05=bore 25mm' },
+  { type:'theory', ch:'Ch 7', q:'Why are spherical roller bearings used in conveyor belt drive shafts? Give technical justification.', marks:3, hint:'High radial capacity, misalignment tolerance, combined loads' },
+  { type:'theory', ch:'Ch 8', q:'Explain hydrodynamic lubrication theory: how is pressure generated? Relate to the statement about bearing motion, geometry, and viscosity.', marks:3, hint:'Journal rotation + converging wedge + viscosity → film pressure' },
+  { type:'theory', ch:'Ch 8', q:'Compare hydrodynamic and hydrostatic bearings in terms of film generation, speed dependence, cost, and applications.', marks:3, hint:'Hydrodynamic: rotation; Hydrostatic: pump; capacity dependence; examples' },
+  // MCQ-style for simulator
+  ...mcqData.slice(0,15).map(m => ({type:'mcq', ch:m.chapter, q:m.q, options:m.options, correct:m.correct, explain:m.explain, marks:1}))
+];
+
+// ===== PROGRESS TRACKING (localStorage) =====
+const PROGRESS_KEY = 'meeg315_progress_v2';
+
+function loadProgress() {
+  try { return JSON.parse(localStorage.getItem(PROGRESS_KEY)) || {}; } catch(e) { return {}; }
+}
+
+function saveProgress(data) {
+  try { localStorage.setItem(PROGRESS_KEY, JSON.stringify(data)); } catch(e) {}
+}
+
+function markAnswerViewed(chKey, qIdx) {
+  const p = loadProgress();
+  if(!p.viewed) p.viewed = {};
+  const key = `${chKey}_${qIdx}`;
+  p.viewed[key] = true;
+  saveProgress(p);
+  updateProgressSidebar();
+}
+
+function updateProgressSidebar() {
+  const p = loadProgress();
+  const viewed = Object.keys(p.viewed || {}).length;
+  const total = Object.values(chapters).reduce((s,c) => s+c.theory.length, 0);
+  const mcqCorrect = Object.keys(mcqAnswers).filter(k => mcqAnswers[k] === mcqData[k].correct).length;
+  document.getElementById('mcq-score-sidebar').textContent = mcqAnswers && Object.keys(mcqAnswers).length > 0 ?
+    Math.round(mcqCorrect/Object.keys(mcqAnswers).length*100)+'%' : '0%';
+}
+
+// Patch showAnswer to track progress
+const _origShowAnswer = showAnswer;
+window.showAnswer = function(chKey, qIdx) {
+  _origShowAnswer(chKey, qIdx);
+  markAnswerViewed(chKey, qIdx);
+  // Update answer button to show viewed
+  setTimeout(() => {
+    const btn = document.querySelector(`.ans-btn[onclick="showAnswer('${chKey}', ${qIdx})"]`);
+    if(btn) { btn.textContent = '✓ Reviewed'; btn.style.color = 'var(--green)'; btn.style.borderColor = 'rgba(52,211,153,0.3)'; }
+  }, 100);
+};
+
+// ===== FLASHCARD RENDERER =====
+function renderFlashcards() {
+  const allChapters = [...new Set(flashcards.map(f=>f.ch))];
+  return `
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 22px;margin-bottom:20px;">
+      <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--text);margin-bottom:4px;">🃏 Flashcards</div>
+      <div style="font-size:13px;color:var(--text2);">Click any card to flip and reveal the answer. ${flashcards.length} cards across all chapters.</div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;">
+      <button class="tab-btn active" id="fc-all" onclick="filterCards('all',this)">All (${flashcards.length})</button>
+      ${allChapters.map(ch => `<button class="tab-btn" onclick="filterCards('${ch}',this)">${ch}</button>`).join('')}
+    </div>
+    <div class="fc-grid" id="fc-grid">${renderCardGrid('all')}</div>
+  `;
+}
+
+function renderCardGrid(filter) {
+  const filtered = filter==='all' ? flashcards : flashcards.filter(f=>f.ch===filter);
+  return filtered.map((fc,i) => `
+    <div class="fc-card" id="fc-${i}" onclick="this.classList.toggle('flipped')">
+      <div class="fc-inner">
+        <div class="fc-front">
+          <span class="fc-label">${fc.ch}</span>
+          <div class="fc-q">${fc.q}</div>
+          <div class="fc-hint">👆 Click to reveal answer</div>
+        </div>
+        <div class="fc-back">
+          <span class="fc-label" style="color:var(--green);background:rgba(52,211,153,0.1);border-color:rgba(52,211,153,0.2);">Answer</span>
+          <div class="fc-a">${fc.a.includes('\n') ? `<code class="fml">${fc.a}</code>` : fc.a}</div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterCards(filter, el) {
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('fc-grid').innerHTML = renderCardGrid(filter);
+}
+
+// ===== EXAM SIMULATOR =====
+let examState = { active:false, questions:[], current:0, answers:{}, startTime:null, duration:0, timer:null };
+
+function renderExamSetup() {
+  const chapterKeys = Object.keys(chapters);
+  return `
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:20px;">
+      <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--text);margin-bottom:8px;">📝 Exam Simulator</div>
+      <div style="font-size:13px;color:var(--text2);margin-bottom:20px;">Simulate a real KU MEEG 315 exam. Select chapters and question count, then answer within the time limit.</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
+        <div>
+          <div style="font-size:12px;color:var(--text3);margin-bottom:8px;font-family:'JetBrains Mono',monospace;">EXAM MODE</div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--text2);">
+              <input type="radio" name="exam-mode" value="mcq" checked style="accent-color:var(--accent)"> MCQ Only (20 questions, 30 min)
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--text2);">
+              <input type="radio" name="exam-mode" value="theory" style="accent-color:var(--accent)"> Theory Only (5 questions, 30 min)
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--text2);">
+              <input type="radio" name="exam-mode" value="mixed" style="accent-color:var(--accent)"> Full Exam (20 MCQ + 5 Theory, 2.5 hrs)
+            </label>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:12px;color:var(--text3);margin-bottom:8px;font-family:'JetBrains Mono',monospace;">CHAPTERS</div>
+          <div style="display:flex;flex-direction:column;gap:4px;">
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12px;color:var(--text2);">
+              <input type="checkbox" id="exam-all" checked onchange="toggleAllChapters(this)" style="accent-color:var(--accent)"> All Chapters
+            </label>
+            ${chapterKeys.map(k=>`<label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12px;color:var(--text2);">
+              <input type="checkbox" class="exam-ch" value="${k}" checked style="accent-color:var(--accent)"> ${chapters[k].tag}
+            </label>`).join('')}
+          </div>
+        </div>
+      </div>
+      <button onclick="startExam()" style="background:var(--accent);color:white;border:none;padding:12px 28px;border-radius:8px;font-family:'Syne',sans-serif;font-weight:700;font-size:14px;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.background='#5b52e8'" onmouseout="this.style.background='var(--accent)'">
+        🚀 Start Exam
+      </button>
+    </div>
+    <div id="exam-area"></div>
+  `;
+}
+
+function toggleAllChapters(el) {
+  document.querySelectorAll('.exam-ch').forEach(c => c.checked = el.checked);
+}
+
+function startExam() {
+  const mode = document.querySelector('input[name="exam-mode"]:checked').value;
+  const selectedChs = [...document.querySelectorAll('.exam-ch:checked')].map(c=>c.value);
+  if(selectedChs.length === 0) { alert('Select at least one chapter!'); return; }
+
+  let questions = [];
+  const durations = { mcq:30*60, theory:30*60, mixed:150*60 };
+
+  if(mode === 'mcq' || mode === 'mixed') {
+    const pool = mcqData.filter(m => selectedChs.some(ch => m.chapter.toLowerCase().includes(ch.replace('ch','ch ').toLowerCase())));
+    const shuffled = [...pool].sort(()=>Math.random()-0.5);
+    questions.push(...shuffled.slice(0, mode==='mixed'?20:Math.min(20,shuffled.length)).map(q=>({...q,type:'mcq'})));
+  }
+  if(mode === 'theory' || mode === 'mixed') {
+    const pool = examQuestions.filter(q=>q.type==='theory' && selectedChs.some(ch=>q.ch.toLowerCase().includes(ch.replace('ch','ch').toLowerCase())));
+    const shuffled = [...pool].sort(()=>Math.random()-0.5);
+    questions.push(...shuffled.slice(0, Math.min(5,shuffled.length)).map(q=>({...q,type:'theory'})));
+  }
+
+  if(questions.length === 0) { alert('No questions found for selected chapters and mode.'); return; }
+
+  examState = { active:true, questions, current:0, answers:{}, startTime:Date.now(), duration:durations[mode], timer:null };
+  renderExamView();
+  examState.timer = setInterval(updateExamTimer, 1000);
+}
+
+function renderExamView() {
+  const area = document.getElementById('exam-area');
+  if(!area) return;
+  const q = examState.questions[examState.current];
+  const total = examState.questions.length;
+  const answered = Object.keys(examState.answers).length;
+  const pct = ((examState.current+1)/total*100).toFixed(0);
+
+  area.innerHTML = `
+    <div class="exam-header">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+        <div>
+          <div style="font-size:12px;color:var(--text3);font-family:'JetBrains Mono',monospace;">Question ${examState.current+1} of ${total} · ${answered} answered</div>
+          <div class="exam-timer" id="exam-timer">--:--</div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          ${examState.questions.map((_,i) => `<div onclick="goToExamQ(${i})" style="width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;cursor:pointer;font-family:'JetBrains Mono',monospace;transition:all 0.15s;${i===examState.current?'background:var(--accent);color:white;':examState.answers[i]!==undefined?'background:rgba(52,211,153,0.15);border:1px solid rgba(52,211,153,0.3);color:var(--green);':'background:var(--surface2);border:1px solid var(--border);color:var(--text3);'}">${i+1}</div>`).join('')}
+        </div>
+      </div>
+      <div class="exam-progress-bar"><div class="exam-progress-fill" style="width:${pct}%"></div></div>
+    </div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:16px;">
+      <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:${q.type==='mcq'?'var(--accent3)':'var(--accent)'};background:${q.type==='mcq'?'rgba(56,189,248,0.1)':'rgba(108,99,255,0.1)'};border:1px solid ${q.type==='mcq'?'rgba(56,189,248,0.2)':'rgba(108,99,255,0.2)'};padding:3px 8px;border-radius:4px;">${q.type==='mcq'?'MCQ':'Theory'}</span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--yellow);background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.2);padding:3px 8px;border-radius:4px;">[${q.marks} mark${q.marks>1?'s':''}]</span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3);background:var(--surface2);border:1px solid var(--border);padding:3px 8px;border-radius:4px;">${q.ch}</span>
+      </div>
+      <div style="font-size:15px;color:var(--text);font-weight:500;line-height:1.6;margin-bottom:16px;">${q.q}</div>
+      ${q.type==='mcq' ? renderExamMCQ(q, examState.current) : renderExamTheory(examState.current)}
+    </div>
+    <div style="display:flex;gap:10px;justify-content:space-between;">
+      <button onclick="prevExamQ()" ${examState.current===0?'disabled':''} style="padding:10px 20px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;${examState.current===0?'opacity:0.4;cursor:not-allowed;':''}">← Previous</button>
+      <div style="display:flex;gap:8px;">
+        ${examState.current < total-1 ? `<button onclick="nextExamQ()" style="padding:10px 20px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;">Next →</button>` : ''}
+        <button onclick="submitExam()" style="padding:10px 20px;border-radius:8px;background:var(--accent);color:white;border:none;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;">Submit Exam</button>
+      </div>
+    </div>
+  `;
+  updateExamTimer();
+}
+
+function renderExamMCQ(q, idx) {
+  const ans = examState.answers[idx];
+  let html = '<div style="display:flex;flex-direction:column;gap:8px;">';
+  q.options.forEach(function(opt, oi) {
+    const selected = ans === oi;
+    const clickable = ans === undefined;
+    const border = selected ? 'rgba(108,99,255,0.4)' : 'var(--border)';
+    const bg = selected ? 'rgba(108,99,255,0.08)' : 'var(--surface2)';
+    const col = selected ? 'var(--accent2)' : 'var(--text2)';
+    const cur = clickable ? 'pointer' : 'default';
+    const btnBg = selected ? 'rgba(108,99,255,0.2)' : 'var(--surface3)';
+    const btnBd = selected ? 'var(--accent)' : 'var(--border)';
+    const oc = clickable ? 'onclick="selectExamMCQ(' + idx + ',' + oi + ')"' : '';
+    html += '<div ' + oc + ' style="padding:10px 14px;border-radius:8px;border:1px solid ' + border + ';background:' + bg + ';cursor:' + cur + ';font-size:13px;color:' + col + ';display:flex;gap:10px;align-items:flex-start;transition:all 0.15s;">';
+    html += '<span style="font-family:monospace;font-size:11px;width:20px;height:20px;border-radius:50%;background:' + btnBg + ';border:1px solid ' + btnBd + ';display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">' + String.fromCharCode(65+oi) + '</span> ';
+    html += opt + '</div>';
+  });
+  html += '</div>';
+  return html;
+}
+
+function renderExamTheory(idx) {
+  const ans = examState.answers[idx] || '';
+  return `<textarea id="theory-ans-${idx}" placeholder="Write your answer here..." style="width:100%;min-height:120px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px;color:var(--text);font-size:13px;font-family:'DM Sans',sans-serif;resize:vertical;line-height:1.6;" onchange="examState.answers[${idx}]=this.value" onkeyup="examState.answers[${idx}]=this.value">${ans}</textarea>`;
+}
+
+function selectExamMCQ(idx, choice) {
+  examState.answers[idx] = choice;
+  renderExamView();
+  document.getElementById('exam-area').scrollTop = 0;
+}
+
+function goToExamQ(i) { examState.current = i; renderExamView(); }
+function nextExamQ() { if(examState.current < examState.questions.length-1) { examState.current++; renderExamView(); } }
+function prevExamQ() { if(examState.current > 0) { examState.current--; renderExamView(); } }
+
+function updateExamTimer() {
+  const el = document.getElementById('exam-timer');
+  if(!el || !examState.active) return;
+  const elapsed = Math.floor((Date.now() - examState.startTime)/1000);
+  const remaining = Math.max(0, examState.duration - elapsed);
+  const m = Math.floor(remaining/60), s = remaining%60;
+  el.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  el.className = 'exam-timer' + (remaining<300?' danger':remaining<600?' warn':'');
+  if(remaining === 0) { clearInterval(examState.timer); submitExam(); }
+}
+
+function submitExam() {
+  clearInterval(examState.timer);
+  examState.active = false;
+  let mcqCorrect=0, mcqTotal=0, theoryTotal=0, theoryMarks=0;
+  examState.questions.forEach((q,i)=>{
+    if(q.type==='mcq') {
+      mcqTotal++;
+      if(examState.answers[i]===q.correct) mcqCorrect++;
+    } else {
+      theoryMarks += q.marks;
+      theoryTotal++;
+    }
+  });
+  const mcqPct = mcqTotal>0 ? Math.round(mcqCorrect/mcqTotal*100) : null;
+  const scoreClass = mcqPct===null?'score-b':mcqPct>=70?'score-a':mcqPct>=40?'score-b':'score-c';
+  const grade = mcqPct===null?'Submitted':mcqPct>=80?'Excellent!':mcqPct>=60?'Good':mcqPct>=40?'Pass':'Needs Work';
+
+  const area = document.getElementById('exam-area');
+  area.innerHTML = `
+    <div class="exam-result">
+      <div style="font-size:40px;margin-bottom:16px;">🎓</div>
+      <div class="exam-score-big ${scoreClass}">${mcqPct!==null?mcqPct+'%':theoryTotal+' Qs'}</div>
+      <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--text);margin:8px 0;">${grade}</div>
+      ${mcqTotal>0?`<div style="font-size:14px;color:var(--text2);margin-bottom:6px;">MCQ: ${mcqCorrect}/${mcqTotal} correct</div>`:''}
+      ${theoryTotal>0?`<div style="font-size:14px;color:var(--text2);margin-bottom:6px;">Theory: ${theoryTotal} questions submitted (${theoryMarks} total marks)</div>`:''}
+      <div style="margin-top:24px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+        <button onclick="showExamReview()" style="padding:10px 20px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;">Review Answers</button>
+        <button onclick="navigate('exam',document.querySelector('.sidebar-item.active'))" style="padding:10px 20px;border-radius:8px;background:var(--accent);border:none;color:white;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;">New Exam</button>
+      </div>
+    </div>
+  `;
+  saveExamScore(mcqPct);
+}
+
+function saveExamScore(pct) {
+  const p = loadProgress();
+  if(!p.examScores) p.examScores=[];
+  p.examScores.push({ date:new Date().toLocaleDateString(), score:pct, total:examState.questions.length });
+  saveProgress(p);
+}
+
+function showExamReview() {
+  const area = document.getElementById('exam-area');
+  let html = '<div style="margin-top:16px;">';
+  examState.questions.forEach((q,i)=>{
+    if(q.type==='mcq') {
+      const userAns = examState.answers[i];
+      const correct = q.correct;
+      const isCorrect = userAns===correct;
+      html += `<div style="background:var(--surface);border:1px solid ${isCorrect?'rgba(52,211,153,0.25)':'rgba(248,113,113,0.25)'};border-radius:10px;padding:14px 16px;margin-bottom:10px;">
+        <div style="font-size:12px;color:var(--text3);margin-bottom:6px;font-family:'JetBrains Mono',monospace;">Q${i+1} MCQ · ${isCorrect?'✅ Correct':'❌ Wrong'}</div>
+        <div style="font-size:13px;color:var(--text);margin-bottom:8px;">${q.q}</div>
+        ${userAns!==undefined?`<div style="font-size:12px;color:${isCorrect?'var(--green)':'var(--red)'};margin-bottom:4px;">Your answer: ${String.fromCharCode(65+userAns)}. ${q.options[userAns]}</div>`:'<div style="font-size:12px;color:var(--text3);">Not answered</div>'}
+        ${!isCorrect?`<div style="font-size:12px;color:var(--green);margin-bottom:4px;">Correct: ${String.fromCharCode(65+correct)}. ${q.options[correct]}</div>`:''}
+        <div style="font-size:12px;color:var(--text2);background:var(--surface2);border-radius:6px;padding:8px;margin-top:6px;">${q.explain}</div>
+      </div>`;
+    } else {
+      html += `<div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:10px;">
+        <div style="font-size:12px;color:var(--text3);margin-bottom:6px;font-family:'JetBrains Mono',monospace;">Q${i+1} Theory · [${q.marks} marks]</div>
+        <div style="font-size:13px;color:var(--text);margin-bottom:8px;">${q.q}</div>
+        <div style="font-size:12px;color:var(--text2);background:var(--surface2);border-radius:6px;padding:8px;white-space:pre-wrap;">${examState.answers[i]||'(No answer written)'}</div>
+        <div style="font-size:11px;color:var(--accent);margin-top:6px;">Hint: ${q.hint}</div>
+      </div>`;
+    }
+  });
+  html += '</div>';
+  area.innerHTML = html;
+}
+
+// ===== PROGRESS RENDERER =====
+function renderProgress() {
+  const p = loadProgress();
+  const viewed = p.viewed || {};
+  const totalAnswers = Object.values(chapters).reduce(function(s,c){ return s+c.theory.length; }, 0);
+  const viewedCount = Object.keys(viewed).length;
+  const mcqAttempted = Object.keys(mcqAnswers).length;
+  const mcqCorrect = Object.keys(mcqAnswers).filter(function(k){ return mcqAnswers[k] === mcqData[parseInt(k)].correct; }).length;
+  const mcqPct = mcqAttempted > 0 ? Math.round(mcqCorrect/mcqAttempted*100) : 0;
+  const examScores = p.examScores || [];
+
+  const chapterStats = Object.entries(chapters).map(function(entry) {
+    const key = entry[0]; const ch = entry[1];
+    const total = ch.theory.length;
+    const done = ch.theory.filter(function(_,i){ return viewed[key+'_'+i]; }).length;
+    const pct = Math.round(done/total*100);
+    const color = pct>=80 ? 'var(--green)' : pct>=40 ? 'var(--yellow)' : 'var(--accent)';
+    return { key, title:ch.tag, total, done, pct, color };
+  });
+
+  const statCards = [
+    { label:'Answers Reviewed', val:viewedCount+'/'+totalAnswers, pct:Math.round(viewedCount/totalAnswers*100), color:'var(--accent2)' },
+    { label:'MCQ Score', val:mcqPct+'%', pct:mcqPct, color:mcqPct>=70?'var(--green)':mcqPct>=40?'var(--yellow)':'var(--red)' },
+    { label:'MCQ Attempted', val:mcqAttempted+'/'+mcqData.length, pct:Math.round(mcqAttempted/mcqData.length*100), color:'var(--accent3)' },
+    { label:'Exams Taken', val:''+examScores.length, pct:Math.min(100,examScores.length*20), color:'var(--orange)' },
+  ];
+
+  let html = '<div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:20px;">';
+  html += '<div style="font-family:Syne,sans-serif;font-size:20px;font-weight:800;color:var(--text);margin-bottom:4px;">My Progress</div>';
+  html += '<div style="font-size:13px;color:var(--text2);">Track your study sessions across all chapters.</div></div>';
+
+  html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:20px;">';
+  statCards.forEach(function(s) {
+    html += '<div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px;">';
+    html += '<div style="font-family:Syne,sans-serif;font-size:22px;font-weight:700;color:'+s.color+';">'+s.val+'</div>';
+    html += '<div style="font-size:11px;color:var(--text3);margin-top:2px;">'+s.label+'</div>';
+    html += '<div style="height:4px;background:var(--border);border-radius:2px;margin-top:8px;overflow:hidden;">';
+    html += '<div style="height:100%;width:'+s.pct+'%;background:'+s.color+';border-radius:2px;"></div></div></div>';
+  });
+  html += '</div>';
+
+  html += '<div style="font-family:monospace;font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:12px;">Chapter Progress</div>';
+  chapterStats.forEach(function(s) {
+    html += '<div class="prog-card">';
+    html += '<div style="display:flex;align-items:center;justify-content:space-between;">';
+    html += '<div><div style="font-family:Syne,sans-serif;font-size:14px;font-weight:700;color:var(--text);">'+s.title+'</div>';
+    html += '<div class="prog-stat">'+s.done+'/'+s.total+' answers reviewed</div></div>';
+    html += '<div style="font-family:Syne,sans-serif;font-size:20px;font-weight:700;color:'+s.color+';">'+s.pct+'%</div></div>';
+    html += '<div class="prog-bar-wrap"><div class="prog-bar-fill" style="width:'+s.pct+'%;background:'+s.color+';"></div></div></div>';
+  });
+
+  if (examScores.length > 0) {
+    html += '<div style="font-family:monospace;font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;margin:20px 0 12px;">Recent Exam Scores</div>';
+    examScores.slice(-5).reverse().forEach(function(s) {
+      const sc = s.score !== null ? s.score+'%' : 'Theory';
+      const col = s.score >= 70 ? 'var(--green)' : s.score >= 40 ? 'var(--yellow)' : 'var(--red)';
+      html += '<div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:8px;margin-bottom:8px;">';
+      html += '<span style="font-size:12px;color:var(--text3);">'+s.date+'</span>';
+      html += '<span style="font-family:Syne,sans-serif;font-size:16px;font-weight:700;color:'+col+';">'+sc+'</span>';
+      html += '<span style="font-size:12px;color:var(--text3);">'+s.total+' questions</span></div>';
+    });
+  }
+
+  html += '<button onclick="clearProgress()" style="margin-top:16px;background:rgba(248,113,113,0.08);border:1px solid rgba(248,113,113,0.2);color:var(--red);padding:8px 16px;border-radius:8px;cursor:pointer;font-family:sans-serif;font-size:12px;">Reset All Progress</button>';
+  return html;
+}
+
+function clearProgress() {
+  if(confirm('Reset all progress? This cannot be undone.')) {
+    localStorage.removeItem(PROGRESS_KEY);
+    mcqAnswers = {};
+    document.getElementById('mcq-score-sidebar').textContent = '0%';
+    navigate('progress', document.querySelector('.sidebar-item.active'));
+  }
 }
 
 // Close on Escape key
