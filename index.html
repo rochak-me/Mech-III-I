@@ -2665,128 +2665,6 @@ Parallel: k_total = n × k_single   (stiffer)
 Analogy: Same as springs in series/parallel</div>
 <div class="kp">From KU lecture notes: Disc springs should be stacked in opposite orientations for series stacking to prevent nesting (sticking together). Parallel stacks use same-direction orientation.</div>`
   },
-
-  'ch6b_5': {
-    marks: 5, source: 'Bhandari (2010) §22.5, Mott (2013) §18-3, KU Numerical Practice',
-    content: `<h4>Helical Compression Spring Design</h4>
-<p><strong>Given:</strong> F = 500N, solid height Ls = 50mm, min clearance = 10mm, max free length Lf = 100mm, d = 10mm, G = 80GPa</p>
-<h4>Step 1 — Spring Index and Wahl Factor</h4>
-<div class="fml">C = D/d  (D = mean coil diameter, to be found)
-Wahl factor: Kw = (4C-1)/(4C-4) + 0.615/C</div>
-<h4>Step 2 — Active Coils from Geometry</h4>
-<div class="fml">Solid height: Ls = n_t × d = 50mm → n_t = 50/10 = 5 total coils
-For squared and ground ends: n (active) = n_t - 2 = 3 coils
-Check: Lf ≤ 100mm (given as max)</div>
-<h4>Step 3 — Spring Rate</h4>
-<div class="fml">k = F/δ = G × d⁴ / (8 × D³ × n)
-δ = Lf - Ls = 100 - 50 = 50mm (maximum deflection)
-k = 500/50 = 10 N/mm</div>
-<h4>Step 4 — Find D from stiffness equation</h4>
-<div class="fml">D³ = G × d⁴ / (8 × k × n) = (80000 × 10⁴) / (8 × 10 × 3)
-D³ = 8000000/240 = 33333 mm³ → D = 32.2mm</div>
-<h4>Step 5 — Wire Stress</h4>
-<div class="fml">C = D/d = 32.2/10 = 3.22
-Kw = (4×3.22-1)/(4×3.22-4) + 0.615/3.22 = 1.58
-τ = Kw × 8FD/(πd³) = 1.58 × 8×500×32.2/(π×10³) = 647 MPa</div>
-<div class="kp">Compare τ with allowable shear stress for oil-tempered wire from data book (typically 800–900 MPa for d=10mm). Check FOS = τ_allow/τ ≥ 1.5.</div>`
-  },
-
-  // ---- CHAPTER 7 ----
-  'ch7_0': {
-    marks: 3, source: 'KU Lecture Notes Ch.7, Bhandari (2010) Ch.15, Design Data Handbook',
-    content: `<h4>Bearing Designation 6205 — Explained</h4>
-<div class="fml">Bearing Number:  6  |  2  |  05
-                  ↓    ↓    ↓
-                Type Series  Bore</div>
-<h4>First Digit — '6' = Type</h4>
-<p>'6' designates a <strong>Deep Groove Ball Bearing</strong> — the most common anti-friction bearing. Suitable for radial loads with moderate axial loads, high speed, low noise.</p>
-<p>Other types: 1=self-aligning ball, 2=spherical roller, 3=cylindrical roller, 7=angular contact ball</p>
-<h4>Second Digit — '2' = Series (Width/OD)</h4>
-<p>'2' means the <strong>light series (02 series)</strong> — smaller outer diameter and narrower width for a given bore. Compared to medium series (03) bearing with the same bore, the 6205 has a smaller OD and lower load capacity.</p>
-<h4>Last Two Digits — '05' = Bore Code</h4>
-<p>For codes 04 and above: <strong>Bore diameter = code × 5mm</strong></p>
-<div class="fml">Bore = 05 × 5 = 25 mm
-OD and width are standard (52mm OD, 15mm width for 6205)</div>
-<div class="kp"><strong>Exception bore codes:</strong> 00=10mm, 01=12mm, 02=15mm, 03=17mm (not ×5 rule)</div>
-<p><strong>6205 vs 6305:</strong> Both have 25mm bore. 6305 is medium series (03) → larger OD (62mm vs 52mm) → higher dynamic load capacity. Use 6305 for heavier loads; 6205 for space-limited, lighter duty.</p>`
-  },
-
-  'ch7_5': {
-    marks: 5, source: 'Bhandari (2010) Ch.15, KU Lecture Notes Ch.7, Design Data Handbook',
-    content: `<h4>Bearing Selection — 2500rpm, Fr=2kN, Fa=1kN, d=25mm, Life=20,000hrs</h4>
-<h4>Step 1 — Required Life in Millions of Revolutions</h4>
-<div class="fml">L10 = (60 × N × Lh) / 10⁶
-L10 = (60 × 2500 × 20000) / 10⁶ = 3000 million revolutions</div>
-<h4>Step 2 — Trial Bearing Selection</h4>
-<p>Shaft dia = 25mm → try bearing 6205 (bore = 25mm). From data book: C = 14,000N, C0 = 7,800N</p>
-<h4>Step 3 — Equivalent Dynamic Load</h4>
-<div class="fml">Fa/C0 = 1000/7800 = 0.128 → from Table 16.1: e ≈ 0.28
-Fa/Fr = 1000/2000 = 0.5 > e = 0.28
-→ Use: X = 0.56, Y = 1.69 (from data book table)
-P = X·Fr + Y·Fa = 0.56×2000 + 1.69×1000 = 1120 + 1690 = 2810 N</div>
-<h4>Step 4 — Apply FOS</h4>
-<div class="fml">P_design = FOS × P = 2 × 2810 = 5620 N</div>
-<h4>Step 5 — Required Dynamic Load Capacity</h4>
-<div class="fml">C_required = P_design × (L10)^(1/3) = 5620 × (3000)^(1/3)
-C_required = 5620 × 14.42 = 81,000 N = 81 kN</div>
-<div class="kp">6205 has C = 14kN — insufficient. Select a larger bearing from the data book with bore ≥ 25mm and C ≥ 81kN. Example: bearing 6210 (50mm bore) or 6310. Choose the lightest bearing that satisfies C_required.</div>`
-  },
-
-  // ---- CHAPTER 8 ----
-  'ch8_0': {
-    marks: 3, source: 'Mott (2013) Ch.16, Bhandari (2010) Ch.26, KU Lecture Notes Ch.8',
-    content: `<h4>Types of Journal Bearings</h4>
-<p>Journal bearings support rotating shafts through sliding contact. Types classified by lubrication mode:</p>
-<div class="step"><strong>1. Boundary-Lubricated Bearings:</strong> Thin lubricant film; actual metal-to-metal contact occurs, especially at start/stop. Used in slow-speed, intermittent applications. Material: Bronze, Babbitt. Example: Home appliances, office machinery, electric fan bearings.</div>
-<div class="step"><strong>2. Hydrodynamic (Full Film) Bearings:</strong> A complete pressurised oil film separates the surfaces. Film generated by journal rotation + converging wedge geometry. Used in high-speed continuous rotation. Example: Crankshaft bearings in IC engines, turbine bearings.</div>
-<div class="step"><strong>3. Hydrostatic Bearings:</strong> Oil supplied under external pressure — load supported even at zero speed. Very high accuracy and load capacity. Expensive (requires pump). Example: Large telescope mounts, heavy machine tool spindles, radar dishes.</div>
-<h4>Key Differences</h4>
-<div class="fml">Hydrodynamic:  Film from rotation + wedge action; load capacity ∝ speed
-Hydrostatic:   Film from external pump; load capacity independent of speed
-Boundary:      Mixed/direct contact; used for intermittent/slow operation</div>
-<div class="kp">Industrial example: IC engine crankshaft bearings use hydrodynamic lubrication — the high speed of the crankshaft generates sufficient film pressure to support loads of tens of kN without metal contact.</div>`
-  },
-
-  'ch8_1': {
-    marks: 3, source: 'Mott (2013) §16-3, KU Lecture Notes Ch.8',
-    content: `<h4>Hydrodynamic Pressure Generation — Elaboration</h4>
-<p>The statement describes the fundamental principle of hydrodynamic lubrication — the <strong>Reynolds equation</strong>. The key elements are:</p>
-<h4>1. Bearing Motion (Journal Rotation)</h4>
-<p>The rotating journal drags viscous oil into the converging wedge-shaped clearance space. The relative motion is essential — without motion, no hydrodynamic film forms (why hydrodynamic bearings fail at startup).</p>
-<h4>2. Geometry (Converging Wedge)</h4>
-<p>Due to the eccentricity of the journal (shifted off-centre by the load), the clearance space forms a converging-diverging wedge. In the converging zone, oil is squeezed and pressure builds up. This pressure supports the load.</p>
-<div class="fml">Sommerfeld Number: S = (μN/P) × (R/c)²
-where: μ = absolute viscosity, N = speed (rev/s)
-       P = bearing pressure = W/(LD), R/c = clearance ratio</div>
-<h4>3. Rheological Properties (Viscosity)</h4>
-<p>The viscosity μ of the lubricant determines how effectively the wedge pressure builds. Higher viscosity → thicker film → better load support (but more friction). Viscosity decreases with temperature — thermal analysis needed.</p>
-<div class="kp">The pressure profile generated is not uniform — maximum pressure occurs slightly ahead of minimum film thickness. At full film lubrication, the coefficient of friction is extremely low (f ≈ 0.001–0.005) — much lower than dry contact (f ≈ 0.3–0.6).</div>`
-  },
-
-  'ch8_3': {
-    marks: 3, source: 'KU Lecture Notes Ch.8, Mott (2013) §16',
-    content: `<h4>Hydrodynamic vs. Hydrostatic Bearings</h4>
-<div class="step"><strong>Hydrodynamic Bearing:</strong><br>
-• Oil film generated purely by journal rotation + converging wedge<br>
-• No external supply of pressurised oil needed<br>
-• Load capacity DEPENDS ON SPEED — zero capacity at standstill<br>
-• Film fails at startup → boundary lubrication phase<br>
-• Low cost, simple design<br>
-• Applications: engine crankshafts, turbines, pumps</div>
-<div class="step"><strong>Hydrostatic Bearing:</strong><br>
-• Oil supplied by an external pump at high pressure<br>
-• Load supported even at zero speed<br>
-• Load capacity INDEPENDENT OF SPEED<br>
-• No startup wear — always full film<br>
-• Expensive (requires precision pump and supply system)<br>
-• Applications: large telescope mounts, precision machine tool spindles, nuclear reactor control rods</div>
-<div class="fml">In hydrodynamic: grease is NOT used (too viscous for wedge film)
-Oil film pressure generated ONLY by rotation — no pump
-In hydrostatic: oil film maintained by EXTERNAL supply under pressure</div>
-<div class="kp"><strong>MCQ tip:</strong> "Load capacity independent of speed" → Hydrostatic. "Oil film generated only by journal rotation" → Hydrodynamic.</div>`
-  },
-
-  'ch1_6': { marks:2, source:'Collins et al. (2009)', content:`<h4>Preliminary vs Detailed Design</h4><p>Preliminary design converts abstract concepts into rough engineering proposals — approximate sizing, rough sketches, order-of-magnitude analysis, feasibility checks. Fast and inexpensive.</p><p>Detailed design produces precise dimensions, full stress/fatigue analysis, tolerance specifications, CAD models, and manufacturing drawings ready for production.</p><div class="kp">Preliminary = "back-of-envelope" viability check. Detailed = complete engineering specification. You cannot skip preliminary design — it filters out bad concepts before expensive detailed analysis is invested.</div>` },
   'ch1_7': { marks:2, source:'Mott (2013)', content:`<h4>Feedback from Manufacturer and User</h4><p>Early feedback prevents costly redesigns later.</p><ul><li><strong>Manufacturer feedback:</strong> Reveals manufacturing constraints, achievable tolerances, assembly difficulties, material sourcing issues</li><li><strong>User feedback:</strong> Reveals actual usage patterns, ergonomic issues, missing features, real functional requirements</li></ul><div class="kp">Changes cost 10–100× more late in the design cycle than early. A design that cannot be manufactured or used comfortably fails regardless of its technical elegance.</div>` },
   'ch1_8': { marks:2, source:'KU Lecture Notes', content:`<h4>Iterative Design Process</h4><p>Iterative means designers cycle back to earlier stages as new information is discovered — analysis may show the design fails stress requirements, triggering a return to concept generation; manufacturing planning may reveal impractical geometry.</p><div class="kp">Each iteration improves the design. Most real designs require 3–10 iterations before reaching a producible solution. This is why design projects always need schedule contingency — iteration cannot be fully predicted in advance.</div>` },
   'ch2_1': { marks:3, source:'KU Lecture Notes Ch.4, Mott (2013)', content:`<h4>Experimental Methods in Stress Concentration Analysis</h4><ul><li><strong>Photoelasticity:</strong> Transparent model loaded under polarised light — stress fringe patterns visible. Best for complex shapes.</li><li><strong>Strain gauges:</strong> Direct strain measurement near stress raisers. Accurate but point-specific.</li><li><strong>Digital Image Correlation:</strong> Full-field strain mapping from camera images.</li></ul><h4>Simulation vs. Experiment</h4><div class="step"><strong>FEA advantages:</strong> No prototype, fast, parametric studies easy</div><div class="step"><strong>FEA limitations:</strong> Mesh-dependent, requires validation, misses manufacturing defects</div><div class="step"><strong>Experimental advantages:</strong> Real material behaviour, actual boundary conditions</div><div class="kp">Best practice: Use FEA for design exploration, validate with experiments for critical components.</div>` },
@@ -2805,17 +2683,6 @@ For d/w = 0.2: Kt ≈ 2.5 (typical value; read from chart)</div><h4>Step 3 — N
 σ_nom = F / A_net = F / [(w - d) × t]
 38.7 = 5000 / [(50 - d) × t]
 t = 5000 / [38.7 × (50 - d)]</div><div class="kp">The exact hole diameter 'd' must be read from the exam figure. Substitute the given hole size to find t. Note: Gray Cast Iron is brittle — Kt MUST be applied even for static loading (unlike ductile materials).</div><div class="wp">For brittle materials like Cast Iron: always apply Kt in static loading. For ductile materials (steel): Kt is typically ignored in static loading (stress redistribution occurs at yield).</div>` },
-
-  'ch8_10': { marks:4, source:'KU Past Exam Jun/Jul 2024, Mott (2013) §16', content:`<h4>Journal Bearing — Friction Coefficient from Charts</h4><p><strong>Given:</strong> D=35mm, L=30mm, W=1500N, N=1800rpm, R/c=700, μ=0.03Pa·s</p><h4>Step 1 — Bearing Pressure</h4><div class="fml">P = W/(L×D) = 1500/(30×35) = 1.429 N/mm² = 1,429,000 Pa</div><h4>Step 2 — Speed in rev/s</h4><div class="fml">N_s = 1800/60 = 30 rev/s</div><h4>Step 3 — Sommerfeld Number</h4><div class="fml">S = (μ×N_s/P) × (R/c)²
-S = (0.03 × 30 / 1,429,000) × 700²
-S = (6.30×10⁻⁷) × 490,000
-S = 0.309 ≈ 0.31</div><h4>Step 4 — Read Friction Variable from Chart 4</h4><div class="fml">L/D = 30/35 = 0.857 ≈ 1.0 (use L/D=1 curve as closest)
-From Chart 4 (Raimondi-Boyd, KU Slides Fig Chart 4):
-For S = 0.31, L/D ≈ 1.0 → f(R/c) ≈ 4.5 (read from chart)
-f = f(R/c) / (R/c) = 4.5 / 700 = 0.00643</div><h4>Step 5 — Verify and Calculate Power Loss</h4><div class="fml">Friction force = f × W = 0.00643 × 1500 = 9.65 N
-Surface velocity V = π×D×N/60 = π×0.035×30 = 3.30 m/s
-Power loss = F×V = 9.65 × 3.30 = 31.8 W</div><div class="kp">The exact f(R/c) value must be read from Chart 4 in the exam appendix or KU data book. The value 4.5 is approximate — interpolate between L/D curves for your exact L/D ratio. Always check h₀ adequacy: h₀_min = 0.00025×35 = 8.75μm.</div>` },
-
   // ---- STRESS ANALYSIS (Ch1 New Topic) ----
   'ch1_9': { marks:3, source:'KU Lecture Notes Ch.3, Bhandari (2010)',
     content:`<h4>Stress Concentration — Causes, Effects & Reduction</h4>
@@ -2935,21 +2802,13 @@ where:
   'ch5a_7': { marks:2, source:'KU Lecture Notes', content:`<h4>Eccentric Loading Examples</h4><ul><li>Wall/shelf bracket: load acts at horizontal distance from wall fastener group</li><li>Crane hook attachment: hook load offset from connection point</li><li>Machine tool mounting: cutting forces create moment on mounting bolts</li></ul><h4>Management Techniques</h4><ul><li>Position rivet centroid close to load line to minimise eccentricity e</li><li>Use gusset plates to stiffen and reduce eccentricity</li><li>Combine direct + torsional shear vectorially → design for critical (max force) rivet</li></ul>` },
   'ch5a_9': { marks:6, source:'KU Past Exam Apr/May 2023, Bhandari (2010)', content:`<h4>Triple Riveted Double-Strap Butt Joint — Boiler Design</h4><p><strong>Given:</strong> D=1.5m=1500mm, p=2.4N/mm², σt=80, τ=60, σc=120 N/mm², η≥80%</p><h4>Step 1 — Plate Thickness</h4><div class="fml">t = p×D/(2×σt×η) = 2.4×1500/(2×80×0.80) = 3600/128 = 28.1mm → use t=30mm (+CA)</div><h4>Step 2 — Rivet Diameter</h4><div class="fml">d = 6√t = 6√30 = 32.9mm → use d=33mm (standard)</div><h4>Step 3 — Pitch (outer row)</h4><div class="fml">Equate shear of 6 rivets (3 rows × 2 shear planes per butt joint) to tearing:
 (p-d)×t×σt = n×2×(π/4×d²)×τ
-Solve for p (outer row pitch)</div><h4>Step 4 — Check Efficiency</h4><div class="fml">η = min(Pt,Ps,Pc)/(p×t×σt) ≥ 80%</div><div class="kp">For triple riveted double-strap: outer row has pitch p, inner rows have pitch p/2. Sketch must show both cover straps, three rows of rivets, zigzag pattern, and all dimensions d, p, pt, m, strap thickness.</div>` },
-  'ch5a_10': { marks:6, source:'KU Past Exam Dec 2024', content:`<h4>Double Riveted Butt Joint — Boiler 1.5m, 0.95 N/mm²</h4><p><strong>Given:</strong> D=1500mm, p=0.95N/mm², η=75%, σt=90MPa, σc=140MPa, τ=56MPa</p><h4>Step 1 — Plate Thickness</h4><div class="fml">t = p×D/(2×σt×η) = 0.95×1500/(2×90×0.75) = 1425/135 = 10.6mm → t=12mm</div><h4>Step 2 — Rivet Diameter</h4><div class="fml">d = 6√t = 6√12 = 20.8mm → d=22mm</div><h4>Step 3 — Pitch</h4><div class="fml">Optimum pitch from tearing = crushing equated to shearing
-Pt=Ps: (p-d)×t×σt = 4×(π/4×d²)×τ (double riveted, double shear)
-p = 4×π/4×22²×56/(t×σt) + d</div><h4>Step 4 — Strap Thickness</h4><div class="fml">t_strap = 0.625×t = 0.625×12 = 7.5mm (equal cover plates)</div><div class="kp">Always check all three failure modes and verify efficiency ≥ specified value. Provide neat sketch with all dimensions labeled.</div>` },
-  'ch5a_11': { marks:6, source:'KU Past Exam Jun/Jul 2024', content:`<h4>Double Riveted Double-Strap Butt Joint — Boiler 1.0m, 2.5 N/mm²</h4><p><strong>Given:</strong> D=1000mm, p=2.5N/mm², σt=80, τ=60, σc=120 N/mm², η≥70%</p><h4>Step 1 — Plate Thickness</h4><div class="fml">t = p×D/(2×σt×η) = 2.5×1000/(2×80×0.70) = 2500/112 = 22.3mm → t=24mm</div><h4>Step 2 — Rivet Diameter</h4><div class="fml">d = 6√24 = 29.4mm → d=30mm</div><h4>Step 3 — Outer Row Pitch (zigzag, outer=2×inner pitch)</h4><div class="fml">Equate shear of 4 rivets in double shear to tearing of outer row:
-4×2×(π/4×30²)×60 = (p-30)×24×80
-Solve for p</div><h4>Transverse Pitch and Margin</h4><div class="fml">pt = 0.33p + 0.67d (between outer and inner rows)
-m = 1.5d = 45mm</div><div class="kp">Sketch must show double cover plates (equal straps), 2 rows per side, zigzag pattern, outer row pitch = 2× inner row pitch.</div>` },
-  'ch5a_12': { marks:4, source:'KU Past Exam Jul/Aug 2024', content:`<h4>4-Rivet Bracket — 100kN at 150mm, FOS=1.5</h4><p><strong>Given:</strong> 4 rivets A,B,C,D at 60mm spacing vertically. P=100kN at 150mm from centroid E.</p><h4>Distances from Centroid E (midpoint BC)</h4><div class="fml">rA=rD=90mm, rB=rC=30mm
+Solve for p (outer row pitch)</div><h4>Step 4 — Check Efficiency</h4><div class="fml">η = min(Pt,Ps,Pc)/(p×t×σt) ≥ 80%</div><div class="kp">For triple riveted double-strap: outer row has pitch p, inner rows have pitch p/2. Sketch must show both cover straps, three rows of rivets, zigzag pattern, and all dimensions d, p, pt, m, strap thickness.</div>` },  'ch5a_10': { marks:4, source:'KU Past Exam Jul/Aug 2024', content:`<h4>4-Rivet Bracket — 100kN at 150mm, FOS=1.5</h4><p><strong>Given:</strong> 4 rivets A,B,C,D at 60mm spacing vertically. P=100kN at 150mm from centroid E.</p><h4>Distances from Centroid E (midpoint BC)</h4><div class="fml">rA=rD=90mm, rB=rC=30mm
 Σr² = 2(90²)+2(30²) = 16200+1800 = 18000 mm²</div><h4>Direct Shear</h4><div class="fml">Fs = 100,000/4 = 25,000 N (downward)</div><h4>Torsional Shear (critical at A or D)</h4><div class="fml">T = 100,000×150 = 15,000,000 N·mm
 Ft = T×rA/Σr² = 15,000,000×90/18,000 = 75,000 N (horizontal)</div><h4>Resultant and Diameter</h4><div class="fml">F = √(25000²+75000²) = 79,057 N
 τ_allow = 240/1.5 = 160 MPa
 d = √(4×79057/(π×160)) = 25.1mm → use 26mm</div>` },
-  'ch5a_13': { marks:3, source:'KU Past Exam Jul/Aug 2024', content:`<h4>Effect of 30° Angled Load</h4><p>When load acts at 30° CCW from horizontal, the effective eccentricity moment changes. The horizontal component P·cos30° and vertical component P·sin30° create modified direct shear in each direction. The torsional moment T = P×e_perp where e_perp = perpendicular distance from load line to centroid.</p><p>For 30° load with same geometry: the resultant on the critical rivet will be different (generally reduced compared to purely vertical load due to changed vector addition), resulting in a slightly smaller required rivet diameter.</p>` },
-  'ch5a_15': { marks:4, source:'KU Past Exam Jul/Aug 2024', content:`<h4>Boiler Circumferential Joints — p=2.5N/mm², D=1.6m</h4><div class="fml">t = p×D/(2×σt×η_long) ≈ 2.5×1600/(2×75×0.80) = 33.3mm → 36mm
+  'ch5a_11': { marks:3, source:'KU Past Exam Jul/Aug 2024', content:`<h4>Effect of 30° Angled Load</h4><p>When load acts at 30° CCW from horizontal, the effective eccentricity moment changes. The horizontal component P·cos30° and vertical component P·sin30° create modified direct shear in each direction. The torsional moment T = P×e_perp where e_perp = perpendicular distance from load line to centroid.</p><p>For 30° load with same geometry: the resultant on the critical rivet will be different (generally reduced compared to purely vertical load due to changed vector addition), resulting in a slightly smaller required rivet diameter.</p>` },
+  'ch5a_13': { marks:4, source:'KU Past Exam Jul/Aug 2024', content:`<h4>Boiler Circumferential Joints — p=2.5N/mm², D=1.6m</h4><div class="fml">t = p×D/(2×σt×η_long) ≈ 2.5×1600/(2×75×0.80) = 33.3mm → 36mm
 d = 6√36 = 36mm
 N = p×(π/4×D²)/(π/4×d²×τ) = 2.5×(π/4×1600²)/(π/4×36²×60)
 N = 5,026,548/61,073 ≈ 83 rivets total
@@ -3018,17 +2877,12 @@ T₁ = 4000×23×tan(11.7°) = 19,099 N·mm
 T₂ = 4000×14.5×tan(4.76°) = 4,826 N·mm
 T_total = 23,925 N·mm = 23.9 N·m
 η = W×(L₁-L₂)/(2π×T_total) = 4000×2/(2π×23925) = 5.3%</div><div class="wp">Very low efficiency — but very high mechanical advantage. Used for precision jacking of heavy loads.</div>` },
-  'ch6b_1': { marks:2, source:'Bhandari (2010)', content:`<h4>Variable Pitch Spring Advantage</h4><p>Variable pitch springs have progressive (non-linear) stiffness: as compression increases, closer-spaced coils bottom out progressively, reducing active coils and increasing effective stiffness. Soft under light load (comfortable), stiff under heavy load (prevents bottoming out). Applications: automotive suspension, safety valves, recoil mechanisms.</p>` },
-  'ch6b_2': { marks:2, source:'Mott (2013)', content:`<h4>Multi-Leaf vs Single-Leaf</h4><p>Multi-leaf springs provide: higher load capacity (distributed over many leaves), inter-leaf friction damping (absorbs shock energy), progressive stiffening under load, fail-safe redundancy (one broken leaf doesn't cause total failure). Used in heavy vehicle (truck, railway) suspensions.</p>` },
-  'ch6b_3': { marks:3, source:'Bhandari (2010)', content:`<h4>Changing Spring Index — Effect on Wahl Factor</h4><div class="fml">Spring 1: C=10, Kw=(39/36)+0.0615=1.145
-Spring 2: C=5,  Kw=(19/16)+0.123=1.311</div><p>Lower C (tighter coils) → higher Kw → 14.5% more stress for same load. Replacing Spring 1 with Spring 2 increases wire stress by 14.5%. Either use larger wire diameter or reduce load to compensate. C < 6 is generally avoided in design.</p>` },
-  'ch6b_4': { marks:2, source:'Bhandari (2010)', content:`<h4>Concentric Springs — Opposite Helix Hands</h4><p>Opposite helix directions (one LH, one RH) prevent: (1) intermeshing of coils during compression, (2) tangling under torsional oscillation, (3) torsional twist of the central loading member (opposite torque reactions cancel). Standard requirement in IS 7906.</p>` },
-  'ch6b_6': { marks:4, source:'KU Past Exam Apr/May 2023', content:`<h4>Composite Spring (Series) — 10kN</h4><div class="fml">D=50-5=45mm, C=45/5=9
+  'ch6b_2': { marks:4, source:'KU Past Exam Apr/May 2023', content:`<h4>Composite Spring (Series) — 10kN</h4><div class="fml">D=50-5=45mm, C=45/5=9
 Kw=(35/32)+0.0683=1.162
 Series: each spring carries same load = 10,000N
 τ = Kw×8FD/(πd³) = 1.162×8×10000×45/(π×125)
 τ = 1.162×3,600,000/392.7 = 10,651 MPa</div><div class="wp">This is extremely high — compare to τ_allow from data book for the wire material. If insufficient, use larger wire diameter.</div>` },
-  'ch6b_7': { marks:6, source:'KU Past Exam Jun/Jul 2024', content:`<h4>Safety Valve Spring Design</h4><div class="fml">A_valve = π/4×65² = 3318mm²
+  'ch6b_3': { marks:6, source:'KU Past Exam Jun/Jul 2024', content:`<h4>Safety Valve Spring Design</h4><div class="fml">A_valve = π/4×65² = 3318mm²
 F₁ = 0.70×3318 = 2323N, F₂ = 0.73×3318 = 2422N
 k = (F₂-F₁)/δ = 99/3.2 = 30.9 N/mm
 C=6 → D=6d, Kw=1.253
@@ -3058,19 +2912,19 @@ P=0.56×5000+1.99×2000=2800+3980=6780N
 C_req=6780×(1003)^(1/3)=6780×10.01=67,850N
 6210 C=35.1kN insufficient; 6310 C=61.8kN insufficient
 → Select 6410 (heavy series, 50mm bore): C≈87.1kN ≥ 67.85kN ✓</div>` },
-  'ch8_2': { marks:2, source:'KU Lecture Notes Ch.8, Mott (2013)', content:`<h4>Petroff's Law Factors</h4><div class="fml">T = 2π²×μ×N×R³×L/c</div><p>Directly influences T: μ (viscosity), N (speed), R (radius, cubic effect), L (length), c (clearance).</p><div class="kp">Bearing material, surface finish, and axial load do NOT appear in Petroff's equation — they don't directly influence frictional torque under full-film lubrication. For exam MCQs: "radial clearance" DOES influence T (it's in the denominator).</div>` },
-  'ch8_4': { marks:2, source:'Mott (2013)', content:`<h4>Heat Dissipation from Journal Bearings</h4><p>Heat dissipated by: conduction through housing, convection by oil flow, radiation (minor). Most practical systems use circulating oil with external cooler.</p><div class="fml">At equilibrium: Hg = Hd
+  'ch8_3': { marks:2, source:'KU Lecture Notes Ch.8, Mott (2013)', content:`<h4>Petroff's Law Factors</h4><div class="fml">T = 2π²×μ×N×R³×L/c</div><p>Directly influences T: μ (viscosity), N (speed), R (radius, cubic effect), L (length), c (clearance).</p><div class="kp">Bearing material, surface finish, and axial load do NOT appear in Petroff's equation — they don't directly influence frictional torque under full-film lubrication. For exam MCQs: "radial clearance" DOES influence T (it's in the denominator).</div>` },
+  'ch8_5': { marks:2, source:'Mott (2013)', content:`<h4>Heat Dissipation from Journal Bearings</h4><p>Heat dissipated by: conduction through housing, convection by oil flow, radiation (minor). Most practical systems use circulating oil with external cooler.</p><div class="fml">At equilibrium: Hg = Hd
 Hg = f×W×V (friction power, watts)
 Hd = C_d×A×(T_op - T_amb)
 Solve for T_op ≤ 70°C target</div>` },
-  'ch8_5': { marks:1, source:'Mott (2013)', content:`<h4>Least Friction Bearing</h4><p><strong>Hydrodynamic journal bearing</strong> (under full-film operating conditions) achieves f ≈ 0.001–0.005, comparable to rolling contact bearings. Hydrostatic bearing has similar low friction but with startup advantage (no boundary lubrication phase). Boundary-lubricated bearings have f = 0.08–0.14 (highest friction).</p>` },
-  'ch8_6': { marks:4, source:'KU Past Exam Apr/May 2023', content:`<h4>Journal Bearing — 3000rpm, 1000N, D=150mm</h4><div class="fml">P=1000/(300×150)=0.0222 N/mm²=22,200Pa
+  'ch8_6': { marks:1, source:'Mott (2013)', content:`<h4>Least Friction Bearing</h4><p><strong>Hydrodynamic journal bearing</strong> (under full-film operating conditions) achieves f ≈ 0.001–0.005, comparable to rolling contact bearings. Hydrostatic bearing has similar low friction but with startup advantage (no boundary lubrication phase). Boundary-lubricated bearings have f = 0.08–0.14 (highest friction).</p>` },
+  'ch8_7': { marks:4, source:'KU Past Exam Apr/May 2023', content:`<h4>Journal Bearing — 3000rpm, 1000N, D=150mm</h4><div class="fml">P=1000/(300×150)=0.0222 N/mm²=22,200Pa
 R/c=75/0.05=1500, Ns=50 rev/s
 S=(0.02×50/22200)×1500²=101.4
 From Chart 3, L/D=2: ho/c≈0.90→h₀=0.045mm
 Required: h₀_min=0.00025×150=0.0375mm
 0.045>0.0375 → Bearing adequate ✓</div>` },
-  'ch8_7': { marks:5, source:'KU Past Exam Dec 2024', content:`<h4>Journal Bearing Design — 5500N at 800rpm</h4><div class="fml">Try D=60mm, L=60mm (L/D=1)
+  'ch8_8': { marks:5, source:'KU Past Exam Dec 2024', content:`<h4>Journal Bearing Design — 5500N at 800rpm</h4><div class="fml">Try D=60mm, L=60mm (L/D=1)
 P=5500/(60×60)=1.528 MPa ✓ (in 1.4-3.4 range)
 c=0.0025×60=0.15mm, R/c=30/0.15=200
 μ=ν×ρ=10.2e-6×900=0.00918 Pa·s, Ns=800/60=13.33
@@ -3079,14 +2933,22 @@ From Chart 4 (L/D=1): f(R/c)≈5.5→f=5.5/200=0.0275
 Friction force=0.0275×5500=151N
 V=π×0.06×800/60=2.51m/s
 Heat=151×2.51=380W</div>` },
-  'ch8_8': { marks:5, source:'KU Past Exam Jul/Aug 2024', content:`<h4>Sommerfeld Number — 10kN, 1500rpm</h4><div class="fml">P=10,000/(75×50)=2,667,000Pa
+
+  'ch8_9': { marks:5, source:'KU Past Exam Jul/Aug 2024', content:`<h4>Sommerfeld Number — 10kN, 1500rpm</h4><div class="fml">P=10,000/(75×50)=2,667,000Pa
 R/c=1/0.001=1000, Ns=25rev/s
 S=(0.02×25/2,667,000)×1000²=0.1875
 L/D=75/50=1.5, from Chart 3: ho/c≈0.27
 h₀=0.27×0.025=6.75μm
 h₀_min=0.00025×50=12.5μm
 h₀<h₀_min → INADEQUATE. Increase D or use higher viscosity oil.</div>` },
-  'ch8_9': { marks:4, source:'KU Past Exam Jun/Jul 2024', content:`<h4>Friction Coefficient from Charts — 1500N, 1800rpm</h4><div class="fml">P=1500/(30×35)=1,429,000Pa
+  'ch8_2': { marks:5, source:'KU Past Exam Jul/Aug 2024', content:`<h4>Sommerfeld Number — 10kN, 1500rpm</h4><div class="fml">P=10,000/(75×50)=2,667,000Pa
+R/c=1/0.001=1000, Ns=25rev/s
+S=(0.02×25/2,667,000)×1000²=0.1875
+L/D=75/50=1.5, from Chart 3: ho/c≈0.27
+h₀=0.27×0.025=6.75μm
+h₀_min=0.00025×50=12.5μm
+h₀<h₀_min → INADEQUATE. Increase D or use higher viscosity oil.</div>` },
+  'ch8_10': { marks:4, source:'KU Past Exam Jun/Jul 2024', content:`<h4>Friction Coefficient from Charts — 1500N, 1800rpm</h4><div class="fml">P=1500/(30×35)=1,429,000Pa
 R/c=700, Ns=30rev/s
 S=(0.03×30/1,429,000)×700²=0.309
 L/D=30/35≈1.0; From Chart 4: f(R/c)≈4.5
@@ -3110,6 +2972,423 @@ P₁ = 25.1 kN vs P₂ = 14.4 kN — enlarging REDUCES the permissible load by 4
 The fillet stress concentration (Kt=1.74) at the diameter change governs. The larger section beyond the fillet is irrelevant because failure occurs at the stress raiser.</div>
 <div class="wp">This counterintuitive result is why stress concentration must ALWAYS be considered at diameter changes. Increasing diameter while using a small fillet radius weakens the component. Solution: use a generous fillet radius to reduce Kt.</div>`
   },
+
+  // ===== MISSING ANSWERS — COMPLETE FILL =====
+
+  // CH1
+  'ch1_0': { marks:3, source:'KU Lecture Notes Ch.1, Collins et al. (2009)',
+    content:`<h4>8 Stages of the Mechanical Design Cycle</h4>
+<div class="step"><strong>1. Recognition of Need:</strong> Identify a gap, problem, or opportunity. Example: existing pump fails frequently — need a more reliable design.</div>
+<div class="step"><strong>2. Problem Definition:</strong> Define goals, constraints, and functional requirements precisely. What must the product do? What are the limits?</div>
+<div class="step"><strong>3. Information Gathering:</strong> Collect data — material properties, similar products, standards (IS, ASME), safety regulations, user requirements.</div>
+<div class="step"><strong>4. Concept Generation:</strong> Brainstorming, mind mapping, TRIZ — generate multiple design alternatives without judgment.</div>
+<div class="step"><strong>5. Evaluation of Alternatives:</strong> Compare concepts against criteria using decision matrix. Select the best concept.</div>
+<div class="step"><strong>6. Detailed Design & Analysis:</strong> Precise dimensions, stress/fatigue analysis, tolerances, material selection, CAD models.</div>
+<div class="step"><strong>7. Planning for Manufacture:</strong> Process planning, tooling, assembly sequence, quality control, cost estimation.</div>
+<div class="step"><strong>8. Feedback & Revision:</strong> Prototype testing, user feedback, manufacturer feedback → iterate and improve.</div>
+<div class="kp">Example product: Bicycle gear — recognized need for lighter shifting mechanism → problem defined → materials researched → concepts generated → evaluated → detailed → manufactured → user feedback → revised over generations.</div>` },
+
+  'ch1_1': { marks:3, source:'KU Lecture Notes Ch.1, Collins et al. (2009)',
+    content:`<h4>Design by Experience</h4>
+<p>Design by experience refers to using practical, hands-on knowledge accumulated from past engineering projects to inform current design decisions. It complements analytical calculations by capturing real-world behaviour that theory sometimes misses.</p>
+<h4>How it contributes</h4>
+<ul><li><strong>Practical insights:</strong> An experienced engineer knows that a theoretically adequate clearance may cause assembly problems in production — theory alone wouldn't flag this</li><li><strong>Material behaviour:</strong> Knowing from experience that a particular casting tends to have porosity → design for lower stress concentration</li><li><strong>Failure patterns:</strong> Having seen a specific joint fail under vibration informs future design choices even without a detailed fatigue analysis</li><li><strong>Rules of thumb:</strong> Quick sanity checks (e.g. "never use C&lt;5 for springs") speed up design without full calculation every time</li></ul>
+<h4>Example</h4>
+<p>A senior engineer designs a pump impeller shaft. Analysis says d=25mm is sufficient. But from experience with similar pumps, they know the keyway creates severe fatigue stress and increase to d=30mm with a rounded-end keyway — even though stress analysis alone didn't demand it.</p>
+<div class="kp">Design by experience ≠ guessing. It is systematic learning from past outcomes, applied as engineering judgment to complement analysis.</div>` },
+
+  'ch1_2': { marks:4, source:'KU Lecture Notes Ch.1, Mott (2013)',
+    content:`<h4>Information Needed Before Starting Design + Judgment Factors</h4>
+<h4>Information Required</h4>
+<ul><li><strong>Functional requirements:</strong> What must the product do? (Load, speed, motion type, accuracy needed)</li><li><strong>Constraints:</strong> Maximum size/weight, cost budget, material restrictions, manufacturing capability</li><li><strong>Operating environment:</strong> Temperature range, corrosive media, vibration, shock loading</li><li><strong>Standards & regulations:</strong> Applicable IS/ISO/ASME codes, safety standards, legal requirements</li><li><strong>User requirements:</strong> Ease of use, maintenance access, service life expectancy</li><li><strong>Similar existing solutions:</strong> Patent literature, competing products, published case studies</li></ul>
+<h4>Factors to Judge How Well a Design Meets Objectives</h4>
+<ul><li><strong>Function:</strong> Does it perform all required tasks reliably?</li><li><strong>Safety:</strong> Is the factor of safety adequate? Are failure modes benign?</li><li><strong>Manufacturability:</strong> Can it be made with available processes and tolerances?</li><li><strong>Cost:</strong> Is it within budget (material + manufacturing + assembly)?</li><li><strong>Reliability/Life:</strong> Will it last the required service life?</li><li><strong>Maintainability:</strong> Can it be repaired/replaced easily?</li><li><strong>Aesthetics/Ergonomics:</strong> Is it user-friendly and visually acceptable?</li></ul>` },
+
+  'ch1_3': { marks:4, source:'KU Lecture Notes Ch.1',
+    content:`<h4>Brainstorming & Mind Mapping in Decision-Making</h4>
+<h4>Brainstorming</h4>
+<p>A group technique for generating as many ideas as possible without criticism. Rules: no evaluation during session, quantity over quality, build on others' ideas, wild ideas welcome.</p>
+<p><strong>Contribution to decisions:</strong> Ensures no obvious solutions are missed. Diverse perspectives reveal non-obvious approaches. Creates a large pool of alternatives to evaluate.</p>
+<h4>Mind Mapping</h4>
+<p>A visual, hierarchical tool that organizes ideas around a central concept with branches and sub-branches. Each branch represents a related concept or category.</p>
+<p><strong>Contribution to decisions:</strong> Shows relationships between ideas. Helps identify root causes and connections. Makes complex problems easier to structure and communicate.</p>
+<h4>Example: Reducing Gear Noise in a Gearbox</h4>
+<div class="fml">Central node: "Gear Noise"
+├── Gear geometry → tooth profile, module, helix angle
+├── Material → hardness, surface finish, damping
+├── Lubrication → oil viscosity, quantity, type
+├── Assembly → bearing preload, alignment, backlash
+└── Housing → stiffness, resonance frequency</div>
+<div class="kp">Brainstorming generates ideas rapidly. Mind mapping organizes them structurally. Together they ensure both creative exploration AND systematic analysis — leading to better-informed decisions.</div>` },
+
+  'ch1_4': { marks:4, source:'KU Lecture Notes Ch.1 (Jun/Jul 2024)',
+    content:`<h4>Brainstorming & Mind Mapping for Ball Bearing Noise in Conveyor</h4>
+<h4>Step 1 — Brainstorming Session</h4>
+<p>Gather relevant team (design, maintenance, operations). State the problem: "Ball bearing in conveyor shaft is noisy." Generate all possible causes without judgment:</p>
+<ul><li>Bearing wear / end of life</li><li>Misalignment of shaft</li><li>Overloading beyond bearing rating</li><li>Inadequate or contaminated lubrication</li><li>Improper mounting (too tight/loose fit)</li><li>Resonance at operating speed</li><li>External contamination (dust, debris)</li><li>Wrong bearing type selected</li></ul>
+<h4>Step 2 — Mind Map (Graphical Representation)</h4>
+<div class="fml">           BALL BEARING NOISE IN CONVEYOR
+                       ↓
+    ┌──────────────────┼────────────────────┐
+    ↓                  ↓                    ↓
+  BEARING            LUBRICATION         OPERATING
+  CONDITION          ISSUES              CONDITIONS
+    │                  │                    │
+  ├─ Worn/damaged     ├─ Insufficient      ├─ Overload
+  ├─ Wrong type       ├─ Contaminated      ├─ Misalignment
+  └─ Wrong fit        └─ Wrong grade       └─ Resonance</div>
+<h4>Proposed Solutions</h4>
+<ul><li>Replace bearing with correct type (check C_req vs C_catalogue)</li><li>Realign shaft using dial indicator</li><li>Clean and re-lubricate with correct grade</li><li>Add seals to prevent contamination</li></ul>
+<div class="kp">The mind map reveals that noise has multiple root causes across different categories — preventing the team from assuming a single cause and missing the real problem.</div>` },
+
+  'ch1_5': { marks:2, source:'KU Lecture Notes Ch.1, Collins et al. (2009)',
+    content:`<h4>Goals vs. Constraints in Mechanical Design</h4>
+<div class="step"><strong>Goals</strong> are desired outcomes or performance targets — things you want to optimize or achieve, but which have some flexibility. They define WHAT SUCCESS looks like.<br>Example: Minimize weight, maximize power output, achieve longest possible service life, lowest manufacturing cost.</div>
+<div class="step"><strong>Constraints</strong> are non-negotiable limitations that MUST be satisfied — if violated, the design is invalid regardless of other merits.<br>Example: Shaft diameter must fit in existing housing ≤ 50mm. Operating temperature must not exceed 80°C. Factor of safety must be ≥ 2.5.</div>
+<h4>Why the Distinction Matters</h4>
+<ul><li>Goals can be traded off against each other (e.g. accept higher weight for lower cost) — constraints cannot</li><li>Constraints define the "feasible design space" — only designs satisfying ALL constraints can be considered</li><li>Goals are used to rank alternatives within the feasible space</li><li>Misidentifying a constraint as a goal (or vice versa) leads to either invalid designs or overly conservative ones</li></ul>
+<div class="kp">Practical example: For a bicycle frame — Goal: minimize weight. Constraint: must support rider up to 120kg with FOS≥3. You can't trade the safety constraint to save weight.</div>` },
+
+  // CH2
+  'ch2_0': { marks:3, source:'KU Lecture Notes Ch.4, Bhandari (2010)',
+    content:`<h4>How Stress Concentration Occurs & Common Causes</h4>
+<p>Stress concentration occurs when the smooth flow of internal stress through a material is disrupted by a geometric discontinuity. The stress "flow lines" must converge around the obstacle, creating a local region of much higher stress than the average (nominal) stress.</p>
+<div class="fml">Stress Concentration Factor: Kt = σ_max / σ_nom</div>
+<h4>Common Causes</h4>
+<ul><li><strong>Holes and openings:</strong> A circular hole in a plate under tension creates Kt=3 at the hole sides</li><li><strong>Notches:</strong> Sharp V-notches, grooves — the sharper the notch radius, the higher the Kt</li><li><strong>Section changes:</strong> Abrupt diameter changes in shafts (step without fillet)</li><li><strong>Keyways and slots:</strong> Sharp corners at keyway ends create Kt = 2–3 for bending</li><li><strong>Threads:</strong> Thread roots act as notches — Kt ≈ 3–4</li><li><strong>Surface imperfections:</strong> Tool marks, scratches, inclusions</li></ul>
+<h4>Design Feature to Mitigate It</h4>
+<div class="kp">Adding a <strong>fillet radius</strong> at any section change. For a stepped shaft with r/d=0.15, Kt reduces from ~3.0 to ~1.5 — a 50% reduction. The fillet allows stress flow lines to curve gradually rather than converge sharply.</div>` },
+
+  'ch2_3': { marks:3, source:'KU Lecture Notes Ch.4, Mott (2013), Bhandari (2010)',
+    content:`<h4>Notch Sensitivity — Concept, Relationship to Kt, and Kf</h4>
+<h4>What is Notch Sensitivity?</h4>
+<p>Not all materials respond equally to the same geometric stress concentration. Notch sensitivity (q) quantifies how much of the theoretical Kt is actually felt by a material in fatigue.</p>
+<div class="fml">q = (Kf − 1) / (Kt − 1)    →    ranges from 0 to 1
+Rearranged: Kf = 1 + q(Kt − 1)</div>
+<h4>Kf vs Kt</h4>
+<ul><li><strong>Kt</strong> (Theoretical SCF): Purely geometric — depends only on shape and size. From Peterson charts.</li><li><strong>Kf</strong> (Fatigue SCF / Fatigue Notch Factor): The actual stress concentration factor that reduces endurance limit. Kf ≤ Kt always.</li></ul>
+<h4>What Affects q?</h4>
+<ul><li><strong>Material strength:</strong> Higher Sut → higher q (q approaches 1). Hard steels are fully notch-sensitive.</li><li><strong>Notch radius:</strong> Very small notch radius → lower q (material "doesn't see" a micro-notch)</li><li><strong>Material ductility:</strong> Ductile materials have lower q — local yielding redistributes stress</li></ul>
+<h4>How Kf is Used in Fatigue Design</h4>
+<div class="fml">Modified endurance limit: Se = ka·kb·kc·kd·ke·(1/Kf)·Se'
+The factor kf = 1/Kf reduces Se to account for the notch effect on fatigue life.</div>
+<div class="kp">Grey cast iron has q≈0 (insensitive to notches). High-strength steel has q≈1 (fully sensitive). This is why adding a keyway to a cast iron shaft is less dangerous than adding one to a hardened steel shaft.</div>` },
+
+  'ch2_6': { marks:5, source:'KU Past Exam, Mott (2013)',
+    content:`<h4>Stepped Shaft — SAE 1095 Annealed, Reversed Bending</h4>
+<p><strong>Given:</strong> SAE 1095 annealed steel, reversed bending (R=-1), machined surface. Determine endurance limit and FOS for given bending moment.</p>
+<h4>Step 1 — Material Properties</h4>
+<div class="fml">SAE 1095 annealed: Sut = 655 MPa, Sy = 380 MPa (from data book)
+Unmodified endurance limit: Se' = 0.5 × Sut = 0.5 × 655 = 327.5 MPa</div>
+<h4>Step 2 — Modification Factors</h4>
+<div class="fml">ka (surface, machined): from chart, for Sut=655MPa → ka ≈ 0.76
+kb (size, d≈25-50mm): kb ≈ 0.85
+kc (loading, bending): kc = 1.0
+kd (temperature, room temp): kd = 1.0
+ke (reliability, 90%): ke = 0.897</div>
+<h4>Step 3 — Stress Concentration</h4>
+<div class="fml">From Peterson chart: Kt (given geometry D/d, r/d)
+Notch sensitivity q (from chart, Sut=655MPa, r from geometry)
+Kf = 1 + q(Kt - 1)</div>
+<h4>Step 4 — Modified Endurance Limit</h4>
+<div class="fml">Se = ka × kb × kc × kd × ke × (1/Kf) × Se'</div>
+<h4>Step 5 — FOS for Reversed Bending</h4>
+<div class="fml">σ_a = M × c / I (bending stress amplitude)
+FOS = Se / σ_a</div>
+<div class="kp">For reversed bending (R=-1): the mean stress σ_m = 0, so only σ_a vs Se matters. Use the actual geometry values from the exam figure to get Kt from data book chart.</div>` },
+
+  'ch2_10': { marks:3, source:'KU Lecture Notes Ch.4, Mott (2013)',
+    content:`<h4>S-N Diagram & Endurance Limit vs Fatigue Strength</h4>
+<h4>The S-N Diagram</h4>
+<p>A plot of stress amplitude (S) vs. number of cycles to failure (N, on log scale). Generated by testing multiple specimens at different stress levels under fully reversed loading.</p>
+<ul><li>High stress → low cycles to failure</li><li>Low stress → high cycles or no failure</li></ul>
+<h4>Endurance Limit (Ferrous Metals — Steel, Cast Iron)</h4>
+<p>The S-N curve for steel shows a <strong>distinct horizontal line</strong> at approximately N = 10⁶ cycles. Any stress amplitude BELOW this line → the material will theoretically last <strong>infinite cycles</strong> (never fail from fatigue). This threshold stress is the <strong>endurance limit Se</strong>.</p>
+<div class="fml">Se' ≈ 0.5 × Sut for steels (Sut ≤ 1400 MPa)</div>
+<h4>Fatigue Strength (Non-Ferrous — Aluminium, Copper, Titanium)</h4>
+<p>Non-ferrous metals do NOT show a horizontal line on the S-N diagram — the curve keeps declining even at very high cycles. There is <strong>no true endurance limit</strong>.</p>
+<p>For these materials, we use <strong>fatigue strength at a specified number of cycles</strong> (typically 10⁷ or 5×10⁸ cycles) as the design criterion.</p>
+<div class="kp">Key exam distinction: Steel = horizontal S-N line = true endurance limit. Aluminium = continuously declining S-N curve = fatigue strength at N cycles only.</div>` },
+
+  // CH5A
+  'ch5a_0': { marks:2, source:'Bhandari (2010), KU Lecture Notes',
+    content:`<h4>Primary Advantage of Riveted Joints & When to Prefer Over Welding</h4>
+<h4>Primary Advantage: Inspectability and Replaceability</h4>
+<p>Every individual rivet is visible, accessible, and can be inspected, tested, and replaced without dismantling the structure. This is critical for safety-critical applications where the joint condition must be certifiable.</p>
+<h4>Other Advantages</h4>
+<ul><li><strong>No heat-affected zone:</strong> No metallurgical changes to the base material — critical for heat-treated high-strength alloys</li><li><strong>Damage tolerance:</strong> A crack stops at the next rivet hole rather than propagating continuously (as in welded joints)</li><li><strong>Vibration damping:</strong> The clamped interface absorbs vibration through frictional micro-slip</li><li><strong>No distortion:</strong> No residual thermal stresses or warping from welding heat</li></ul>
+<h4>When to Prefer Riveting Over Welding</h4>
+<ul><li>Aircraft structures (aluminium alloys that lose strength when welded)</li><li>Field assembly where welding equipment is unavailable</li>
+<li>Joints requiring periodic disassembly for inspection</li><li>High-vibration applications</li><li>When quality control of welding cannot be guaranteed</li></ul>` },
+
+  'ch5a_5': { marks:3, source:'Bhandari (2010), KU Lecture Notes Ch.5',
+    content:`<h4>Four Modes of Failure in Riveted Joints & Design Against Each</h4>
+<div class="step"><strong>1. Tearing of Plate at Rivet Hole</strong><br>
+The plate tears across the weakest cross-section (through the rivet holes).<br>
+Strength: P_t = (p − d) × t × σ_t<br>
+Design: Optimize pitch p — too small → plate tears. Check η_t = (p−d)/p × 100%</div>
+<div class="step"><strong>2. Shearing of Rivet</strong><br>
+The rivet shears off at the interface between plates.<br>
+Strength: P_s = n × (π/4 × d²) × τ [×2 for double shear in butt joints]<br>
+Design: Use adequate rivet diameter d. Use butt joints for double shear when possible.</div>
+<div class="step"><strong>3. Crushing of Rivet or Plate</strong><br>
+The rivet hole in the plate (or the rivet itself) gets crushed/deformed by bearing stress.<br>
+Strength: P_c = n × d × t × σ_c<br>
+Design: Use larger rivet diameter or thicker plate. σ_c_allow ≈ 1.5–2.0 × σ_t_allow.</div>
+<div class="step"><strong>4. Tearing at Margin</strong><br>
+Plate tears between the rivet hole and the plate edge if the margin (m) is too small.<br>
+Prevent by: m ≥ 1.5d (edge margin from rivet center to plate edge)</div>
+<div class="kp">Design principle: Choose p, d, and t so that P_t = P_s = P_c (equal strength in all modes) → maximum joint efficiency η = min(P_t, P_s, P_c)/(p×t×σ_t) × 100%</div>` },
+
+  'ch5a_8': { marks:3, source:'KU Past Exam, Bhandari (2010)',
+    content:`<h4>Eccentric Bracket — 20kN, SAE 1045 Annealed, FOS=2</h4>
+<p><strong>Given:</strong> P=20kN, SAE 1045 annealed, FOS=2. 3 rivets A, B, C vertically spaced.</p>
+<h4>Step 1 — Material & Allowable Stress</h4>
+<div class="fml">SAE 1045 annealed: Sy = 310 MPa
+τ_allow = 0.577 × Sy / FOS = 0.577 × 310 / 2 = 89.4 MPa</div>
+<h4>Step 2 — Locate Centroid</h4>
+<div class="fml">For 3 rivets equally spaced vertically at pitch p:
+Centroid E is at the middle rivet B.
+r_A = r_C = p, r_B = 0
+Σr² = 2p² (only A and C contribute)</div>
+<h4>Step 3 — Direct Shear</h4>
+<div class="fml">F_s = P/3 = 20,000/3 = 6,667 N (on each rivet, downward)</div>
+<h4>Step 4 — Torsional Shear (critical at A or C)</h4>
+<div class="fml">T = P × e (e = eccentricity from load line to centroid)
+F_t = T × r_A / Σr² = P×e×p / (2p²) = P×e / (2p)
+Direction: horizontal (perpendicular to r_A)</div>
+<h4>Step 5 — Resultant and Diameter</h4>
+<div class="fml">F_max = √(F_s² + F_t²)   [90° angle between them at A]
+d = √(4 × F_max / (π × τ_allow))</div>
+<div class="kp">Use exact dimensions from the exam figure for p and e. The critical rivet is A or C (farthest from centroid). Rivet B (at centroid) only carries direct shear.</div>` },
+
+  'ch5a_12': { marks:3, source:'KU Past Exam Jan/Feb 2024',
+    content:`<h4>4 Identical Rivets, 5kN Eccentric Force, SAE 1045 Annealed, FOS=3</h4>
+<h4>Step 1 — Material</h4>
+<div class="fml">SAE 1045 annealed: Sy = 310 MPa
+τ_allow = 0.577 × 310 / 3 = 59.6 MPa</div>
+<h4>Step 2 — Centroid of 4-Rivet Group</h4>
+<div class="fml">Locate geometric centroid of the 4 rivets (midpoint of the pattern).
+Calculate distance r_i from centroid to each rivet.
+For symmetric 2×2 pattern with spacing a×b:
+r = √((a/2)² + (b/2)²) for corner rivets
+Σr² = 4 × r²</div>
+<h4>Step 3 — Direct Shear</h4>
+<div class="fml">F_s = P/n = 5000/4 = 1250 N (equal on all rivets, in direction of P)</div>
+<h4>Step 4 — Torsional Shear</h4>
+<div class="fml">T = P × e (e from exam figure)
+F_t_i = T × r_i / Σr²
+Direction: perpendicular to line joining centroid to rivet i</div>
+<h4>Step 5 — Critical Rivet & Diameter</h4>
+<div class="fml">Find angle θ between F_s and F_t at critical rivet
+F_max = √(F_s² + F_t² + 2·F_s·F_t·cosθ)
+d = √(4·F_max / (π·τ_allow))</div>
+<div class="kp">Use exact spacing dimensions from the exam figure to find r and e. The critical rivet is the one where both direct and torsional shear components ADD most (smallest angle between them).</div>` },
+
+  // CH5B
+  'ch5b_0': { marks:3, source:'Bhandari (2010), KU Lecture Notes Ch.5',
+    content:`<h4>Welded Joints — Advantages and Disadvantages vs. Riveted</h4>
+<h4>Advantages of Welded Joints</h4>
+<ul><li><strong>Higher structural efficiency:</strong> No holes drilled → full plate cross-section is effective → 15-20% lighter than riveted equivalent</li><li><strong>Leak-proof:</strong> Continuous weld bead seals pressure vessels hermetically without caulking</li><li><strong>Smooth contour:</strong> No protruding rivet heads → better aerodynamics, easier cleaning</li><li><strong>Complex geometry:</strong> Can join curved, irregular, or thin sections impossible to rivet</li><li><strong>Faster fabrication:</strong> Automated MIG/TIG/robotic welding is much faster than riveting</li><li><strong>Less material:</strong> No cover plates, gusset plates, or additional connecting material needed</li></ul>
+<h4>Disadvantages of Welded Joints</h4>
+<ul><li><strong>Heat-affected zone (HAZ):</strong> Welding heat alters material properties near the weld — reduces strength of heat-treated alloys (e.g. aircraft aluminium)</li><li><strong>Residual stresses:</strong> Thermal contraction during cooling introduces residual tensile stresses that promote fatigue cracking</li><li><strong>Weld toe stress concentration:</strong> Abrupt transition at weld toe acts as a notch (Kt = 1.5–3.0) → fatigue failure site</li><li><strong>Inspection difficulty:</strong> Internal defects (porosity, lack of fusion) require X-ray or ultrasonic NDT — expensive</li><li><strong>Skilled labour:</strong> Consistent quality requires certified welders or automated equipment</li><li><strong>Not easily disassembled:</strong> Permanent joint — cannot be taken apart without destroying it</li></ul>` },
+
+  'ch5b_5': { marks:4, source:'KU Past Exam Jan/Feb 2024, Bhandari (2010)',
+    content:`<h4>Single Transverse + Double Parallel Fillet Weld — 150kN</h4>
+<p><strong>Given:</strong> P=150kN, plate dimensions from figure, allowable shear τ=300 N/mm (= 0.707×s×τ per mm where s and τ combine to give 300 N/mm)</p>
+<h4>Approach — Treat as Combination Weld</h4>
+<div class="fml">P = P_transverse + P_parallel
+P_transverse = 300 N/mm × w  (w = plate width from figure)
+P_parallel = 2 × 300 N/mm × L  (L = length each parallel weld)</div>
+<h4>Step 1 — Transverse Weld Capacity</h4>
+<div class="fml">P_t = 0.707 × s × w × σ_allow  (or = 300 × w if 300 N/mm given)
+Calculate P_t using plate width w from exam figure</div>
+<h4>Step 2 — Remaining Load on Parallel Welds</h4>
+<div class="fml">P_p = P_total - P_t = 150,000 - P_t   N</div>
+<h4>Step 3 — Length of Each Parallel Weld</h4>
+<div class="fml">P_p = 2 × 300 × L   (two parallel welds, one each side)
+L = P_p / (2 × 300)   mm</div>
+<div class="kp">For varying loads: use shear allowable τ for BOTH transverse and parallel welds (do NOT use higher tensile allowable for transverse weld). Minimum weld size s from plate thickness (data book Table 10.4).</div>` },
+
+  // CH6A
+  'ch6a_0': { marks:3, source:'Bhandari (2010), KU Lecture Notes Ch.6',
+    content:`<h4>Buttress Thread vs. Square and ACME Threads</h4>
+<h4>Buttress Thread</h4>
+<p>The buttress thread has one flank perpendicular to the screw axis (0° — the "loaded" face) and the other flank at 45°. This asymmetric design transmits force <strong>very efficiently in ONE direction only</strong>.</p>
+<h4>Comparison Table</h4>
+<div class="fml">Thread      Flank angle    Efficiency   Direction   Application
+Square      90° both        ~35-40%     Both ways   Vises, presses, jacks
+ACME        29° included    ~30-35%     Both ways   Lathe screws, linear actuators  
+Buttress    0°/45°          ~40%+       ONE way only Breech guns, presses</div>
+<h4>Advantages of Buttress vs. Square</h4>
+<ul><li>Stronger than square thread in the loaded direction (larger root width)</li><li>Easier to manufacture than square thread (similar to ACME tooling)</li><li>The perpendicular loaded face gives near-zero radial force component → high efficiency in one direction</li></ul>
+<h4>Disadvantages</h4>
+<ul><li>Cannot transmit force efficiently in the reverse direction</li><li>Unsuitable where bidirectional load transmission is needed</li></ul>
+<h4>Applications</h4>
+<p>Artillery breech mechanisms, hydraulic press screws, aircraft hydraulic jack screws, pipe couplings under high one-way pressure, safety valve stems.</p>` },
+
+  'ch6a_1': { marks:3, source:'Bhandari (2010), KU Lecture Notes Ch.6',
+    content:`<h4>Self-Locking in Power Screws — Concept, Achievement & Desirability</h4>
+<h4>What is Self-Locking?</h4>
+<p>A screw is self-locking when the load W cannot back-drive the screw (i.e., the screw does not rotate and descend under the load alone without an applied lowering torque).</p>
+<h4>Self-Locking Condition</h4>
+<div class="fml">Condition: tan λ ≤ μ   (helix angle ≤ friction angle)
+i.e., λ ≤ φ   where φ = arctan(μ)
+Efficiency when self-locking: η &lt; 50%</div>
+<h4>How Self-Locking is Best Achieved</h4>
+<div class="kp">Best by BOTH: ↓ decrease helix angle λ AND ↑ increase friction coefficient μ</div>
+<ul><li><strong>Decrease λ:</strong> Use single-start thread (not multi-start), use smaller pitch for given diameter</li><li><strong>Increase μ:</strong> Use rough or dry threads (no lubrication), use bronze nut on steel screw (high μ pair)</li></ul>
+<div class="wp">Decreasing λ alone by making the screw longer just wastes material. Increasing μ alone by removing lubrication increases wear. The combination is most effective.</div>
+<h4>When is Self-Locking Desirable?</h4>
+<ul><li><strong>Screw jacks:</strong> Must hold a raised load without a brake — non-self-locking screw would drop the load</li><li><strong>Vises and clamps:</strong> Must hold workpieces without an applied force</li><li><strong>Machine adjustments:</strong> Set screws, micrometer adjusters — position must not drift</li></ul>` },
+
+  'ch6a_4': { marks:4, source:'KU Past Exam, Bhandari (2010)',
+    content:`<h4>Power Screw 5kN: pitch=6mm, d=20mm, μ=0.12</h4>
+<h4>Step 1 — Mean Diameter & Lead</h4>
+<div class="fml">d_major = 20mm (assume square thread)
+d_mean = d_major - 0.5×p = 20 - 3 = 17mm (single-start: L=p=6mm)</div>
+<h4>Step 2 — Helix Angle</h4>
+<div class="fml">tan λ = L/(π×d_m) = 6/(π×17) = 0.1123
+λ = arctan(0.1123) = 6.42°</div>
+<h4>Step 3 — Friction Angle</h4>
+<div class="fml">tan φ = μ = 0.12 → φ = 6.84°</div>
+<h4>Step 4 — Self-Locking Check</h4>
+<div class="fml">tan λ = 0.1123 vs μ = 0.12
+Since tan λ &lt; μ → Self-locking ✓</div>
+<h4>Step 5 — Torque to Raise</h4>
+<div class="fml">T_raise = W × (d_m/2) × (tan λ + μ)/(1 - μ tan λ)
+T_raise = 5000 × 8.5 × (0.1123 + 0.12)/(1 - 0.12×0.1123)
+T_raise = 42,500 × 0.2323/0.9865
+T_raise = 42,500 × 0.2355 = 10,009 N·mm = 10.0 N·m</div>
+<h4>Step 6 — Efficiency</h4>
+<div class="fml">η = tan λ/tan(λ+φ) = 0.1123/tan(13.26°) = 0.1123/0.2355 = 47.7%</div>
+<div class="kp">η &lt; 50% confirms self-locking. Power = T×ω = T×2πN/60 if speed is given.</div>` },
+
+  // CH6B
+  'ch6b_0': { marks:3, source:'Bhandari (2010) §22.6, KU Lecture Notes',
+    content:`<h4>Disc Springs (Belleville Springs) — Application & Stacking Effects</h4>
+<h4>What are Disc Springs?</h4>
+<p>Disc springs (Belleville washers) are conical annular discs that deform axially under load. They provide <strong>very high load capacity in minimal axial space</strong> — the defining characteristic.</p>
+<h4>Applications</h4>
+<ul><li>Bolt/flange preloading — maintains clamping force as the joint relaxes</li><li>Safety valves — snap-action opening under pressure overload</li><li>Clutch mechanisms — compact high-force spring packs</li><li>Vibration damping in machine tools</li><li>Nuclear reactor control systems — reliable force in extreme environments</li></ul>
+<h4>Stacking Effects</h4>
+<div class="step"><strong>Series stacking (same direction):</strong> Load = same, deflection MULTIPLIES (n×δ per disc). Spring becomes softer — same load, more travel. Use when large deflection needed.</div>
+<div class="step"><strong>Parallel stacking (alternate direction):</strong> Deflection = same, load MULTIPLIES (n×F per disc). Spring becomes stiffer — same travel, more force. Use when large force in small space needed.</div>
+<div class="step"><strong>Parallel-series combination:</strong> Both load and deflection increase proportionally. Used in heavy-duty applications.</div>
+<div class="kp">Key feature: Disc springs can be designed for progressive or even near-constant load characteristics by choosing the h/t ratio (disc height to thickness). For h/t ≈ 2.83 → almost constant force over deflection range.</div>` },
+
+  'ch6b_1': { marks:5, source:'KU Past Exam, Bhandari (2010)',
+    content:`<h4>Helical Compression Spring: 500N, Solid Height=50mm, Min Clearance=10mm, Max Free Length</h4>
+<p><strong>Given:</strong> F=500N, solid length L_s=50mm, min clearance=10mm when under load, find max free length and number of coils.</p>
+<h4>Step 1 — Spring Index and Wire Diameter</h4>
+<div class="fml">Assume C=8 (typical), wire material: find allowable τ from data book
+Wahl factor: Kw = (4×8-1)/(4×8-4) + 0.615/8 = 31/28 + 0.077 = 1.184
+τ = Kw × 8FD/(πd³) ≤ τ_allow
+Solve for d (wire diameter)</div>
+<h4>Step 2 — Mean Coil Diameter</h4>
+<div class="fml">D = C × d</div>
+<h4>Step 3 — Number of Active Coils</h4>
+<div class="fml">From solid length: L_s = n_t × d = 50mm → n_t = 50/d
+For squared & ground ends: n_inactive = 2 → n = n_t - 2</div>
+<h4>Step 4 — Deflection at Solid</h4>
+<div class="fml">y_s = 8FD³n/(Gd⁴)   (deflection to reach solid height)</div>
+<h4>Step 5 — Free Length</h4>
+<div class="fml">L_f_max = L_s + y_s + clearance
+where clearance = min 10mm (= (n_t-1) × gap per coil)</div>
+<div class="kp">The maximum free length is limited by buckling: L_f/D ≤ 2.63 for fixed-fixed ends. Verify this condition. Use exact values from data book for G and τ_allow for the specified wire material.</div>` },
+
+  // CH7
+  'ch7_0': { marks:3, source:'KU Lecture Notes Ch.7, Design Data Handbook',
+    content:`<h4>Bearing Designation 6205 — Digit Meaning</h4>
+<h4>Breaking Down: 6 - 2 - 05</h4>
+<div class="fml">   6          2         05
+   ↑          ↑          ↑
+ Type      Series     Bore</div>
+<div class="step"><strong>First digit "6" = Type:</strong> Deep groove ball bearing. Other types: 1=self-aligning ball, 2=spherical roller, 3=tapered roller, 4=double row deep groove, 7=angular contact, 8=thrust.</div>
+<div class="step"><strong>Second digit "2" = Series:</strong> Indicates the cross-section size (OD and width for a given bore). 2=Light series (02), 3=Medium series (03), 4=Heavy series (04). Higher series = larger OD and width = higher load capacity.</div>
+<div class="step"><strong>Last two digits "05" = Bore code:</strong> 05 × 5 = 25mm bore diameter. Rule: bore = code × 5mm for codes 04 and above. Special cases: 00=10mm, 01=12mm, 02=15mm, 03=17mm.</div>
+<h4>Summary for 6205</h4>
+<div class="fml">Type: Deep groove ball bearing
+Series: Light (02)
+Bore: 05 × 5 = 25mm
+OD: 52mm, Width: 15mm (from catalogue)
+C = ~14.0 kN, C₀ = ~7.8 kN</div>
+<div class="kp">Compare: 6305 has same 25mm bore but medium series → OD=62mm, C≈22.5kN. Same bore, higher load capacity, larger envelope.</div>` },
+
+  'ch7_5': { marks:5, source:'KU Past Exam, Bhandari (2010)',
+    content:`<h4>Bearing Selection: 2500rpm, 2kN Radial, 1kN Axial, d=25mm</h4>
+<h4>Step 1 — Required Life</h4>
+<div class="fml">Assume L_h = 5000 hrs (general machinery — use if not specified)
+L10 = 60 × N × L_h / 10⁶ = 60 × 2500 × 5000 / 10⁶ = 750 million rev</div>
+<h4>Step 2 — Trial Bearing</h4>
+<div class="fml">Bore = 25mm → try 6205: C=14,000N, C₀=7,800N</div>
+<h4>Step 3 — Equivalent Load</h4>
+<div class="fml">F_a/C₀ = 1000/7800 = 0.128 → from Table 16.1: e ≈ 0.28
+F_a/F_r = 1000/2000 = 0.5 > e = 0.28
+→ Use: X=0.56, Y≈1.69 (interpolate from data book)
+P = X×F_r + Y×F_a = 0.56×2000 + 1.69×1000 = 1120 + 1690 = 2810N</div>
+<h4>Step 4 — Required C</h4>
+<div class="fml">C_req = P × (L10)^(1/3) = 2810 × (750)^(1/3)
+(750)^(1/3) = 9.09
+C_req = 2810 × 9.09 = 25,540N = 25.5kN</div>
+<h4>Step 5 — Select Bearing</h4>
+<div class="fml">6205: C=14kN < 25.5kN → insufficient
+6305: C≈22.5kN < 25.5kN → insufficient
+6405: C≈38.4kN ≥ 25.5kN ✓ (bore 25mm, heavy series)
+OR: 6206 (larger bore series if shaft allows)</div>
+<div class="kp">If life hours not specified, use 5000h for general machinery or 20,000h for continuous operation. Always verify bore ≥ shaft diameter and re-check X,Y with actual C₀ of selected bearing.</div>` },
+
+  // CH8
+  'ch8_0': { marks:3, source:'Mott (2013) Ch.16, Bhandari (2010), KU Lecture Notes Ch.8',
+    content:`<h4>Types of Journal Bearings — Design & Application Differences</h4>
+<div class="step"><strong>1. Boundary-Lubricated (Dry/Semi-dry) Bearings</strong><br>
+A thin lubricant film exists but actual metal-to-metal contact occurs at startup/shutdown. Design uses porous bronze sintered bearings impregnated with oil — oil weeps to surface on heating.<br>
+✅ Simple, self-contained, no pump needed<br>
+Applications: Home appliances, office equipment, electric fans, low-speed intermittent rotation</div>
+<div class="step"><strong>2. Hydrodynamic (Full-Film) Bearings</strong><br>
+Journal rotation + converging wedge geometry generates pressurised oil film that COMPLETELY separates surfaces — zero metal contact under normal operation. Film thickness 10–100μm.<br>
+✅ Very low friction (f=0.001–0.005), long life, suitable for high speeds<br>
+Applications: IC engine crankshafts, turbine bearings, large pumps, high-speed rotating machinery</div>
+<div class="step"><strong>3. Hydrostatic Bearings</strong><br>
+Oil supplied under external pump pressure — load supported even at zero speed. No wedge action needed; film exists regardless of speed.<br>
+✅ No startup wear, load capacity independent of speed, extremely precise<br>
+❌ Expensive (requires external pump system)<br>
+Applications: Large telescope mounts, precision machine tool spindles, radar dish bearings</div>
+<div class="kp">Industrial example: IC engine crankshaft uses hydrodynamic lubrication. The journal never touches the bearing under normal running — the oil film supports loads of tens of kN.</div>` },
+
+  'ch8_1': { marks:3, source:'Mott (2013) §16-3, KU Lecture Notes Ch.8',
+    content:`<h4>Hydrodynamic Bearing Theory: Motion + Geometry + Viscosity</h4>
+<p>The statement refers to the three essential requirements for generating a hydrodynamic lubricant film — all three must be present simultaneously.</p>
+<h4>1. Bearing Motion (Journal Rotation)</h4>
+<p>The rotating journal drags viscous oil into the converging clearance space by viscous shear. Without relative motion between journal and bearing, no hydrodynamic film forms — this is why hydrodynamic bearings are vulnerable at startup (boundary lubrication until speed builds up).</p>
+<h4>2. Geometry (Converging Wedge)</h4>
+<p>The journal shifts off-centre under load (eccentricity e), creating a converging-diverging wedge-shaped clearance. In the converging zone, oil is squeezed and <strong>pressure builds</strong> as the film thins. This pressure acts on the journal to support the load. Without a converging geometry, pressure cannot build.</p>
+<div class="fml">Eccentricity ratio: ε = e/c (0 = concentric, 1 = metal contact)
+Film thickness: h = c(1 + ε cosθ) — varies around circumference</div>
+<h4>3. Rheological Properties (Viscosity)</h4>
+<p>Higher viscosity μ → thicker film → more load capacity. But also more friction and heat generation. Viscosity decreases with temperature — this is why bearing temperature must be controlled below 70°C.</p>
+<div class="fml">Sommerfeld Number: S = (μN/P)(R/c)²
+S captures all three factors together — viscosity, speed, pressure, geometry.</div>
+<div class="kp">All three must work together: motion creates the drag, geometry creates convergence that converts drag into pressure, viscosity determines how much pressure develops per unit of convergence.</div>` },
+
+  'ch8_4': { marks:3, source:'Mott (2013), Bhandari (2010), KU Lecture Notes',
+    content:`<h4>Hydrodynamic vs. Hydrostatic Bearings — Full Comparison</h4>
+<div class="step"><strong>Film Generation</strong><br>
+Hydrodynamic: Film generated by journal ROTATION + converging wedge geometry. No external pump.<br>
+Hydrostatic: Film maintained by EXTERNAL OIL PUMP supplying pressurised oil regardless of speed.</div>
+<div class="step"><strong>Load Capacity vs. Speed</strong><br>
+Hydrodynamic: Load capacity ∝ speed (faster rotation = thicker film = more pressure). At low/zero speed → no film → metal contact.<br>
+Hydrostatic: Load capacity is INDEPENDENT of speed. Full load supported even at zero rpm. No startup wear.</div>
+<div class="step"><strong>Startup Behaviour</strong><br>
+Hydrodynamic: Undergoes boundary lubrication at startup until journal reaches sufficient speed for full film. This is when most wear occurs.<br>
+Hydrostatic: Full film from first moment of operation — no startup wear at all.</div>
+<div class="step"><strong>Cost & Complexity</strong><br>
+Hydrodynamic: Simple, self-contained. Just a bearing shell + lubricant.<br>
+Hydrostatic: Requires external pump, oil supply system, pressure regulator, filter → expensive but highly precise.</div>
+<h4>Applications</h4>
+<div class="fml">Hydrodynamic: IC engines, turbines, pumps, motors (high-speed continuous rotation)
+Hydrostatic: Telescope mounts, precision spindles, radar dishes, nuclear reactor control rods</div>` },
+
 };
 
 // ===== ANSWER FUNCTIONS =====
