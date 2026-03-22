@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KU Study Hub — Mechanical Engineering</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════
+   KU STUDY HUB — MASTER TEMPLATE
+   Structure: Multi-subject portal with per-subject
+   apps, each fully independent.
+   Add subjects by duplicating the subject card
+   and creating a new subject HTML file.
+═══════════════════════════════════════════════ */
+
+:root {
+  --bg:        #080b12;
+  --surface:   #0e1220;
+  --surface2:  #141827;
+  --surface3:  #1c2235;
+  --border:    #1e2540;
+  --border2:   #2a3255;
+
+  /* accent per subject — easy to override */
+  --meeg315:   #6c63ff;  /* purple  */
+  --meeg328:   #22d3a0;  /* emerald */
+  --meeg999:   #f59e0b;  /* amber   — future subject slot */
+
+  --text:      #e8edf5;
+  --text2:     #8892aa;
+  --text3:     #4a5470;
+
+  --radius:    14px;
+  --font-head: 'Syne', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ─── BACKGROUND GRID ─── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(108,99,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(108,99,255,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ─── NOISE OVERLAY ─── */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.4;
+}
+
+/* ─── HEADER ─── */
+header {
+  position: relative;
+  z-index: 10;
+  padding: 48px 40px 0;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.ku-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: var(--text3);
+  border: 1px solid var(--border2);
+  background: var(--surface);
+  padding: 6px 14px;
+  border-radius: 100px;
+  margin-bottom: 28px;
+  text-transform: uppercase;
+}
+
+.ku-badge::before {
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--meeg315);
+  box-shadow: 0 0 8px var(--meeg315);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+h1.site-title {
+  font-family: var(--font-head);
+  font-size: clamp(32px, 5vw, 60px);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  margin-bottom: 16px;
+}
+
+h1.site-title span {
+  background: linear-gradient(135deg, var(--meeg315), var(--meeg328));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.site-desc {
+  font-size: 16px;
+  color: var(--text2);
+  max-width: 540px;
+  line-height: 1.7;
+  margin-bottom: 56px;
+}
+
+/* ─── STATS ROW ─── */
+.stats-row {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-bottom: 64px;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.stat-item .val {
+  font-family: var(--font-head);
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.stat-item .lbl {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text3);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.stat-divider {
+  width: 1px;
+  background: var(--border2);
+  align-self: stretch;
+  margin: 4px 0;
+}
+
+/* ─── SECTION LABEL ─── */
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* ─── SUBJECT GRID ─── */
+.subject-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 20px;
+  margin-bottom: 80px;
+}
+
+/* ─── SUBJECT CARD ─── */
+.subject-card {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px;
+  cursor: pointer;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  overflow: hidden;
+  transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+  z-index: 1;
+}
+
+.subject-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--accent-color, var(--meeg315)), transparent 60%);
+  opacity: 0.04;
+  transition: opacity 0.2s;
+  pointer-events: none;
+}
+
+.subject-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--accent-color, var(--meeg315));
+  box-shadow: 0 12px 40px rgba(0,0,0,0.4),
+              0 0 0 1px var(--accent-color, var(--meeg315)) inset;
+}
+
+.subject-card:hover::before { opacity: 0.08; }
+
+/* color variants */
+.card-315 { --accent-color: var(--meeg315); }
+.card-328 { --accent-color: var(--meeg328); }
+.card-soon { --accent-color: var(--meeg999); cursor: default; opacity: 0.5; }
+.card-soon:hover { transform: none; box-shadow: none; border-color: var(--border); }
+
+/* glow orb top-right */
+.card-glow {
+  position: absolute;
+  top: -30px; right: -30px;
+  width: 120px; height: 120px;
+  border-radius: 50%;
+  background: var(--accent-color, var(--meeg315));
+  opacity: 0.06;
+  filter: blur(30px);
+  pointer-events: none;
+}
+
+.card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.card-icon {
+  width: 44px; height: 44px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.card-code {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--accent-color, var(--meeg315));
+  background: rgba(108,99,255,0.08);
+  border: 1px solid rgba(108,99,255,0.15);
+  padding: 4px 10px;
+  border-radius: 100px;
+  letter-spacing: 0.06em;
+}
+
+.card-328 .card-code {
+  background: rgba(34,211,160,0.08);
+  border-color: rgba(34,211,160,0.15);
+}
+
+.card-soon .card-code {
+  background: rgba(245,158,11,0.08);
+  border-color: rgba(245,158,11,0.15);
+}
+
+.card-title {
+  font-family: var(--font-head);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.25;
+  margin-bottom: 8px;
+}
+
+.card-desc {
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.6;
+  margin-bottom: 24px;
+  flex: 1;
+}
+
+/* mini stats inside card */
+.card-stats {
+  display: flex;
+  gap: 16px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
+  margin-bottom: 20px;
+}
+
+.card-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.card-stat .n {
+  font-family: var(--font-head);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--accent-color, var(--meeg315));
+}
+
+.card-stat .l {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+/* feature pills */
+.card-features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 22px;
+}
+
+.feature-pill {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text3);
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  padding: 3px 10px;
+  border-radius: 100px;
+  letter-spacing: 0.04em;
+}
+
+/* CTA button */
+.card-cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-family: var(--font-head);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.subject-card:hover .card-cta {
+  background: var(--accent-color, var(--meeg315));
+  border-color: var(--accent-color, var(--meeg315));
+  color: #fff;
+}
+
+.cta-arrow {
+  font-size: 16px;
+  transition: transform 0.15s;
+}
+
+.subject-card:hover .cta-arrow { transform: translateX(4px); }
+
+/* ─── COMING SOON BADGE ─── */
+.coming-badge {
+  position: absolute;
+  top: 16px; right: 16px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--meeg999);
+  background: rgba(245,158,11,0.1);
+  border: 1px solid rgba(245,158,11,0.2);
+  padding: 3px 8px;
+  border-radius: 100px;
+}
+
+/* ─── HOW IT WORKS ─── */
+.how-section {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 40px 80px;
+  position: relative;
+  z-index: 1;
+}
+
+.how-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.how-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px;
+}
+
+.how-num {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text3);
+  margin-bottom: 12px;
+}
+
+.how-title {
+  font-family: var(--font-head);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+.how-desc {
+  font-size: 12.5px;
+  color: var(--text2);
+  line-height: 1.6;
+}
+
+/* ─── FOOTER ─── */
+footer {
+  text-align: center;
+  padding: 32px 40px;
+  border-top: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text3);
+  position: relative;
+  z-index: 1;
+  letter-spacing: 0.05em;
+}
+
+footer a {
+  color: var(--meeg315);
+  text-decoration: none;
+}
+
+/* ─── MOBILE ─── */
+@media (max-width: 640px) {
+  header, .main-content, .how-section { padding-left: 20px; padding-right: 20px; }
+  header { padding-top: 32px; }
+  .stats-row { gap: 16px; }
+  .stat-divider { display: none; }
+  .subject-grid { grid-template-columns: 1fr; }
+  .how-grid { grid-template-columns: 1fr 1fr; }
+}
+
+/* ─── FADE IN ─── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+header       { animation: fadeUp 0.5s ease both; }
+.main-content{ animation: fadeUp 0.5s ease 0.1s both; }
+.how-section { animation: fadeUp 0.5s ease 0.2s both; }
+</style>
+</head>
+<body>
+
+<!-- ═══ HEADER ═══ -->
+<header>
+  <div class="ku-badge">Kathmandu University · BE Mechanical Engineering · III Year Sem I</div>
+  <h1 class="site-title">KU Study<br><span>Hub</span></h1>
+  <p class="site-desc">
+    Past questions, possible exam questions, model answers, MCQs, flashcards,
+    and exam simulator — all in one place. Built for KU Mechanical students.
+  </p>
+  <div class="stats-row">
+    <div class="stat-item">
+      <span class="val">2</span>
+      <span class="lbl">Subjects</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <span class="val">180+</span>
+      <span class="lbl">Past Questions</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <span class="val">200+</span>
+      <span class="lbl">MCQs</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <span class="val">100%</span>
+      <span class="lbl">Free</span>
+    </div>
+  </div>
+</header>
+
+<!-- ═══ MAIN CONTENT ═══ -->
+<div class="main-content" style="max-width:1200px;margin:0 auto;padding:0 40px;position:relative;z-index:1;">
+
+  <div class="section-label">Subjects</div>
+
+  <div class="subject-grid">
+
+    <!-- ══ MEEG 315 CARD ══ -->
+    <a class="subject-card card-315" href="MEEG315_Interactive.html">
+      <div class="card-glow"></div>
+      <div class="card-header">
+        <div class="card-icon">⚙️</div>
+        <span class="card-code">MEEG 315</span>
+      </div>
+      <div class="card-title">Machine Element Design & Process I</div>
+      <p class="card-desc">Riveted joints, welded joints, power screws, springs, rolling bearings, journal bearings, stress analysis, fatigue design.</p>
+      <div class="card-stats">
+        <div class="card-stat"><span class="n">84</span><span class="l">Questions</span></div>
+        <div class="card-stat"><span class="n">105</span><span class="l">MCQs</span></div>
+        <div class="card-stat"><span class="n">6</span><span class="l">Exam Papers</span></div>
+        <div class="card-stat"><span class="n">8</span><span class="l">Chapters</span></div>
+      </div>
+      <div class="card-features">
+        <span class="feature-pill">📝 All Past Qs</span>
+        <span class="feature-pill">✅ Model Answers</span>
+        <span class="feature-pill">🃏 Flashcards</span>
+        <span class="feature-pill">⏱ Exam Sim</span>
+        <span class="feature-pill">📐 Formula Sheet</span>
+        <span class="feature-pill">📋 Design Procedures</span>
+      </div>
+      <div class="card-cta">
+        Open Study Hub <span class="cta-arrow">→</span>
+      </div>
+    </a>
+
+    <!-- ══ MEEG 328 CARD ══ -->
+    <a class="subject-card card-328" href="MEEG328_Interactive.html">
+      <div class="card-glow"></div>
+      <div class="card-header">
+        <div class="card-icon">☀️</div>
+        <span class="card-code">MEEG 328</span>
+      </div>
+      <div class="card-title">Renewable Energy</div>
+      <p class="card-desc">Solar, wind, hydro, biomass, geothermal energy systems. Resource assessment, conversion technologies, system design, policy.</p>
+      <div class="card-stats">
+        <div class="card-stat"><span class="n" id="re-q">—</span><span class="l">Questions</span></div>
+        <div class="card-stat"><span class="n" id="re-mcq">—</span><span class="l">MCQs</span></div>
+        <div class="card-stat"><span class="n" id="re-papers">—</span><span class="l">Exam Papers</span></div>
+        <div class="card-stat"><span class="n" id="re-ch">—</span><span class="l">Chapters</span></div>
+      </div>
+      <div class="card-features">
+        <span class="feature-pill">📝 All Past Qs</span>
+        <span class="feature-pill">✅ Model Answers</span>
+        <span class="feature-pill">🖼 Figures</span>
+        <span class="feature-pill">⚡ Possible Qs</span>
+        <span class="feature-pill">🃏 Flashcards</span>
+        <span class="feature-pill">⏱ Exam Sim</span>
+      </div>
+      <div class="card-cta">
+        Open Study Hub <span class="cta-arrow">→</span>
+      </div>
+    </a>
+
+    <!-- ══ FUTURE SUBJECT SLOT ══ -->
+    <div class="subject-card card-soon">
+      <span class="coming-badge">Coming Soon</span>
+      <div class="card-glow"></div>
+      <div class="card-header">
+        <div class="card-icon">📦</div>
+        <span class="card-code" style="color:var(--meeg999)">MEEG ???</span>
+      </div>
+      <div class="card-title">Next Subject</div>
+      <p class="card-desc">Upload your past questions and slides — a complete study hub will be built for your next subject.</p>
+      <div class="card-cta" style="opacity:0.4;">
+        Not yet available <span class="cta-arrow">—</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══ HOW IT WORKS ═══ -->
+<div class="how-section">
+  <div class="section-label" style="margin-bottom:20px;">How each subject hub works</div>
+  <div class="how-grid">
+    <div class="how-card">
+      <div class="how-num">01</div>
+      <div class="how-title">All Past Questions</div>
+      <div class="how-desc">Every question from every past exam paper, organized by chapter and year. Numericals include figures.</div>
+    </div>
+    <div class="how-card">
+      <div class="how-num">02</div>
+      <div class="how-title">Model Answers</div>
+      <div class="how-desc">Step-by-step answers for every question — written for 3–6 mark exam format, clear and concise.</div>
+    </div>
+    <div class="how-card">
+      <div class="how-num">03</div>
+      <div class="how-title">Possible Questions</div>
+      <div class="how-desc">Predicted exam questions based on slide content and past question trends — topics not yet examined.</div>
+    </div>
+    <div class="how-card">
+      <div class="how-num">04</div>
+      <div class="how-title">MCQ Practice</div>
+      <div class="how-desc">All objective questions from past papers plus generated MCQs, sorted by year and chapter.</div>
+    </div>
+    <div class="how-card">
+      <div class="how-num">05</div>
+      <div class="how-title">Exam Simulator</div>
+      <div class="how-desc">Timed mock exams matching the real KU pattern — MCQ section + theory section with scoring.</div>
+    </div>
+    <div class="how-card">
+      <div class="how-num">06</div>
+      <div class="how-title">Formula Sheets</div>
+      <div class="how-desc">Book-quality equations with proper fraction notation, design procedure steps from lecture slides.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  KU Study Hub &nbsp;·&nbsp; Kathmandu University Mechanical Engineering &nbsp;·&nbsp;
+  Built for <a href="#">BE III Year Sem I</a> &nbsp;·&nbsp;
+  <span style="color:var(--meeg315)">MEEG 315</span> &nbsp;+&nbsp;
+  <span style="color:var(--meeg328)">MEEG 328</span>
+</footer>
+
+</body>
+</html>
