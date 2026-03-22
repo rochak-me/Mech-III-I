@@ -1210,7 +1210,7 @@ function renderReferences(){
   // ── IV Curve — solar cell at 25°C and 60°C ──
   const ivCtx = document.getElementById('ch-ivcurve');
   if(ivCtx && !ivCtx._chartjs){
-    // Generate IV curve data points
+    // Generate IV curve points using diode equation
     const genIV = (Isc, Voc, n=1.3) => {
       const pts = [];
       for(let v=0; v<=Voc; v+=Voc/60){
@@ -1220,47 +1220,91 @@ function renderReferences(){
       return pts;
     };
     const iv25 = genIV(8.5, 37.2);   // STC 25°C
-    const iv60 = genIV(8.7, 33.5);   // 60°C — lower Voc
-    const pmax25 = iv25.reduce((m,p)=>p.x*p.y>m.x*m.y?p:m,{x:0,y:0});
+    const iv60 = genIV(8.7, 33.5);   // 60°C — Voc drops ~3.7V (35×2.3mV×46 cells ÷ 1000 × 46)
+
+    // Find Pmax point for 25°C
+    let pmaxIdx = 0, pmaxVal = 0;
+    iv25.forEach((p,i) => { const pw = p.x*p.y; if(pw>pmaxVal){pmaxVal=pw; pmaxIdx=i;} });
+    const pmax25 = iv25[pmaxIdx];
+
+    // Create horizontal/vertical reference lines as extra datasets
+    const iscLine = iv25.slice(0,2).map((p,i) => ({x: i===0?0:37.2, y: 8.5}));
+    const vocLine = [{x:37.2,y:0},{x:37.2,y:0.1}];
+
     new Chart(ivCtx, {
       type: 'line',
       data: {
         datasets: [
           {
             label: '25°C (STC)',
-            data: iv25, borderColor: '#22d3a0', backgroundColor: 'rgba(34,211,160,0.06)',
+            data: iv25,
+            borderColor: '#22d3a0',
+            backgroundColor: 'rgba(34,211,160,0.08)',
             fill: true, tension: 0, pointRadius: 0, borderWidth: 2.5,
           },
           {
-            label: '60°C (Hot day)',
-            data: iv60, borderColor: '#f87171', backgroundColor: 'transparent',
+            label: '60°C (Hot Day)',
+            data: iv60,
+            borderColor: '#f87171',
+            backgroundColor: 'transparent',
             fill: false, tension: 0, pointRadius: 0, borderWidth: 2, borderDash: [6,3],
           },
           {
-            label: 'Pmax (25°C)',
-            data: [pmax25], borderColor: '#fbbf24', backgroundColor: '#fbbf24',
-            pointRadius: 8, pointStyle: 'star', showLine: false,
-          }
+            label: 'Pmax (25°C) = ' + pmaxVal.toFixed(1) + 'W',
+            data: [pmax25],
+            borderColor: '#fbbf24',
+            backgroundColor: '#fbbf24',
+            pointRadius: 9, pointStyle: 'star', showLine: false, pointHoverRadius: 11,
+          },
+          {
+            label: 'Isc line',
+            data: [{x:0,y:8.5},{x:pmax25.x,y:8.5}],
+            borderColor: 'rgba(34,211,160,0.3)',
+            borderDash: [3,3], pointRadius: 0, showLine: true, borderWidth: 1,
+            fill: false, legend: {display: false},
+          },
+          {
+            label: 'Voc line',
+            data: [{x:37.2,y:0},{x:37.2,y:0.3}],
+            borderColor: 'rgba(34,211,160,0.3)',
+            borderDash: [3,3], pointRadius: 0, showLine: true, borderWidth: 1,
+            fill: false,
+          },
         ]
       },
       options: {
         responsive: true, parsing: false,
         plugins: {
-          legend: { position: 'top', labels: { boxWidth: 12, padding: 14 } },
-          tooltip: { callbacks: {
-            label: ctx => {
-              if(ctx.dataset.label.includes('Pmax')) return ` Pmax = ${(ctx.parsed.x*ctx.parsed.y).toFixed(1)} W`;
-              return ` I = ${ctx.parsed.y.toFixed(2)} A  @  V = ${ctx.parsed.x.toFixed(2)} V`;
+          legend: {
+            position: 'top',
+            labels: {
+              boxWidth: 12, padding: 14,
+              filter: (item) => !item.text.includes('line'),
             }
-          }},
-          annotation: { annotations: {
-            isc: { type:'line', yMin:8.5, yMax:8.5, borderColor:'rgba(34,211,160,0.3)', borderDash:[3,3], label:{content:'Isc',display:true,position:'start',color:'#22d3a0',font:{size:10}} },
-            voc: { type:'line', xMin:37.2, xMax:37.2, borderColor:'rgba(34,211,160,0.3)', borderDash:[3,3], label:{content:'Voc',display:true,position:'end',color:'#22d3a0',font:{size:10}} }
-          }}
+          },
+          tooltip: {
+            callbacks: {
+              label: ctx => {
+                if(ctx.dataset.label.includes('Pmax')) return ' Pmax = ' + (ctx.parsed.x*ctx.parsed.y).toFixed(1) + ' W at V=' + ctx.parsed.x.toFixed(1) + 'V';
+                if(ctx.dataset.label.includes('line')) return null;
+                return ' I = ' + ctx.parsed.y.toFixed(2) + ' A  at  V = ' + ctx.parsed.x.toFixed(2) + ' V';
+              }
+            }
+          }
         },
         scales: {
-          x: { type:'linear', title:{display:true,text:'Voltage (V)',color:'#4a5470'}, grid:{color:'#1a2530'}, min:0, max:40 },
-          y: { title:{display:true,text:'Current (A)',color:'#4a5470'}, grid:{color:'#1a2530'}, min:0, max:10 }
+          x: {
+            type: 'linear', min: 0, max: 40,
+            title: { display: true, text: 'Voltage (V)', color: '#4a5470' },
+            grid: { color: '#1a2530' },
+            ticks: { callback: v => v + 'V' }
+          },
+          y: {
+            min: 0, max: 10,
+            title: { display: true, text: 'Current (A)', color: '#4a5470' },
+            grid: { color: '#1a2530' },
+            ticks: { callback: v => v + 'A' }
+          }
         }
       }
     });
@@ -2571,7 +2615,10 @@ function buildRefs(keys){
 <p>Biological decomposition of organic matter by microorganisms in the <strong>complete absence of oxygen</strong>, producing biogas and nutrient-rich digestate.</p>
 
 <h4>4 Biochemical Stages</h4>
-
+<div class="vis-box">
+  <div class="vis-title">Biochemical Pathway of Anaerobic Digestion</div>
+  <canvas id="ch-biochem" height="80"></canvas>
+</div>
 <p style="font-size:12px;color:var(--text2);">Pathways: (a) Acetotrophic: $4CH_3COOH \\rightarrow 4CO_2 + 4CH_4$  &nbsp;&nbsp; (b) Hydrogenotrophic: $CO_2 + 4H_2 \\rightarrow CH_4 + 2H_2O$</p>
 
 <h4>Biogas Plant Design — 500 kg Cattle Dung/day (Janakpur)</h4>
@@ -2995,30 +3042,72 @@ Importance: High turbulence → increased fatigue loads on blades and tower → 
 <div class="kp">Standard monitoring heights: 10m (reference), 50m (hub height estimate), 80-100m (actual hub height for modern turbines). Minimum measurement duration: 12 months minimum, 2+ years preferred.</div>` },
 
   // ─── CH5 MISSING ANSWERS ───
-  'ch5_1': { marks:"8+2+2+5", refs:['ku-slides', 'ku-exam-2022', 'masters'], content:`<h4>Net-Zero Restaurant PV System Design — Namche Bazaar</h4>
-<h4>Approach (using given tables and conditions)</h4>
-<div class="step"><strong>a. Average Daily Energy Load and Peak Power (end of Year 5):</strong><br>
-Sum all appliance loads from the given table: E_daily = Σ(Power × Hours/day) Wh/day.<br>
-Apply annual growth factor for Year 5 (typically 1.03-1.05 per year compound).<br>
-E_year5 = E_base × (1+growth)⁵<br>
-Peak power = sum of all appliances that could run simultaneously × diversity factor.</div>
-<div class="step"><strong>b. Battery Bank Capacity:</strong><br>
-Autonomy days = 3 (typical for remote site)<br>
-Battery Ah = (E_daily × autonomy) / (V_system × DOD × η_battery)<br>
-Use 24V or 48V system, DOD=0.8 for deep cycle batteries.<br>
-Configuration: Strings in PARALLEL increase Ah (capacity), cells in SERIES increase voltage.<br>
-Draw diagram showing series strings (for voltage) and parallel banks (for capacity).</div>
-<div class="step"><strong>c. Inverter Size:</strong><br>
-Inverter VA = Peak load (W) / power factor × 1.25 (safety margin)<br>
-Select nearest standard inverter size.</div>
-<div class="step"><strong>d. PV Array Design:</strong><br>
-Number of modules = P_PV / P_module<br>
-Modules in series = V_system / V_module_mpp × 1.2<br>
-Strings in parallel = Total modules / modules per string<br>
-Sketch: Show modules in series strings connected in parallel to charge controller → battery bank → inverter → loads.</div>
-<div class="kp">For Namche Bazaar (high altitude, ~3440m): Solar irradiation is excellent (~5.5 kWh/m²/day) due to high altitude and clear atmosphere. Use derating factor 0.9-0.95 for temperature (cold = better PV performance). System must handle winter when tourist demand may be lower.</div>` },
+  'ch5_1': { marks:"8+2+2+5", refs:['ku-slides','ku-exam-2022','masters'], content:`
+<h4>Net-Zero Restaurant PV System Design — Namche Bazaar</h4>
+<p><em>The system uses ONLY renewable energy (standalone / off-grid). All calculations depend on the attached load table and data given in the exam. The approach below shows the method with standard formulas.</em></p>
 
-  'ch5_2': { marks:"6+5", refs:['ku-slides', 'ku-exam-2025', 'duffie', 'masters'], content:`<h4>Flat Plate Collector + 5MW PV Plant Inter-Row Spacing</h4>
+<h4>a. Average Daily Energy Load & Peak Power (Year 5)</h4>
+<div class="derivation">
+  <span class="step-num">Load Calculation</span>
+  $$E_{daily} = \\sum (P_i \\times H_i) \\quad [\\text{Wh/day}]$$
+  $$E_{year5} = E_{base} \\times (1 + g)^5 \\quad g = \\text{annual growth rate (1.03–1.05)}$$
+  $$P_{peak} = \\sum P_{simultaneous} \\times \\text{diversity factor}$$
+</div>
+<div class="note-box">📋 Use the exam's attached load table to sum all (Power × Hours) values. Year 5 accounts for tourist growth. Peak power = all appliances likely to run simultaneously (kitchen + lighting peak).</div>
+
+<h4>b. Battery Bank Capacity</h4>
+<div class="derivation">
+  <span class="step-num">Battery Sizing</span>
+  $$Ah = \\frac{E_{daily} \\times N_{auto}}{V_{sys} \\times DOD \\times \\eta_{bat}}$$
+  $$N_{auto} = 3 \\text{ days (remote mountain site)}, \\quad DOD = 0.8 \\text{ (deep cycle)}, \\quad V_{sys} = 24\\text{ V or }48\\text{ V}$$
+</div>
+<div class="vis-box">
+  <div class="vis-title">Battery Bank Configuration — Series + Parallel</div>
+  <svg viewBox="0 0 400 120" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:400px;">
+    <defs><marker id="ba" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L6,3 z" fill="#22d3a0"/></marker></defs>
+    <!-- String 1: cells in series for voltage -->
+    <rect x="10" y="20" width="50" height="30" rx="5" fill="rgba(56,189,248,0.12)" stroke="#38bdf8" stroke-width="1.5"/>
+    <text x="35" y="33" fill="#38bdf8" font-size="8" text-anchor="middle" font-family="monospace">Cell 1</text>
+    <text x="35" y="44" fill="#64748b" font-size="7" text-anchor="middle">12V / 100Ah</text>
+    <line x1="60" y1="35" x2="80" y2="35" stroke="#38bdf8" stroke-width="1.5" marker-end="url(#ba)"/>
+    <rect x="81" y="20" width="50" height="30" rx="5" fill="rgba(56,189,248,0.12)" stroke="#38bdf8" stroke-width="1.5"/>
+    <text x="106" y="33" fill="#38bdf8" font-size="8" text-anchor="middle" font-family="monospace">Cell 2</text>
+    <text x="106" y="44" fill="#64748b" font-size="7" text-anchor="middle">12V / 100Ah</text>
+    <text x="200" y="33" fill="#38bdf8" font-size="9" text-anchor="middle" font-family="monospace">→ SERIES → 24V / 100Ah</text>
+    <!-- String 2: parallel for capacity -->
+    <rect x="10" y="65" width="50" height="30" rx="5" fill="rgba(167,139,250,0.12)" stroke="#a78bfa" stroke-width="1.5"/>
+    <text x="35" y="78" fill="#a78bfa" font-size="8" text-anchor="middle" font-family="monospace">Cell 1</text>
+    <text x="35" y="89" fill="#64748b" font-size="7" text-anchor="middle">12V / 100Ah</text>
+    <line x1="60" y1="80" x2="80" y2="80" stroke="#a78bfa" stroke-width="1.5" marker-end="url(#ba)"/>
+    <rect x="81" y="65" width="50" height="30" rx="5" fill="rgba(167,139,250,0.12)" stroke="#a78bfa" stroke-width="1.5"/>
+    <text x="106" y="78" fill="#a78bfa" font-size="8" text-anchor="middle" font-family="monospace">Cell 2</text>
+    <text x="106" y="89" fill="#64748b" font-size="7" text-anchor="middle">12V / 100Ah</text>
+    <text x="200" y="78" fill="#a78bfa" font-size="9" text-anchor="middle" font-family="monospace">→ PARALLEL → 24V / 200Ah</text>
+    <!-- Labels -->
+    <text x="10" y="115" fill="#64748b" font-size="8" font-family="monospace">Series = ↑ Voltage</text>
+    <text x="200" y="115" fill="#64748b" font-size="8" font-family="monospace">Parallel = ↑ Capacity (Ah)</text>
+  </svg>
+</div>
+
+<h4>c. Inverter Size</h4>
+<div class="derivation">
+  <span class="step-num">Inverter Sizing</span>
+  $$S_{inverter} = \\frac{P_{peak}}{\\cos\\phi} \\times 1.25 \\quad [\\text{VA}]$$
+  $$\\cos\\phi = \\text{power factor (0.8–1.0 for mixed loads)}$$
+</div>
+<div class="note-box">Select the next standard size above: e.g. 2kVA, 3kVA, 5kVA, 10kVA. For Namche (mountain, no grid): choose high-quality pure sine wave inverter with overload protection.</div>
+
+<h4>d. PV Array Design</h4>
+<div class="derivation">
+  <span class="step-num">PV Modules Required</span>
+  $$N_{modules} = \\frac{P_{PV}}{P_{module}} \\quad \\text{where} \\quad P_{PV} = \\frac{E_{daily}}{G \\times PR}$$
+  $$N_{series} = \\frac{V_{sys}}{V_{mp}} \\times 1.2 \\quad \\text{(voltage matching with safety factor)}$$
+  $$N_{parallel} = \\lceil N_{modules} / N_{series} \\rceil \\quad \\text{(parallel strings)}$$
+</div>
+<div class="kp">✅ Final check: V_array = N_series × V_mp ≥ V_system. I_array = N_parallel × I_mp. Array must complement battery bank voltage. For Namche: use high-efficiency mono-Si panels — cold temperature actually IMPROVES Voc, boosting output.</div>
+` },
+
+'ch5_2': { marks:"6+5", refs:['ku-slides', 'ku-exam-2025', 'duffie', 'masters'], content:`<h4>Flat Plate Collector + 5MW PV Plant Inter-Row Spacing</h4>
 <p>See Ch4 Q0 answer — this is the same question from Jul 2025. The question combines flat plate collector theory (6 marks) with the 5MW PV plant spacing calculation (5 marks).</p>
 <h4>Flat Plate Collector Energy Balance (Summary)</h4>
 <div class="math-eq">$$\\eta = F_R\\left[\\tau\\alpha - U_L\\frac{T_i-T_a}{G}\\right]$$</div><p style="font-size:12px;color:var(--text2);margin:6px 0;">$F_R$=0.80–0.95, $\\tau\\alpha$=0.70–0.90, $U_L$=3–8 W/m²·K</p>
