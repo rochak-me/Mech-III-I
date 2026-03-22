@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MEEG 328 — Renewable Energy Study Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#080c10; --surface:#0d1318; --surface2:#121a20; --surface3:#192028;
+  --border:#1a2530; --border2:#243040;
+  --accent:#22d3a0; --accent2:#6ee7c7; --accent3:#38bdf8;
+  --green:#22d3a0; --yellow:#fbbf24; --red:#f87171; --orange:#fb923c; --purple:#a78bfa;
+  --text:#e2eff5; --text2:#7a9ab0; --text3:#3a5568;
+  --font-head:'Syne',sans-serif; --font-body:'DM Sans',sans-serif; --font-mono:'JetBrains Mono',monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(34,211,160,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(34,211,160,0.025) 1px,transparent 1px);background-size:44px 44px;pointer-events:none;z-index:0;}
+
+/* LAYOUT */
+.layout{display:flex;min-height:100vh;}
+.sidebar{width:265px;min-height:100vh;background:var(--surface);border-right:1px solid var(--border);position:fixed;top:0;left:0;display:flex;flex-direction:column;z-index:100;overflow-y:auto;}
+.main{margin-left:265px;flex:1;min-width:0;display:flex;flex-direction:column;}
+
+/* SIDEBAR */
+.sidebar-logo{padding:22px 20px 16px;border-bottom:1px solid var(--border);}
+.sidebar-logo .badge{font-family:var(--font-mono);font-size:10px;color:var(--accent);background:rgba(34,211,160,0.1);border:1px solid rgba(34,211,160,0.22);padding:3px 8px;border-radius:4px;letter-spacing:0.05em;margin-bottom:7px;display:inline-block;}
+.sidebar-logo h1{font-family:var(--font-head);font-size:17px;font-weight:800;color:var(--text);line-height:1.2;}
+.sidebar-logo p{font-size:10px;color:var(--text3);margin-top:3px;}
+.home-link{display:flex;align-items:center;gap:8px;padding:8px 20px;font-size:12px;color:var(--text3);cursor:pointer;transition:color 0.15s;border-bottom:1px solid var(--border);text-decoration:none;}
+.home-link:hover{color:var(--accent);}
+.sidebar-section-label{font-family:var(--font-mono);font-size:9px;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;padding:14px 20px 5px;}
+.sidebar-item{display:flex;align-items:center;gap:9px;padding:8px 20px;cursor:pointer;color:var(--text2);font-size:12.5px;border-left:2px solid transparent;transition:all 0.15s;position:relative;}
+.sidebar-item:hover{background:var(--surface2);color:var(--text);}
+.sidebar-item.active{background:rgba(34,211,160,0.08);color:var(--accent2);border-left-color:var(--accent);}
+.sidebar-item .dot{width:5px;height:5px;border-radius:50%;background:var(--text3);flex-shrink:0;transition:all 0.15s;}
+.sidebar-item.active .dot{background:var(--accent);box-shadow:0 0 8px var(--accent);}
+.sidebar-item .ch-num{font-family:var(--font-mono);font-size:9px;color:var(--text3);margin-left:auto;flex-shrink:0;}
+.sidebar-stats{margin-top:auto;padding:14px 20px;border-top:1px solid var(--border);}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.stat-box{background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:9px;text-align:center;}
+.stat-box .num{font-family:var(--font-head);font-size:18px;font-weight:700;color:var(--accent2);}
+.stat-box .label{font-size:9px;color:var(--text3);margin-top:1px;}
+
+/* TOPBAR */
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 28px;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
+.breadcrumb{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text3);font-family:var(--font-mono);}
+#bc-main{color:var(--accent);}
+#bc-sub{color:var(--text2);}
+.mob-menu-btn{display:none;align-items:center;justify-content:center;width:34px;height:34px;border-radius:7px;background:var(--surface2);border:1px solid var(--border);cursor:pointer;font-size:15px;margin-right:8px;}
+.topbar-right{display:flex;align-items:center;gap:10px;}
+.year-badge{font-family:var(--font-mono);font-size:10px;color:var(--text3);background:var(--surface2);border:1px solid var(--border);padding:4px 10px;border-radius:100px;}
+
+/* CONTENT */
+.content{padding:28px 36px;max-width:1100px;width:100%;box-sizing:border-box;}
+#content-area{animation:fadeIn 0.2s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+/* CHAPTER HERO */
+.chapter-hero{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:26px 28px;margin-bottom:24px;position:relative;overflow:hidden;}
+.chapter-hero::before{content:'';position:absolute;top:-40px;right:-40px;width:140px;height:140px;border-radius:50%;background:var(--accent);opacity:0.04;filter:blur(30px);}
+.hero-tag{font-family:var(--font-mono);font-size:10px;color:var(--accent);background:rgba(34,211,160,0.1);border:1px solid rgba(34,211,160,0.2);padding:3px 10px;border-radius:100px;display:inline-block;margin-bottom:10px;letter-spacing:0.05em;}
+.chapter-hero h2{font-family:var(--font-head);font-size:22px;font-weight:800;color:var(--text);margin-bottom:6px;}
+.chapter-hero p{font-size:13px;color:var(--text2);line-height:1.6;max-width:680px;}
+.hero-pills{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px;}
+.hero-pill{font-size:11px;color:var(--text3);background:var(--surface2);border:1px solid var(--border);padding:3px 10px;border-radius:100px;font-family:var(--font-mono);}
+
+/* TAB BAR */
+#tab-bar{display:flex;gap:4px;margin-bottom:20px;flex-wrap:wrap;}
+.tab-btn{font-family:var(--font-mono);font-size:11px;padding:6px 14px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text3);cursor:pointer;transition:all 0.15s;letter-spacing:0.03em;}
+.tab-btn:hover{border-color:var(--border2);color:var(--text2);}
+.tab-btn.active{background:rgba(34,211,160,0.1);border-color:rgba(34,211,160,0.3);color:var(--accent2);}
+
+/* QUESTION CARDS */
+.q-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:12px;transition:border-color 0.15s;}
+.q-card:hover{border-color:var(--border2);}
+.q-card.possible{border-left:3px solid var(--yellow);}
+.q-header{display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;}
+.q-num{font-family:var(--font-mono);font-size:10px;color:var(--text3);background:var(--surface2);border:1px solid var(--border);padding:3px 8px;border-radius:6px;flex-shrink:0;margin-top:2px;}
+.q-text{font-size:13.5px;color:var(--text);line-height:1.65;flex:1;}
+.q-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.marks-pill{font-family:var(--font-mono);font-size:10px;color:var(--yellow);background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.2);padding:2px 8px;border-radius:100px;}
+.year-tag{font-family:var(--font-mono);font-size:10px;padding:2px 8px;border-radius:100px;border:1px solid;}
+.year-tag.y2022{color:#34d399;border-color:rgba(52,211,153,0.3);background:rgba(52,211,153,0.07);}
+.year-tag.y2024{color:#38bdf8;border-color:rgba(56,189,248,0.3);background:rgba(56,189,248,0.07);}
+.year-tag.y2025{color:#a78bfa;border-color:rgba(167,139,250,0.3);background:rgba(167,139,250,0.07);}
+.year-tag.yposs{color:#fbbf24;border-color:rgba(251,191,36,0.3);background:rgba(251,191,36,0.07);}
+.possible-badge{font-family:var(--font-mono);font-size:9px;color:var(--yellow);background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.2);padding:2px 8px;border-radius:100px;}
+.view-ans-btn{font-family:var(--font-mono);font-size:10px;color:var(--accent);background:rgba(34,211,160,0.07);border:1px solid rgba(34,211,160,0.2);padding:4px 12px;border-radius:7px;cursor:pointer;transition:all 0.15s;margin-left:auto;flex-shrink:0;white-space:nowrap;}
+.view-ans-btn:hover{background:rgba(34,211,160,0.15);border-color:rgba(34,211,160,0.35);}
+.figure-badge{font-family:var(--font-mono);font-size:9px;color:var(--accent3);background:rgba(56,189,248,0.08);border:1px solid rgba(56,189,248,0.2);padding:2px 8px;border-radius:100px;}
+.or-divider{display:flex;align-items:center;gap:12px;margin:8px 0;font-family:var(--font-mono);font-size:10px;color:var(--text3);}
+.or-divider::before,.or-divider::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* FIGURE IMAGE */
+.q-figure{margin-top:12px;border-radius:8px;overflow:hidden;border:1px solid var(--border);background:var(--surface2);}
+.q-figure img{width:100%;max-width:500px;display:block;border-radius:8px;}
+.q-figure .fig-placeholder{padding:20px;text-align:center;font-size:12px;color:var(--text3);font-family:var(--font-mono);}
+.upload-figure-hint{font-size:10px;color:var(--text3);font-family:var(--font-mono);margin-top:4px;font-style:italic;}
+
+/* CONCEPT CARDS */
+.concept-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;}
+.concept-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px;}
+.concept-label{font-family:var(--font-mono);font-size:9px;color:var(--accent);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px;}
+.concept-title{font-family:var(--font-head);font-size:15px;font-weight:700;color:var(--text);margin-bottom:8px;}
+.concept-body{font-size:12.5px;color:var(--text2);line-height:1.65;white-space:pre-line;}
+
+/* FORMULA CARD */
+.fml{font-family:var(--font-mono);font-size:12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin:8px 0;line-height:1.8;color:var(--accent2);white-space:pre-line;}
+
+/* MCQ */
+.mcq-section-header{font-family:var(--font-mono);font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em;padding:10px 0 6px;border-bottom:1px solid var(--border);margin-bottom:12px;}
+.mcq-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:12px;}
+.mcq-card.answered{border-color:var(--border2);}
+.mcq-num-row{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.mcq-q-text{font-size:13px;color:var(--text);line-height:1.6;margin-bottom:14px;}
+.mcq-options{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.mcq-option{padding:9px 14px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);cursor:pointer;font-size:12.5px;color:var(--text2);transition:all 0.15s;}
+.mcq-option:hover:not(.disabled){border-color:var(--accent);color:var(--text);}
+.mcq-option.disabled{cursor:default;}
+.mcq-option.show-correct{background:rgba(34,211,160,0.1);border-color:rgba(34,211,160,0.4);color:var(--green);}
+.mcq-option.selected-wrong{background:rgba(248,113,113,0.1);border-color:rgba(248,113,113,0.4);color:var(--red);}
+.mcq-explanation{margin-top:10px;font-size:12px;color:var(--text2);background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;display:none;line-height:1.6;}
+.mcq-explanation.show{display:block;}
+.score-bar{display:flex;gap:14px;padding:14px 16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;margin-bottom:18px;}
+.score-box{display:flex;flex-direction:column;gap:2px;}
+.score-box .sv{font-family:var(--font-head);font-size:18px;font-weight:700;color:var(--accent2);}
+.score-box .sl{font-size:10px;color:var(--text3);font-family:var(--font-mono);}
+
+/* FILL IN BLANK */
+.fitb-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin-bottom:10px;}
+.fitb-q{font-size:13px;color:var(--text);line-height:1.6;margin-bottom:8px;}
+.fitb-ans{font-family:var(--font-mono);font-size:12px;color:var(--accent2);background:var(--surface2);border:1px solid rgba(34,211,160,0.2);border-radius:7px;padding:8px 12px;display:none;}
+.fitb-ans.show{display:block;}
+.fitb-reveal-btn{font-family:var(--font-mono);font-size:10px;color:var(--text3);background:var(--surface2);border:1px solid var(--border);padding:4px 12px;border-radius:7px;cursor:pointer;transition:all 0.15s;}
+.fitb-reveal-btn:hover{border-color:var(--accent);color:var(--accent);}
+
+/* ANSWER MODAL */
+.ans-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:200;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);}
+.ans-overlay.open{display:flex;}
+.ans-modal{background:var(--surface);border:1px solid var(--border2);border-radius:16px;width:100%;max-width:680px;max-height:88vh;overflow-y:auto;box-shadow:0 24px 60px rgba(0,0,0,0.6);}
+.ans-modal-header{display:flex;align-items:center;gap:12px;padding:18px 20px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--surface);z-index:1;border-radius:16px 16px 0 0;}
+.ans-q-badge{font-family:var(--font-mono);font-size:10px;color:var(--accent);background:rgba(34,211,160,0.1);border:1px solid rgba(34,211,160,0.2);padding:3px 8px;border-radius:6px;flex-shrink:0;}
+.ans-q-text{font-size:12px;color:var(--text2);line-height:1.4;flex:1;}
+.ans-close{width:28px;height:28px;border-radius:7px;border:1px solid var(--border);background:var(--surface2);cursor:pointer;color:var(--text3);font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.15s;}
+.ans-close:hover{color:var(--red);border-color:rgba(248,113,113,0.3);}
+.ans-modal-meta{padding:10px 20px;border-bottom:1px solid var(--border);display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.ans-pill{font-family:var(--font-mono);font-size:10px;padding:3px 10px;border-radius:100px;border:1px solid;}
+.ans-pill.marks{color:var(--yellow);border-color:rgba(251,191,36,0.3);background:rgba(251,191,36,0.07);}
+.ans-pill.source{color:var(--text3);border-color:var(--border);}
+.ans-modal-body{padding:20px;}
+.ans-content h4{font-family:var(--font-head);font-size:15px;font-weight:700;color:var(--accent2);margin-bottom:10px;margin-top:16px;}
+.ans-content h4:first-child{margin-top:0;}
+.ans-content p{font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:10px;}
+.ans-content ul{padding-left:18px;margin-bottom:10px;}
+.ans-content ul li{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:4px;}
+.ans-content .step{background:var(--surface2);border-left:3px solid var(--accent);padding:10px 14px;border-radius:0 8px 8px 0;margin-bottom:10px;font-size:13px;color:var(--text2);line-height:1.65;}
+.ans-content .kp{background:rgba(34,211,160,0.06);border:1px solid rgba(34,211,160,0.15);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--text2);line-height:1.65;margin-bottom:10px;}
+.ans-content .wp{background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.15);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--text2);line-height:1.65;margin-bottom:10px;}
+.ans-content .fml{font-family:var(--font-mono);font-size:12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--accent2);line-height:1.8;white-space:pre-line;margin-bottom:10px;}
+
+/* OVERVIEW */
+.overview-hero{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px 32px;margin-bottom:24px;position:relative;overflow:hidden;}
+.overview-hero::before{content:'';position:absolute;top:-50px;right:-50px;width:200px;height:200px;background:var(--accent);border-radius:50%;opacity:0.03;filter:blur(40px);}
+.overview-tag{font-family:var(--font-mono);font-size:10px;color:var(--accent);background:rgba(34,211,160,0.1);border:1px solid rgba(34,211,160,0.2);padding:3px 10px;border-radius:100px;display:inline-block;margin-bottom:12px;}
+.overview-hero h2{font-family:var(--font-head);font-size:28px;font-weight:800;margin-bottom:8px;}
+.overview-hero p{font-size:14px;color:var(--text2);max-width:600px;line-height:1.65;}
+.stat-cards{display:flex;gap:14px;flex-wrap:wrap;margin-top:18px;}
+.stat-card{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px 18px;text-align:center;}
+.stat-card .sn{font-family:var(--font-head);font-size:26px;font-weight:800;color:var(--accent2);}
+.stat-card .sl{font-size:10px;color:var(--text3);font-family:var(--font-mono);}
+.priority-table{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:24px;}
+.pt-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.pt-title{font-family:var(--font-head);font-size:16px;font-weight:700;}
+.pt-count{font-family:var(--font-mono);font-size:11px;color:var(--text3);}
+.pt-row{display:grid;grid-template-columns:1fr 2fr auto;gap:16px;padding:12px 20px;border-bottom:1px solid var(--border);align-items:center;font-size:13px;}
+.pt-row:last-child{border-bottom:none;}
+.pt-row:hover{background:var(--surface2);}
+.pt-topic{color:var(--text);font-weight:500;}
+.pt-focus{color:var(--text2);}
+.priority-high{color:var(--red);background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.2);font-family:var(--font-mono);font-size:10px;padding:3px 10px;border-radius:100px;}
+.priority-med{color:var(--yellow);background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.2);font-family:var(--font-mono);font-size:10px;padding:3px 10px;border-radius:100px;}
+
+/* PROGRESS */
+.prog-section{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:14px;}
+.prog-ch{display:flex;align-items:center;gap:12px;margin-bottom:10px;font-size:13px;color:var(--text2);}
+.prog-bar-wrap{flex:1;height:5px;background:var(--surface3);border-radius:3px;overflow:hidden;}
+.prog-bar{height:100%;background:var(--accent);border-radius:3px;transition:width 0.4s;}
+.prog-pct{font-family:var(--font-mono);font-size:10px;color:var(--text3);min-width:32px;text-align:right;}
+
+/* MOBILE */
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%);transition:transform 0.25s;width:280px;}
+  .sidebar.open{transform:translateX(0);}
+  .main{margin-left:0;}
+  .content{padding:16px;}
+  .mob-menu-btn{display:flex;}
+  .mob-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:99;}
+  .mob-overlay.show{display:block;}
+  .mcq-options{grid-template-columns:1fr;}
+  .overview-hero{padding:20px;}
+}
+@media(min-width:769px){.mob-menu-btn{display:none;}.mob-overlay{display:none!important;}}
+@media(min-width:769px) and (max-width:1200px){.content{padding:22px 26px;max-width:100%;}}
+@media(min-width:1201px){.content{padding:28px 44px;max-width:1200px;}}
+</style>
+</head>
+<body>
+
+<div id="mob-overlay" class="mob-overlay" onclick="toggleMobileMenu()"></div>
+
+<div class="layout">
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="badge">MEEG 328</div>
+    <h1>Renewable Energy</h1>
+    <p>KU · BE III Year · Sem I</p>
+  </div>
+  <a class="home-link" href="index.html">← Back to Study Hub</a>
+  <div class="sidebar-section-label">Overview</div>
+  <div class="sidebar-item active" onclick="navigate('overview',this)"><div class="dot"></div>Overview & Priority List</div>
+  <div class="sidebar-section-label">Chapters</div>
+  <div class="sidebar-item" onclick="navigate('ch1',this)"><div class="dot"></div>Ch 1 — Energy Overview<span class="ch-num">6Q</span></div>
+  <div class="sidebar-item" onclick="navigate('ch2',this)"><div class="dot"></div>Ch 2 — Biomass Energy<span class="ch-num">8Q</span></div>
+  <div class="sidebar-item" onclick="navigate('ch3',this)"><div class="dot"></div>Ch 3 — Biogas Energy<span class="ch-num">9Q</span></div>
+  <div class="sidebar-item" onclick="navigate('ch4',this)"><div class="dot"></div>Ch 4 — Solar Thermal<span class="ch-num">8Q</span></div>
+  <div class="sidebar-item" onclick="navigate('ch5',this)"><div class="dot"></div>Ch 5 — Solar PV<span class="ch-num">10Q</span></div>
+  <div class="sidebar-item" onclick="navigate('ch6',this)"><div class="dot"></div>Ch 6 — Wind Energy<span class="ch-num">8Q</span></div>
+  <div class="sidebar-item" onclick="navigate('ch7',this)"><div class="dot"></div>Ch 7 — Energy Storage<span class="ch-num">5Q</span></div>
+  <div class="sidebar-item" onclick="navigate('ch8',this)"><div class="dot"></div>Ch 8 — Hydro & Others<span class="ch-num">6Q</span></div>
+  <div class="sidebar-section-label">Practice</div>
+  <div class="sidebar-item" onclick="navigate('mcq',this)"><div class="dot"></div>MCQ Practice</div>
+  <div class="sidebar-item" onclick="navigate('fitb',this)"><div class="dot"></div>Fill in the Blank</div>
+  <div class="sidebar-item" onclick="navigate('flashcards',this)"><div class="dot"></div>Flashcards</div>
+  <div class="sidebar-item" onclick="navigate('formulas',this)"><div class="dot"></div>Formula Sheet</div>
+  <div class="sidebar-section-label">Exam</div>
+  <div class="sidebar-item" onclick="navigate('exam',this)"><div class="dot"></div>Exam Simulator</div>
+  <div class="sidebar-item" onclick="navigate('progress',this)"><div class="dot"></div>My Progress</div>
+  <div class="sidebar-stats">
+    <div class="stat-grid">
+      <div class="stat-box"><div class="num" id="sb-questions">60</div><div class="label">Questions</div></div>
+      <div class="stat-box"><div class="num" id="sb-mcq">40</div><div class="label">MCQs</div></div>
+      <div class="stat-box"><div class="num" id="sb-progress">0%</div><div class="label">Progress</div></div>
+      <div class="stat-box"><div class="num" id="mcq-score-sidebar">0%</div><div class="label">MCQ Score</div></div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="topbar">
+    <div class="breadcrumb">
+      <button class="mob-menu-btn" onclick="toggleMobileMenu()">☰</button>
+      <span id="bc-main">MEEG 328</span>
+      <span style="color:var(--text3)">›</span>
+      <span id="bc-sub">Overview</span>
+    </div>
+    <div class="topbar-right">
+      <span class="year-badge">3 Exam Papers</span>
+    </div>
+  </div>
+  <div class="content">
+    <div id="tab-bar"></div>
+    <div id="content-area"></div>
+  </div>
+</main>
+</div>
+
+<!-- ANSWER MODAL -->
+<div class="ans-overlay" id="ans-overlay" onclick="closeAns(event)">
+  <div class="ans-modal" id="ans-modal">
+    <div class="ans-modal-header">
+      <span class="ans-q-badge" id="ans-qbadge">Q1</span>
+      <span class="ans-q-text" id="ans-qtitle"></span>
+      <button class="ans-close" onclick="closeAnsBtn()">✕</button>
+    </div>
+    <div class="ans-modal-meta" id="ans-meta"></div>
+    <div class="ans-modal-body" id="ans-body"></div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  MEEG 328 — RENEWABLE ENERGY STUDY HUB
+//  All past questions from Dec 2022, Jul/Aug 2024, Jul 2025
+//  + Possible questions from slides
+// ═══════════════════════════════════════════════════════
+
+let currentView = 'overview';
+let mcqAnswers = {};
+const PROGRESS_KEY = 'meeg328_progress_v1';
+
+function loadProgress(){ try{ return JSON.parse(localStorage.getItem(PROGRESS_KEY)||'{}'); }catch(e){ return {}; } }
+function saveProgress(p){ try{ localStorage.setItem(PROGRESS_KEY, JSON.stringify(p)); }catch(e){} }
+function markViewed(chKey, qIdx){
+  const p = loadProgress();
+  if(!p.viewed) p.viewed = {};
+  p.viewed[chKey+'_'+qIdx] = 1;
+  saveProgress(p);
+  updateSidebarStats();
+}
+
+function navigate(view, el){
+  document.querySelectorAll('.sidebar-item').forEach(i=>i.classList.remove('active'));
+  if(el) el.classList.add('active');
+  currentView = view;
+  renderView(view);
+  const area = document.getElementById('content-area');
+  if(area){ area.scrollTop=0; }
+  window.scrollTo(0,0);
+}
+
+function renderView(view){
+  const area = document.getElementById('content-area');
+  const bc = document.getElementById('bc-sub');
+  const tabBar = document.getElementById('tab-bar');
+  tabBar.innerHTML = '';
+  area.style.animation='none';
+  setTimeout(()=>{ area.style.animation='fadeIn 0.2s ease'; },10);
+
+  if(view==='overview'){ bc.textContent='Overview'; area.innerHTML=renderOverview(); return; }
+  if(view==='mcq'){ bc.textContent='MCQ Practice'; area.innerHTML=renderMCQ(); return; }
+  if(view==='fitb'){ bc.textContent='Fill in the Blank'; area.innerHTML=renderFITB(); return; }
+  if(view==='flashcards'){ bc.textContent='Flashcards'; area.innerHTML=renderFlashcards(); return; }
+  if(view==='formulas'){ bc.textContent='Formula Sheet'; area.innerHTML=renderFormulas(); return; }
+  if(view==='exam'){ bc.textContent='Exam Simulator'; area.innerHTML=renderExamSetup(); return; }
+  if(view==='progress'){ bc.textContent='My Progress'; area.innerHTML=renderProgress(); return; }
+
+  const ch = chapters[view];
+  if(!ch){ area.innerHTML='<p style="color:var(--text3)">Coming soon...</p>'; return; }
+  bc.textContent = ch.tag + ' — ' + ch.title;
+
+  tabBar.innerHTML = `
+    <button class="tab-btn active" id="tab-theory" onclick="switchTab('theory',this,'${view}')">📝 Past Questions</button>
+    <button class="tab-btn" id="tab-possible" onclick="switchTab('possible',this,'${view}')">⚡ Possible Questions</button>
+    <button class="tab-btn" id="tab-concepts" onclick="switchTab('concepts',this,'${view}')">💡 Concepts</button>
+  `;
+  renderChapterTab(view, 'theory');
+}
+
+function switchTab(tab, el, view){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  if(el) el.classList.add('active');
+  renderChapterTab(view, tab);
+}
+
+function renderChapterTab(view, tab){
+  const area = document.getElementById('content-area');
+  const ch = chapters[view];
+  let html = `
+    <div class="chapter-hero">
+      <div class="hero-tag">${ch.tag}</div>
+      <h2>${ch.title}</h2>
+      <p>${ch.desc}</p>
+      <div class="hero-pills">${ch.pills.map(p=>`<span class="hero-pill">${p}</span>`).join('')}</div>
+    </div>
+  `;
+
+  if(tab==='theory'){
+    const p = loadProgress();
+    const viewed = p.viewed || {};
+    html += ch.theory.map((q,i)=>{
+      const key = view+'_'+i;
+      const hasAns = answerData[key] !== undefined;
+      const isViewed = viewed[key];
+      const years = q.years||[];
+      const yearTags = years.map(y=>{
+        const cls = y.includes('2022')?'y2022':y.includes('2024')?'y2024':y.includes('2025')?'y2025':'yposs';
+        return `<span class="year-tag ${cls}">${y}</span>`;
+      }).join('');
+      return `<div class="q-card" id="qcard-${key}">
+        <div class="q-header">
+          <span class="q-num">${ch.tag}·Q${i+1}</span>
+          <span class="q-text">${q.q}</span>
+        </div>
+        ${q.figure ? `<div class="q-figure"><div class="fig-placeholder">📷 Figure: ${q.figure}<br><span class="upload-figure-hint">Upload screenshot to display here</span></div></div>` : ''}
+        <div class="q-meta">
+          <span class="marks-pill">[${q.marks} marks]</span>
+          ${yearTags}
+          ${q.or ? `<span class="or-divider">OR</span>` : ''}
+          ${hasAns ? `<button class="view-ans-btn" onclick="showAnswer('${view}',${i})">📖 View Answer</button>` : ''}
+        </div>
+      </div>`;
+    }).join('');
+  }
+  else if(tab==='possible'){
+    html += `<div style="background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.15);border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:12.5px;color:var(--text2);">
+      ⚡ <strong style="color:var(--yellow)">Possible Questions</strong> — predicted from slide content and past question trends. These topics appear in the slides but have not been asked in past papers yet.
+    </div>`;
+    html += (ch.possible||[]).map((q,i)=>{
+      return `<div class="q-card possible">
+        <div class="q-header">
+          <span class="q-num" style="color:var(--yellow);border-color:rgba(251,191,36,0.2);background:rgba(251,191,36,0.08);">PRED·${i+1}</span>
+          <span class="q-text">${q.q}</span>
+        </div>
+        <div class="q-meta">
+          <span class="marks-pill">[${q.marks} marks est.]</span>
+          <span class="possible-badge">⚡ Possible</span>
+          ${q.topic ? `<span class="year-tag yposs">${q.topic}</span>` : ''}
+        </div>
+      </div>`;
+    }).join('');
+  }
+  else if(tab==='concepts'){
+    html += `<div class="concept-grid">${ch.concepts.map(c=>`
+      <div class="concept-card">
+        <div class="concept-label">${c.label}</div>
+        <div class="concept-title">${c.title}</div>
+        <div class="concept-body">${c.body}</div>
+      </div>
+    `).join('')}</div>`;
+  }
+
+  area.innerHTML = html;
+}
+
+function showAnswer(chKey, qIdx){
+  const key = chKey+'_'+qIdx;
+  const ans = answerData[key];
+  const ch = chapters[chKey];
+  const q = ch && ch.theory[qIdx];
+  markViewed(chKey, qIdx);
+
+  const overlay = document.getElementById('ans-overlay');
+  const badge = document.getElementById('ans-qbadge');
+  const title = document.getElementById('ans-qtitle');
+  const meta = document.getElementById('ans-meta');
+  const body = document.getElementById('ans-body');
+
+  badge.textContent = (ch?ch.tag:'Q') + ' · Q' + (qIdx+1);
+  title.textContent = q ? q.q.replace(/<[^>]+>/g,'').substring(0,100)+'...' : '';
+
+  if(ans){
+    meta.innerHTML = `<span class="ans-pill marks">[${ans.marks} marks]</span><span class="ans-pill source">📚 ${ans.source}</span>`;
+    body.innerHTML = `<div class="ans-content">${ans.content}</div>`;
+  } else {
+    meta.innerHTML = `<span class="ans-pill marks">[${q?q.marks:'?'} marks]</span>`;
+    body.innerHTML = `<div style="text-align:center;padding:28px 20px;"><div style="font-size:26px;margin-bottom:10px;">🔧</div><div style="font-family:var(--font-head);font-weight:700;color:var(--text);margin-bottom:6px;">Answer Coming Soon</div><div style="font-size:12px;color:var(--text3);">Being prepared from lecture slides and reference books.</div></div>`;
+  }
+  overlay.classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function closeAnsBtn(){ document.getElementById('ans-overlay').classList.remove('open'); document.body.style.overflow=''; }
+function closeAns(e){ if(e.target===document.getElementById('ans-overlay')) closeAnsBtn(); }
+
+function toggleMobileMenu(){
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('mob-overlay');
+  sidebar.classList.toggle('open');
+  overlay.classList.toggle('show');
+}
+
+function updateSidebarStats(){
+  const p = loadProgress();
+  const viewed = Object.keys(p.viewed||{}).length;
+  const total = Object.values(chapters).reduce((s,c)=>s+(c.theory||[]).length,0);
+  const pct = total>0 ? Math.round(viewed/total*100) : 0;
+  const sbQ = document.getElementById('sb-questions');
+  const sbMcq = document.getElementById('sb-mcq');
+  const sbProg = document.getElementById('sb-progress');
+  if(sbQ) sbQ.textContent = total;
+  if(sbMcq) sbMcq.textContent = mcqData.length;
+  if(sbProg) sbProg.textContent = pct+'%';
+}
+
+// ═══════════════════════════════════════════════════════
+//  RENDER FUNCTIONS
+// ═══════════════════════════════════════════════════════
+function renderOverview(){
+  const priorityRows = [
+    { topic:'PV System Design', focus:'Hydraulic energy, pump sizing, PV power calculation', p:'high' },
+    { topic:'Anaerobic Digestion & Biogas Sizing', focus:'Plant size, water requirement, biogas production, LPG substitution', p:'high' },
+    { topic:'Solar Flat Plate Collector', focus:'Energy balance, efficiency, collector area calculation', p:'high' },
+    { topic:'Wind Power & WRA', focus:'Betz limit, power extraction, wind speed scaling', p:'high' },
+    { topic:'Energy Scenario of Nepal', focus:'Nepal energy mix, RoR hydropower dependence, energy security', p:'high' },
+    { topic:'Gasification System Design', focus:'Feedstock, gasifier choice, syngas processing, block diagram', p:'med' },
+    { topic:'Biodigester Types', focus:'Fixed dome vs floating dome vs bag type', p:'med' },
+    { topic:'PV Cell IV Characteristics', focus:'Isc, Voc, FF, Pmax, temperature effect', p:'med' },
+    { topic:'Energy Storage Systems', focus:'Battery types, PHES, super capacitor', p:'med' },
+    { topic:'COP27 / Climate Policy', focus:'Global agreements, EV barriers in Nepal', p:'low' },
+  ];
+  return `
+    <div class="overview-hero">
+      <div class="overview-tag">MEEG 328 — Study Hub</div>
+      <h2>Priority List &amp; Exam Guide</h2>
+      <p>Compiled from 3 past exam papers (Dec 2022, Jul/Aug 2024, Jul 2025). Topics ranked by frequency and marks weight.</p>
+      <div class="stat-cards">
+        <div class="stat-card"><div class="sn">${Object.values(chapters).reduce((s,c)=>s+(c.theory||[]).length,0)}</div><div class="sl">Past Questions</div></div>
+        <div class="stat-card"><div class="sn">${mcqData.length}</div><div class="sl">MCQs + Fill Blank</div></div>
+        <div class="stat-card"><div class="sn">8</div><div class="sl">Chapters</div></div>
+        <div class="stat-card"><div class="sn">3</div><div class="sl">Exam Papers</div></div>
+      </div>
+    </div>
+    <div class="priority-table">
+      <div class="pt-header"><span class="pt-title">🎯 Master Priority List</span><span class="pt-count">${priorityRows.length} topics</span></div>
+      ${priorityRows.map(r=>`
+        <div class="pt-row">
+          <span class="pt-topic">${r.topic}</span>
+          <span class="pt-focus">${r.focus}</span>
+          <span class="${r.p==='high'?'priority-high':r.p==='med'?'priority-med':'priority-low'}">${r.p==='high'?'● High':r.p==='med'?'● Medium':'● Low'}</span>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function renderMCQ(){
+  const yearOrder = ['Dec 2022','Jul/Aug 2024','Fill-in-Blank 2024'];
+  let html = `<div class="score-bar">
+    <div class="score-box"><div class="sv" id="score-attempted">0/${mcqData.length}</div><div class="sl">Attempted</div></div>
+    <div class="score-box"><div class="sv" id="score-correct">0</div><div class="sl">Correct</div></div>
+    <div class="score-box"><div class="sv" id="score-pct">0%</div><div class="sl">Score</div></div>
+    <button onclick="resetMcq()" style="margin-left:auto;font-family:var(--font-mono);font-size:11px;padding:6px 14px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--text3);cursor:pointer;">Reset</button>
+  </div>
+  <div id="mcq-filters" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;">
+    <button class="tab-btn active" onclick="filterMcq('all',this)">All (${mcqData.length})</button>
+    ${yearOrder.map(y=>`<button class="tab-btn" onclick="filterMcq('${y}',this)">${y}</button>`).join('')}
+  </div>
+  <div id="mcq-list">${getMcqHtml('all')}</div>`;
+  return html;
+}
+
+function getMcqHtml(filter){
+  const filtered = filter==='all' ? mcqData : mcqData.filter(q=>q.year===filter);
+  let html = '';
+  let lastYear = '';
+  filtered.forEach((q,gi)=>{
+    const idx = mcqData.indexOf(q);
+    if(q.year!==lastYear){
+      const cls = q.year.includes('2022')?'y2022':q.year.includes('Fill')?'yposs':'y2024';
+      html += `<div class="mcq-section-header"><span class="year-tag ${cls}">${q.year}</span></div>`;
+      lastYear = q.year;
+    }
+    const answered = mcqAnswers[idx]!==undefined;
+    html += `<div class="mcq-card ${answered?'answered':''}" id="mcq-${idx}">
+      <div class="mcq-num-row">
+        <span class="q-num">Q${gi+1}</span>
+        <span class="year-tag ${q.year.includes('2022')?'y2022':q.year.includes('Fill')?'yposs':'y2024'}">${q.year}</span>
+      </div>
+      <div class="mcq-q-text">${q.q}</div>
+      <div class="mcq-options">
+        ${q.opts.map((o,oi)=>`<div class="mcq-option ${answered?'disabled':''} ${answered&&oi===q.correct?'show-correct':''} ${answered&&mcqAnswers[idx]===oi&&oi!==q.correct?'selected-wrong':''}" onclick="answerMcq(${idx},${oi})">${o}</div>`).join('')}
+      </div>
+      <div class="mcq-explanation ${answered?'show':''}" id="exp-${idx}">
+        ${answered?`<strong>${mcqAnswers[idx]===q.correct?'✅ Correct!':'❌ Incorrect.'}</strong> ${q.explain}`:''}
+      </div>
+    </div>`;
+  });
+  return html;
+}
+
+function filterMcq(filter, el){
+  document.querySelectorAll('#mcq-filters .tab-btn').forEach(b=>b.classList.remove('active'));
+  if(el) el.classList.add('active');
+  document.getElementById('mcq-list').innerHTML = getMcqHtml(filter);
+}
+
+function answerMcq(idx, chosen){
+  if(mcqAnswers[idx]!==undefined) return;
+  mcqAnswers[idx] = chosen;
+  const card = document.getElementById('mcq-'+idx);
+  const exp = document.getElementById('exp-'+idx);
+  if(!card||!exp) return;
+  const opts = card.querySelectorAll('.mcq-option');
+  const isCorrect = chosen===mcqData[idx].correct;
+  opts.forEach((o,oi)=>{
+    o.classList.add('disabled');
+    if(oi===mcqData[idx].correct) o.classList.add('show-correct');
+    if(oi===chosen&&!isCorrect) o.classList.add('selected-wrong');
+  });
+  exp.innerHTML = `<strong>${isCorrect?'✅ Correct!':'❌ Incorrect.'}</strong> ${mcqData[idx].explain}`;
+  exp.classList.add('show');
+  card.classList.add('answered');
+  const total = Object.keys(mcqAnswers).length;
+  const correct = Object.keys(mcqAnswers).filter(k=>mcqAnswers[parseInt(k)]===mcqData[parseInt(k)].correct).length;
+  const pct = Math.round(correct/total*100);
+  const ae = document.getElementById('score-attempted'); if(ae) ae.textContent=total+'/'+mcqData.length;
+  const ce = document.getElementById('score-correct'); if(ce) ce.textContent=correct;
+  const pe = document.getElementById('score-pct'); if(pe){ pe.textContent=pct+'%'; pe.style.color=pct>=70?'var(--green)':pct>=40?'var(--yellow)':'var(--red)'; }
+  const ss = document.getElementById('mcq-score-sidebar'); if(ss) ss.textContent=pct+'%';
+}
+
+function resetMcq(){ mcqAnswers={}; renderView('mcq'); }
+
+function renderFITB(){
+  let html = `<div style="background:rgba(34,211,160,0.06);border:1px solid rgba(34,211,160,0.15);border-radius:10px;padding:12px 16px;margin-bottom:18px;font-size:13px;color:var(--text2);">
+    Fill-in-the-blank questions from past exams. Click <strong>Reveal Answer</strong> to check.
+  </div>`;
+  fitbData.forEach((q,i)=>{
+    html += `<div class="fitb-card">
+      <div class="fitb-q">${i+1}. ${q.q}</div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <button class="fitb-reveal-btn" onclick="revealFitb(${i})">Reveal Answer</button>
+        <span class="year-tag ${q.year.includes('2022')?'y2022':'y2024'}">${q.year}</span>
+      </div>
+      <div class="fitb-ans" id="fitb-ans-${i}">→ ${q.ans}</div>
+    </div>`;
+  });
+  return html;
+}
+
+function revealFitb(i){
+  const el = document.getElementById('fitb-ans-'+i);
+  if(el) el.classList.add('show');
+}
+
+function renderFlashcards(){
+  return `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;">
+    ${flashcards.map((f,i)=>`
+    <div onclick="this.classList.toggle('flipped')" style="height:160px;cursor:pointer;perspective:800px;">
+      <div style="position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform 0.5s;" class="fc-inner-${i}">
+        <div style="position:absolute;inset:0;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px;backface-visibility:hidden;display:flex;flex-direction:column;justify-content:center;">
+          <div style="font-family:var(--font-mono);font-size:9px;color:var(--accent);margin-bottom:8px;text-transform:uppercase;">${f.ch}</div>
+          <div style="font-size:13.5px;color:var(--text);font-weight:500;line-height:1.5;">${f.q}</div>
+          <div style="margin-top:auto;font-size:10px;color:var(--text3);font-family:var(--font-mono);">Click to flip →</div>
+        </div>
+        <div style="position:absolute;inset:0;background:var(--surface2);border:1px solid rgba(34,211,160,0.2);border-radius:12px;padding:18px;backface-visibility:hidden;transform:rotateY(180deg);display:flex;align-items:center;">
+          <div style="font-size:12.5px;color:var(--accent2);line-height:1.6;">${f.a}</div>
+        </div>
+      </div>
+    </div>
+    `).join('')}
+  </div>
+  <style>.fc-inner-${'{i}'.replace('{i}','*')}[class*="fc-inner"]{transform-style:preserve-3d;transition:transform 0.5s;}[onclick].flipped>[class*="fc-inner"]{transform:rotateY(180deg);}</style>`;
+}
+
+function renderFormulas(){
+  return `<div>
+    ${formulaChapters.map(fc=>`
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:16px;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;border-bottom:1px solid var(--border);padding-bottom:12px;">
+        <span style="font-size:20px;">${fc.icon}</span>
+        <span style="font-family:var(--font-head);font-size:16px;font-weight:700;color:${fc.color};">${fc.title}</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;">
+        ${fc.formulas.map(f=>`
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px;">
+          <div style="font-size:12.5px;color:var(--text2);margin-bottom:8px;">${f.name}</div>
+          <div class="fml">${f.eq}</div>
+          ${f.note?`<div style="font-size:11px;color:var(--text3);margin-top:6px;">${f.note}</div>`:''}
+        </div>
+        `).join('')}
+      </div>
+    </div>
+    `).join('')}
+  </div>`;
+}
+
+function renderExamSetup(){
+  return `<div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px;max-width:540px;">
+    <div style="font-family:var(--font-head);font-size:20px;font-weight:800;margin-bottom:6px;">⏱ Exam Simulator</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:20px;">Simulates the KU MEEG 328 exam pattern.</p>
+    <div style="display:grid;gap:10px;">
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px;">
+        <div style="font-family:var(--font-head);font-weight:700;margin-bottom:4px;">Section A — MCQ</div>
+        <div style="font-size:12px;color:var(--text2);">10 questions × 1 mark = 10 marks | 30 min</div>
+      </div>
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px;">
+        <div style="font-family:var(--font-head);font-weight:700;margin-bottom:4px;">Section B — Fill in Blank</div>
+        <div style="font-size:12px;color:var(--text2);">10 questions × 1 mark = 10 marks | 20 min</div>
+      </div>
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px;">
+        <div style="font-family:var(--font-head);font-weight:700;margin-bottom:4px;">Section C — Long Answer</div>
+        <div style="font-size:12px;color:var(--text2);">5 questions × 11 marks = 55 marks | 90 min</div>
+      </div>
+    </div>
+    <div style="margin-top:18px;font-size:12px;color:var(--text3);">Full exam simulator coming soon. Practice with MCQs and Fill-in-Blank sections in the sidebar.</div>
+  </div>`;
+}
+
+function renderProgress(){
+  const p = loadProgress();
+  const viewed = p.viewed || {};
+  let html = `<div style="font-family:var(--font-head);font-size:20px;font-weight:800;margin-bottom:20px;">📊 My Progress</div>`;
+  Object.keys(chapters).forEach(chKey=>{
+    const ch = chapters[chKey];
+    const n = (ch.theory||[]).length;
+    const done = (ch.theory||[]).filter((_,i)=>viewed[chKey+'_'+i]).length;
+    const pct = n>0?Math.round(done/n*100):0;
+    html += `<div class="prog-section">
+      <div class="prog-ch">
+        <span style="min-width:180px;font-size:12.5px;">${ch.tag}</span>
+        <div class="prog-bar-wrap"><div class="prog-bar" style="width:${pct}%"></div></div>
+        <span class="prog-pct">${done}/${n}</span>
+      </div>
+    </div>`;
+  });
+  html += `<button onclick="clearProgress()" style="margin-top:16px;font-family:var(--font-mono);font-size:11px;padding:8px 18px;border-radius:8px;border:1px solid rgba(248,113,113,0.3);background:rgba(248,113,113,0.07);color:var(--red);cursor:pointer;">Clear Progress</button>`;
+  return html;
+}
+
+function clearProgress(){ saveProgress({}); renderView('progress'); updateSidebarStats(); }
+
+// Navigate wrapper for mobile
+const _origNav = navigate;
+window.navigate = function(view, el){
+  _origNav(view, el);
+  const mcqEl = document.getElementById('sb-mcq'); if(mcqEl) mcqEl.textContent=mcqData.length;
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('mob-overlay');
+  if(sidebar&&sidebar.classList.contains('open')){ sidebar.classList.remove('open'); if(overlay) overlay.classList.remove('show'); }
+};
+
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeAnsBtn(); });
+</script>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  DATA — CHAPTERS, QUESTIONS, ANSWERS, MCQs, FITB
+// ═══════════════════════════════════════════════════════
+
+const chapters = {
+  ch1: {
+    title: "Energy Overview — National & Global Context",
+    tag: "Chapter 1",
+    desc: "Global energy scenario, Nepal energy mix, renewable energy policy, energy security, climate change, NDC, SDG targets.",
+    pills: ["Nepal Energy Mix","Global Scenario","Energy Policy","Climate Change","NDC","Energy Security"],
+    theory: [
+      { q: "Discuss the current energy consumption scenario of Nepal. In Nepal, more than 90% of electricity is generated from Run of River (RoR) hydropower — what do you think, is heavily relying on RoR for electricity generation the right way of energy planning and energy security? Do you think we need diverse energy mix in our energy supplies, why?", marks:"5+6", years:["Jul/Aug 2024"] },
+      { q: "Discuss the major decisions and points of agreement made at the recent COP27 held in Egypt in relation to renewable energy and climate change; provide your reflection on the challenges for these agreements. Elaborate on any 3 possible major barriers in the widespread use of Electric Vehicle for Nepal.", marks:"2+3", years:["Dec 2022"] },
+      { q: "How would you evaluate the current global energy scenario in relation to climate change challenges? Discuss Nepal's current energy supply and consumption patterns from the perspective of energy security.", marks:"5+6", years:["Jul 2025"] },
+      { q: "Write a short note on the Hydrograph and Flow Duration Curve.", marks:"3", years:["Jul/Aug 2024"] },
+      { q: "⚡ What is the energy trilemma? How does Nepal's energy situation relate to the three dimensions of energy security, energy equity, and environmental sustainability?", marks:"4", years:[] },
+      { q: "⚡ Explain the concept of Sankey diagram. Describe Nepal's energy flow from primary sources to end use with approximate percentages.", marks:"3", years:[] },
+    ],
+    possible: [
+      { q: "Explain the concept of Energy Balance. Write the governing equation and explain each term. Why is it important for national energy planning?", marks:"3", topic:"Energy Policy" },
+      { q: "What is the 15th Five-Year Plan's target for Nepal's renewable energy development? Discuss the key targets and current status.", marks:"3", topic:"Nepal Policy" },
+      { q: "Compare Nepal's per capita energy consumption with regional SAARC neighbors. What are the main reasons for the difference?", marks:"3", topic:"Global Scenario" },
+    ],
+    concepts: [
+      { label:"Nepal Energy Mix", title:"Nepal's Energy Sources (2023)", body:"Hydropower: >90% of electricity\nFirewood: ~68% of total energy\nPetroleum: ~15%\nBiogas: ~1.2%\nSolar/Wind: ~3%\nTotal installed hydro capacity: ~2500 MW\nPer capita electricity: ~260 kWh/year (low)" },
+      { label:"Energy Security", title:"3 Pillars of Energy Trilemma", body:"1. Energy Security: reliable supply, no blackouts\n2. Energy Equity: affordable access for all\n3. Environmental Sustainability: low carbon\nNepal's problem: over-reliance on RoR → seasonal blackouts in dry season" },
+      { label:"Climate Policy", title:"COP & NDC Key Points", body:"COP27 (Sharm el-Sheikh 2022): Loss & damage fund established\nNepal's NDC: 15% renewable energy by 2030\nSDG 7: Affordable and clean energy\nNepal target: 15,000 MW hydro by 2030" },
+    ]
+  },
+
+  ch2: {
+    title: "Biomass Energy",
+    tag: "Chapter 2",
+    desc: "Biomass types, thermal conversion (pyrolysis, gasification, combustion), improved cookstoves, gasifier design, HHV/LHV, biofuels.",
+    pills: ["Gasification","Pyrolysis","Combustion","Improved Cookstoves","HHV/LHV","Syngas","Gasifier Design"],
+    theory: [
+      { q: "Design an appropriate superstructure (with block diagrams) including the raw material pre-processing, gasification unit (gasifier choice), syngas cooling, syngas cleaning, syngas usage and possible oxidation agent preparation for the given combinations:\n• Charcoal based Feedstock\n• No load fluctuations expected\n• Fuel characteristic is uniform but has high chance of fire hazard due to high energy value\n• The byproduct before final output needs to be solid particle-less and Sulphur-free\n• Final output is ~150 kWe (Electricity or shaft power)\nMention the assumptions and explain your selection with proper reason(s).", marks:"3+2", years:["Dec 2022"] },
+      { q: "List the principal biomass conversion technologies and discuss about pyrolysis process and its practical applications.", marks:"1+5", years:["Jul 2025"] },
+      { q: "Write a short note on Fluidized bed gasifier.", marks:"4", years:["Jul/Aug 2024"] },
+      { q: "Write a short note on Improved Cookstove.", marks:"4", years:["Jul/Aug 2024"] },
+      { q: "⚡ Explain the difference between HHV (Higher Heating Value) and LHV (Lower Heating Value) of a biomass fuel. For RDF pellet with HHV=1000 kJ/kg, moisture content=50%, hydrogen content=10%, and enthalpy of vaporization=500 kJ/kg, calculate the LHV.", marks:"3", years:["Dec 2022 MCQ"] },
+      { q: "⚡ Distinguish between updraft and downdraft gasifiers in terms of gas quality, tar content and suitable applications.", marks:"3", years:[] },
+      { q: "⚡ What are the main products of pyrolysis and how do the three operating modes (slow, fast, flash) differ in terms of product distribution?", marks:"3", years:[] },
+      { q: "⚡ Describe the Water Boiling Test (WBT) for improved cookstove testing. What parameters does it measure?", marks:"3", years:[] },
+    ],
+    possible: [
+      { q: "A biomass power plant uses rice husk with HHV=15 MJ/kg. If the plant generates 500 kW electrical power with an overall efficiency of 25%, calculate the biomass consumption rate in kg/hour.", marks:"4", topic:"Biomass Numericals" },
+      { q: "Explain biomass torrefaction. How does it improve the properties of biomass for energy use?", marks:"3", topic:"Thermal Conversion" },
+      { q: "What is the reduction level of a compound? Explain with the example of Methyl Acetate (C₃H₆O₂).", marks:"2", topic:"Biofuels" },
+    ],
+    concepts: [
+      { label:"Conversion Routes", title:"Biomass Conversion Technologies", body:"Thermochemical:\n• Combustion → heat/power (direct)\n• Gasification → syngas (limited O₂)\n• Pyrolysis → bio-oil, char, gas (no O₂)\n• Torrefaction → solid densification\nBiochemical:\n• Anaerobic digestion → biogas\n• Fermentation → ethanol\n• Transesterification → biodiesel" },
+      { label:"Gasifiers", title:"Gasifier Types Comparison", body:"Updraft: gas exits top, feedstock from top, air from bottom. High tar (~50g/Nm³), high efficiency\nDowndraft: air & gas both exit bottom. Low tar (<1g/Nm³), best for IC engines\nFluidized bed: sand bed fluidized by air. High throughput, uniform temperature\nRule: Charcoal+electricity → Downdraft" },
+      { label:"HHV vs LHV", title:"Calorific Values", body:"HHV (Gross CV): includes heat of condensation of water vapor\nLHV (Net CV) = HHV − 2.442 × (9H + M)\nH = hydrogen fraction, M = moisture fraction\n2.442 = latent heat correction (MJ/kg)\nFor engines: always use LHV" },
+    ]
+  },
+
+  ch3: {
+    title: "Biogas Energy",
+    tag: "Chapter 3",
+    desc: "Anaerobic digestion, biochemical process, biogas composition, digester types (fixed dome, floating dome, bag), sizing calculations, Nepal context.",
+    pills: ["Anaerobic Digestion","Digester Types","Biogas Sizing","HRT","Nepal Biogas","LPG Substitution"],
+    theory: [
+      { q: "What is anaerobic digestion process? Briefly describe biochemical process of anaerobic digestion. A livestock farm wants to manage cattle dung of 500 kg daily (dung contains 20% TS and 80% VS) in his farm located in Janakpur, Nepal. You are supposed to provide the required plant size, daily water requirement, daily biogas production and equivalent amount of LPG substitution from the available waste.", marks:"1+4+6", years:["Jul/Aug 2024"] },
+      { q: "What is anaerobic digestion? Discuss the various types of biodigesters along with their respective advantages and disadvantages. Additionally, considering that more than two dozen large-scale commercial biogas plants have already been installed in Nepal, could you discuss what key challenges are these plants facing, and what opportunities exist for improving their performance?", marks:"1+6+4", years:["Jul 2025"] },
+      { q: "Provide any 2 technical differences between Fixed Dome, Floating Dome, and Bag Type Biodigester.", marks:"3", years:["Dec 2022"] },
+      { q: "To manage 50 kg of cattle manure considering 50 days of hydraulic retention time and 30 L biogas production per kg cattle manure, the required size of biogas plant required is ___?", marks:"1", years:["Jul/Aug 2024 FITB"] },
+      { q: "⚡ A household generates 30 kg/day of cattle dung. Design a family biogas plant: calculate plant volume, daily biogas production, and equivalent LPG saved. Assume HRT=40 days, dung:water=1:1.", marks:"6", years:[] },
+      { q: "⚡ Explain the four stages of anaerobic digestion (hydrolysis, acidogenesis, acetogenesis, methanogenesis) and the role of each stage in biogas production.", marks:"4", years:[] },
+      { q: "⚡ Compare biogas with LPG in terms of calorific value, composition, and suitability as a cooking fuel for Nepali rural households.", marks:"3", years:[] },
+      { q: "⚡ What is the optimum pH for anaerobic digestion? Why does pH control matter and what happens if pH drops below 6?", marks:"2", years:[] },
+      { q: "⚡ Describe the working principle of a fixed dome biogas plant with a labeled diagram. Why is it most commonly used in Nepal?", marks:"4", years:[] },
+    ],
+    possible: [
+      { q: "A biogas plant serves a family of 5 using 40 kg cattle dung/day. If average biogas consumption is 0.4 m³/person/day for cooking, is the plant sufficient? Calculate the shortfall or surplus.", marks:"4", topic:"Biogas Sizing" },
+      { q: "What are the major constraints to large-scale biogas development in Nepal's hilly and mountainous regions?", marks:"3", topic:"Nepal Biogas" },
+    ],
+    concepts: [
+      { label:"Digestion Stages", title:"4 Stages of Anaerobic Digestion", body:"1. Hydrolysis: complex organics → simple monomers\n2. Acidogenesis: monomers → VFAs + CO₂ + H₂\n3. Acetogenesis: VFAs → acetic acid + H₂\n4. Methanogenesis: acetate + H₂ → CH₄ + CO₂\nOptimum pH: 6.8–7.2\nOptimum temp: 35°C (mesophilic)" },
+      { label:"Biogas Sizing", title:"Biogas Plant Sizing Formulas", body:"Plant volume V = W × HRT / (1+dilution ratio)\nW = daily dung input (kg), HRT = hydraulic retention time (days)\nWater required = W × dilution ratio (usually 1:1)\nBiogas production = W × biogas yield (30L/kg cattle dung typical)\nLPG equivalent: 1 m³ biogas ≈ 0.45 kg LPG\n(Biogas CV ≈ 22 MJ/m³, LPG CV ≈ 47 MJ/kg)" },
+      { label:"Digester Types", title:"Fixed vs Floating vs Bag", body:"Fixed Dome: concrete, constant volume, variable pressure. Low cost, long life, underground. Most common in Nepal.\nFloating Dome: steel drum floats on slurry, constant pressure, variable volume. Higher cost, maintenance issue.\nBag Type: plastic bag, portable, cheapest. Short life, not suitable for Nepal climate.\nFor Nepal rural: Fixed Dome preferred" },
+    ]
+  },
+
+  ch4: {
+    title: "Solar Thermal Energy",
+    tag: "Chapter 4",
+    desc: "Solar radiation basics, flat plate collector, thermosyphon system, collector efficiency, sizing, hot water system design, collector area calculation.",
+    pills: ["Flat Plate Collector","Thermosyphon","Collector Efficiency","Solar Geometry","Hot Water System","Collector Area"],
+    theory: [
+      { q: "Discuss briefly about solar flat plate collector working principle and energy balance in the collector. An investor requests you to estimate the inter-row spacing and the total area requirement for the installation of 5 MW grid connected solar PV plant somewhere at latitude of 27° North hemisphere. He wanted to install a solar PV module of 600 Wp (length=2.2m and breadth=1.3m), two rows with 30 modules in each row. Use sun path diagram for any other relevant data.", marks:"6+5", years:["Jul 2025"] },
+      { q: "The supplied cold-water temperature in a solar collector is 10°C and the hot water temperature at the storage is 55°C. The average solar radiation of the site is 4 kWh/m²/day. Estimate the collector area requirement for the hot water demand of 1200 L per day for a typical commercial building demand when system efficiency of the collector is 80% and the collector efficiency is 60%.", marks:"5", years:["Jul/Aug 2024"] },
+      { q: "Describe thermosyphon technology in water heater with electrically analogous circuit diagram for the heat transfer.", marks:"3", years:["Dec 2022"] },
+      { q: "Elaborate on the significance of ANY THREE basic parameters in wind resource assessment with the standard monitoring heights and their importance.\nOR\nElaborate on any 3 wind power controlling and shading mechanisms in case of drastic wind conditions.", marks:"3", years:["Dec 2022"] },
+      { q: "⚡ Define the efficiency of a flat plate solar collector. Derive the Hottel-Whillier-Bliss equation: η = FR[τα − UL(Ti−Ta)/G]. Explain each term.", marks:"4", years:[] },
+      { q: "⚡ What is solar time? How does it differ from standard time? What is the equation of time?", marks:"2", years:[] },
+      { q: "⚡ Explain the concept of solar declination, hour angle, and zenith angle. How are they used to calculate beam radiation on a tilted surface?", marks:"4", years:[] },
+      { q: "⚡ Compare flat plate collectors with evacuated tube collectors in terms of efficiency, cost, operating temperature range, and suitable applications.", marks:"3", years:[] },
+    ],
+    possible: [
+      { q: "A solar water heater is installed at Kathmandu (latitude 27.7°N). The collector area is 3 m². Average daily insolation is 5 kWh/m²/day. If the collector efficiency is 55%, calculate the daily useful heat gain and the water temperature rise for 200 L storage.", marks:"5", topic:"Solar Thermal Design" },
+      { q: "What is a solar pyranometer? How is it different from a pyrheliometer? Explain with diagrams.", marks:"3", topic:"Solar Measurement" },
+      { q: "Explain passive solar space heating. What are the key design principles for buildings in Nepal's climate?", marks:"3", topic:"Solar Buildings" },
+    ],
+    concepts: [
+      { label:"Collector Efficiency", title:"Flat Plate Collector — Key Equations", body:"Useful heat gain: Qu = m_dot × Cp × (To − Ti)\nIncident solar: Qsolar = G × Ac\nEfficiency: η = Qu/Qsolar\nHWB equation: η = FR × [τα − UL × (Ti−Ta)/G]\nFR = collector heat removal factor\nUL = overall heat loss coefficient\nτα = transmittance-absorptance product" },
+      { label:"Collector Sizing", title:"Hot Water System Sizing Steps", body:"1. Daily heat demand Q = m_dot × Cp × ΔT\n   (m_dot in kg/day, Cp=4.18 kJ/kg·K)\n2. Solar heat available per m²/day = G × η_coll\n3. Collector area = Q / (G × η_system × η_coll)\n4. Include system efficiency (piping losses, storage)" },
+      { label:"Thermosyphon", title:"Thermosyphon Solar Heater", body:"Operates on natural convection — NO pump needed\nCold water (denser) sinks, hot water (lighter) rises\nStorage tank MUST be above collector\nElectrical analogy: ΔT = Q × R_thermal\nR_glass + R_absorber + R_fluid + R_loss\nAdvantage: no electricity, simple, reliable" },
+    ]
+  },
+
+  ch5: {
+    title: "Solar Photovoltaic (PV)",
+    tag: "Chapter 5",
+    desc: "PV cell principles, IV characteristics, cell generations, system components, grid-tied vs off-grid, PV system design, pump sizing.",
+    pills: ["IV Characteristics","PV System Design","Pump Sizing","Battery Bank","Grid-tied","Off-grid","Cell Generations"],
+    theory: [
+      { q: "Discuss briefly how electricity is generated from solar photovoltaic (PV). Describe an ideal IV characteristics of solar cell and show the effect of high temperature on it. Calculate hydraulic energy, solar PV power and pump size for a water supply system in a village with an average insolation of 4.6 kWh/m²/day for the following requirements: Population 2500, average water consumption 60 liters/day/person and total dynamic head 220.5 m. Assume pump efficiency is 60%, load mismatching factor 0.8, and derating factor 0.9.", marks:"2+3+6", years:["Jul/Aug 2024"] },
+      { q: "A breakfast restaurant is planned for high-end tourists at Namche Bazaar. The owner wishes to create a unique experience for the guests integrating the idea of net-zero restaurant with only renewable energy as the sole electricity supply source. Design a full load energy system (Stand Alone System). Use the attached tables and conditions given to design and calculate the system:\na. Calculate the average daily energy load and maximum peak power load for the end of fifth year.\nb. Calculate the battery bank capacity needed in voltage and ampere hours for full load condition and suggest the appropriate configuration with illustrative diagram (series and parallel).\nc. Calculate the inverter size.\nd. Design and sketch PV system with suggested configuration mentioning the number and arrangement of PV modules to compliment the battery bank.", marks:"8+2+2+2+5", years:["Dec 2022"] },
+      { q: "Discuss briefly about solar flat plate collector working principle. An investor wants 5 MW grid-connected PV plant at 27°N. Install 600 Wp modules (2.2m×1.3m), 2 rows of 30 modules each. Estimate inter-row spacing and total area. Use sun path diagram.", marks:"6+5", years:["Jul 2025"] },
+      { q: "Discuss ideal IV characteristics of solar cells and the effect of temperature on them.", marks:"3", years:["Jul 2025"] },
+      { q: "⚡ A PV system consists of 10 modules each rated 300 Wp at STC. System is in Pokhara (insolation=5.2 kWh/m²/day). Calculate: (a) daily energy output, (b) monthly energy, (c) annual capacity factor.", marks:"4", years:[] },
+      { q: "⚡ Explain the three generations of solar PV technology. What are the efficiency ranges and key materials for each generation?", marks:"3", years:[] },
+      { q: "⚡ What is the fill factor of a solar cell? How is it calculated? What does a low fill factor indicate about cell quality?", marks:"2", years:[] },
+      { q: "⚡ A battery bank for a standalone PV system must store 3 days of autonomy for a 2 kWh/day load. If battery voltage is 12V and depth of discharge is 80%, calculate required ampere-hours.", marks:"3", years:[] },
+      { q: "⚡ What is the effect of shading on a PV array? How do bypass diodes help mitigate this effect?", marks:"2", years:[] },
+      { q: "⚡ Explain what Maximum Power Point Tracking (MPPT) is and why it is important in PV systems.", marks:"2", years:[] },
+    ],
+    possible: [
+      { q: "Compare on-grid (grid-tied) and off-grid (standalone) PV systems in terms of components, cost, reliability, and suitability for Nepal.", marks:"4", topic:"PV Systems" },
+      { q: "What is net metering? How does it benefit solar PV owners in grid-connected systems?", marks:"2", topic:"Grid-tied PV" },
+      { q: "Calculate the inter-row spacing for a solar PV installation at latitude 27°N to avoid shading on the winter solstice. Module height is 1.5 m.", marks:"4", topic:"PV Installation" },
+    ],
+    concepts: [
+      { label:"IV Characteristics", title:"Solar Cell Parameters", body:"Isc: short circuit current (max I, V=0)\nVoc: open circuit voltage (max V, I=0)\nPmax = Imp × Vmp (maximum power point)\nFill Factor FF = Pmax/(Isc × Voc)\nEfficiency η = Pmax/(G × Ac)\nTemperature effect: Voc ↓ as T ↑, Isc slightly ↑\nNet effect: efficiency ↓ ~0.4-0.5%/°C for Si" },
+      { label:"PV System Sizing", title:"Standalone PV System Design Steps", body:"1. Daily load E (Wh/day)\n2. Daily solar energy Esol = G × PR (G=insolation)\n3. Array size = E/Esol\n4. Battery Ah = E×days_autonomy/(V_sys×DOD×η_bat)\n5. Inverter: size = peak load × 1.25\n6. Charge controller: Isc × 1.25 × strings" },
+      { label:"PV Pump Sizing", title:"PV Water Pump Sizing", body:"1. Daily volume V = pop × per_capita\n2. Hydraulic energy Eh = ρgHV\n3. Pump input power P_pump = Eh/(η_pump × solar_hours)\n4. PV power = P_pump/(LMF × DF)\n   LMF=load mismatching, DF=derating\n5. Number of modules = P_PV/P_module" },
+    ]
+  },
+
+  ch6: {
+    title: "Wind Energy",
+    tag: "Chapter 6",
+    desc: "Wind resource assessment, Betz limit, turbine types (HAWT/VAWT), wind speed scaling, power extraction, wind farm design, WRA parameters.",
+    pills: ["Betz Limit","Wind Power","HAWT vs VAWT","Wind Speed Scaling","WRA","Wind Farm","Power Curve"],
+    theory: [
+      { q: "Briefly discuss about the concept of power extraction from wind. Do you think wind resource assessment (WRA) is pivotal for the installation of wind turbine, why?", marks:"3+3", years:["Jul/Aug 2024"] },
+      { q: "Discuss briefly about the concept of power extraction from wind. An anemometer is mounted at a height of 10m above a surface with crops, hedges and shrubs shows a wind speed of 5m/s. Estimate the wind speed and the specific power in the wind at a height of 100m. Assume 15°C, 1 atm and friction coefficient (α)=0.2.", marks:"4+4", years:["Jul 2025"] },
+      { q: "Elaborate on the significance of ANY THREE basic parameters in wind resource assessment with the standard monitoring heights and their importance.", marks:"3", years:["Dec 2022"] },
+      { q: "The wind speed at site A for a wind farm is 10% higher than at site B. What would be the expected increase in wind power extraction at site A compared to site B?", marks:"1", years:["Jul/Aug 2024 MCQ"] },
+      { q: "⚡ Which of the following is NOT true for HAWTs compared to VAWTs? a) Higher efficiency b) Lesser aerodynamic losses c) Lower cost-to-power ratio d) Absence of active yaw drive", marks:"1", years:["Dec 2022 MCQ"] },
+      { q: "⚡ A wind turbine has a rotor diameter of 80m and operates at a site with average wind speed of 8 m/s. Calculate: (a) swept area, (b) theoretical maximum power using Betz limit (air density=1.225 kg/m³).", marks:"4", years:[] },
+      { q: "⚡ Explain the concept of capacity factor for wind turbines. What is a typical capacity factor for onshore wind in Nepal, and why is it lower than the theoretical maximum?", marks:"3", years:[] },
+      { q: "⚡ Describe the main components of a horizontal axis wind turbine (HAWT) and the function of each component.", marks:"4", years:[] },
+    ],
+    possible: [
+      { q: "What are the key criteria for site selection of a wind farm? Discuss with reference to Nepal's wind resource potential.", marks:"3", topic:"Wind Farm Design" },
+      { q: "Explain the Rayleigh distribution for wind speed frequency. Why is it preferred for wind resource characterization?", marks:"3", topic:"Wind Statistics" },
+      { q: "A wind farm has 10 turbines each rated at 2 MW with a capacity factor of 0.28. Calculate the annual energy production.", marks:"3", topic:"Wind Numericals" },
+    ],
+    concepts: [
+      { label:"Betz Law", title:"Wind Power Extraction", body:"Power in wind: P = ½ρAv³\nBetz limit: max extractable = 16/27 × P = 59.3%\nActual turbines: 40-50% of wind power\nPower coefficient Cp = P_turbine/P_wind\nKey: Power ∝ v³ → 10% more wind speed = 33% more power (1.1³=1.33)" },
+      { label:"Wind Speed Scaling", title:"Log Law & Power Law", body:"Power law: v₂/v₁ = (h₂/h₁)^α\nα = friction coefficient (terrain dependent)\nOpen water: α≈0.10\nFlat open land: α≈0.14\nCrops/hedges: α≈0.20\nForests/buildings: α≈0.30\nLog law: v = (v*/κ) × ln(h/z₀)" },
+      { label:"WRA Parameters", title:"3 Key WRA Parameters", body:"1. Wind speed: measured at 10m & 50m, mean annual\n2. Wind direction: rose diagram, prevailing direction\n3. Turbulence intensity: σ_v/v_mean (affects fatigue)\nStandard heights: 10m, 50m, 80m, 100m\nMinimum measurement period: 1 year" },
+    ]
+  },
+
+  ch7: {
+    title: "Energy Storage",
+    tag: "Chapter 7",
+    desc: "Battery types, pumped hydro storage (PHES), super capacitors, comparison of storage technologies, energy storage for Nepal.",
+    pills: ["Batteries","PHES","Super Capacitor","Storage Comparison","Grid Storage","Nepal Storage"],
+    theory: [
+      { q: "List the principal biomass conversion technologies and discuss pumped hydro energy storage (PHES) — what it is, how it works, and its role in Nepal's energy system.", marks:"1+5+5", years:["Jul 2025"] },
+      { q: "Which of these are not considered the major technical issues with using Super Capacitor as energy storage? a) Low energy density b) High self-discharge c) Cells have low voltages d) Poor energy efficiency (<60%)", marks:"0.5", years:["Dec 2022 MCQ"] },
+      { q: "⚡ Compare lead-acid batteries, lithium-ion batteries, and flow batteries in terms of energy density, cycle life, cost, and suitable applications for renewable energy storage.", marks:"4", years:[] },
+      { q: "⚡ What is the general energy rating range of SLI batteries used in cars, trucks, and traction vehicles? Why are they NOT suitable for renewable energy storage?", marks:"2", years:[] },
+      { q: "⚡ A pumped hydro facility has a reservoir of 1 million m³ and a head of 200m. Calculate the stored energy in MWh. Assume overall efficiency=85%.", marks:"3", years:[] },
+    ],
+    possible: [
+      { q: "Explain flywheel energy storage. What are its advantages and limitations compared to batteries?", marks:"3", topic:"Storage Technologies" },
+      { q: "What is the role of energy storage in grid stability for a country like Nepal with high seasonal variation in hydropower?", marks:"3", topic:"Grid Storage" },
+    ],
+    concepts: [
+      { label:"Storage Technologies", title:"Energy Storage Comparison", body:"Pumped Hydro: highest capacity, long life, proven. Requires terrain.\nLi-ion: high energy density, declining cost. Best for grid/EV.\nLead-acid: cheap, mature. Low cycle life, heavy.\nFlow battery: scalable, long cycle life. Expensive.\nSuper Capacitor: high power density, fast charge/discharge. Very low energy density.\nFlywheel: high power, mechanical, short duration." },
+      { label:"PHES", title:"Pumped Hydro Energy Storage", body:"Energy stored: E = ρgVHη\nρ=1000 kg/m³, V=volume (m³), H=head (m), η=efficiency\nEfficiency: 70-85% round trip\nNepal relevance: seasonal storage to manage RoR variability\nKali Gandaki Reservoir: potential large PHES site" },
+    ]
+  },
+
+  ch8: {
+    title: "Hydropower, Geothermal & Ocean Energy",
+    tag: "Chapter 8",
+    desc: "Microhydro power, run-of-river hydropower, geothermal energy types, tidal and ocean thermal energy, OTEC.",
+    pills: ["Microhydro","Run-of-River","Geothermal","Tidal Energy","OTEC","Flow Duration Curve"],
+    theory: [
+      { q: "Flow Duration Curve (FDC) is useful for the design and sizing of: a) Solar dryer b) Downdraft gasifier c) Solar PV d) Microhydro power plant", marks:"1", years:["Jul/Aug 2024 MCQ"] },
+      { q: "The minimum value of ΔT for Ocean Thermal Energy Conversion (OTEC) to be effective is: a)<10°C b)>10°C c)>100°C d) Exactly 0°C", marks:"0.5", years:["Dec 2022 MCQ"] },
+      { q: "Provide any 2 technical differences between Flash Steam, Dry Steam and Binary cycle power plant in Geothermal Energy Harnessing.", marks:"3", years:["Dec 2022"] },
+      { q: "Geothermal energy generated by radioactive decays are not majorly produced from the decay of long-lived radioactive isotopes of: a) Potassium b) Plutonium c) Thorium d) Uranium", marks:"0.5", years:["Dec 2022 MCQ"] },
+      { q: "Power density of H₂O with 5m/s velocity in a tidal energy power is about: a) 125 kW/m² b) 62.5 kW/m² c) 25 kW/m² d) 12.5 kW/m²", marks:"0.5", years:["Dec 2022 MCQ"] },
+      { q: "⚡ Explain the working principle of a run-of-river (RoR) hydropower plant. What are the advantages and limitations of RoR for Nepal's energy security?", marks:"4", years:[] },
+    ],
+    possible: [
+      { q: "A microhydro plant is to be designed for a stream with a flow rate of 50 l/s and a net head of 30 m. Calculate the power output assuming an overall efficiency of 70%.", marks:"3", topic:"Microhydro Design" },
+      { q: "Describe the concept of Ocean Thermal Energy Conversion (OTEC). What minimum temperature difference is required and what are the main barriers to commercial development?", marks:"3", topic:"OTEC" },
+    ],
+    concepts: [
+      { label:"Hydropower", title:"Power Formula & RoR Basics", body:"P = ρgQHη\nQ=flow (m³/s), H=head (m), η=efficiency\nRoR: uses river flow directly, no large reservoir\nAdvantages: low environmental impact, quick build\nDisadvantages: seasonal variation, no storage\nFDC: shows % of time flow exceeds a given value" },
+      { label:"Geothermal", title:"Geothermal Power Plant Types", body:"Dry Steam: steam directly to turbine (Geysers, USA)\nFlash Steam: hot water flashed to steam in low-pressure tank\nBinary Cycle: geothermal fluid heats secondary fluid (isobutane)\nBinary cycle: lowest temp requirement (~100°C), most common new\nRadioactive isotopes: K-40, Th-232, U-235, U-238" },
+    ]
+  }
+};
+
+// ═══════════════════════════════════════════════════════
+//  MCQ DATA — All MCQs from Dec 2022 and Jul/Aug 2024
+// ═══════════════════════════════════════════════════════
+const mcqData = [
+  // ─── Dec 2022 Section A ───
+  { q:"Which of these tests are NOT part of the standard Water Boiling Test in Standard Stove Test Protocol?", opts:["Cold Start","Hot Start","Controlled Cooking","Simmering"], correct:3, explain:"The WBT has three phases: Cold Start, Hot Start, and Simmering. 'Controlled Cooking' is not part of the standard WBT protocol.", year:"Dec 2022" },
+  { q:"The efficiency vs. ratio of (internal−ambient temp) to solar radiation for typical Solar Water Heaters generally follows the ___ form with ___ gradient.", opts:["Slope-intercept, negative","Slope-intercept, positive","Double-intercept, negative","Double-intercept, negative"], correct:0, explain:"The efficiency vs. (Ti−Ta)/G plot follows y=mx+c (slope-intercept form) with a NEGATIVE slope because as inlet temperature rises above ambient, more heat is lost and efficiency drops.", year:"Dec 2022" },
+  { q:"___ type bio-digester does NOT have the provision for overflow tank to accommodate possibilities of slurry expansion and overflow during gas production.", opts:["Fixed Dome","Floating Dome","Bag","All three"], correct:0, explain:"Fixed Dome biodigesters lack an overflow tank. The dome itself is rigid, so pressure builds up. Floating Dome has a floating drum that rises to accommodate volume. Bag type is flexible.", year:"Dec 2022" },
+  { q:"Geothermal energy generated by radioactive decays are not majorly produced from the decay of long-lived radioactive isotopes of:", opts:["Potassium","Plutonium","Thorium","Uranium"], correct:1, explain:"The main radioactive isotopes contributing to geothermal heat are K-40, Th-232, U-235, and U-238. Plutonium is not naturally abundant enough to be a major contributor.", year:"Dec 2022" },
+  { q:"Power density of H₂O with 5m/s velocity in a tidal energy power is about:", opts:["125 kW/m²","62.5 kW/m²","25 kW/m²","12.5 kW/m²"], correct:1, explain:"P/A = ½ρv³ = 0.5×1025×5³ = 0.5×1025×125 = 64,062 W/m² ≈ 62.5 kW/m². Water is ~800× denser than air so tidal turbines are very compact.", year:"Dec 2022" },
+  { q:"Which of this is NOT true for HAWTs compared to VAWTs?", opts:["Higher efficiency","Lesser aerodynamic losses","Lower cost-to-power ratio","Absence of active yaw drive"], correct:3, explain:"HAWTs require active yaw drive to face the wind — this is a DISADVANTAGE. VAWTs don't need yaw systems. HAWTs have higher efficiency, lower aerodynamic losses, and better cost-to-power ratio.", year:"Dec 2022" },
+  { q:"A near shore wind turbine site falls within:", opts:["In land, 1 km from shore","In land, 3 km from shore","On water, within 3 km from land","On water, within 5 km from land"], correct:2, explain:"Near-shore wind is defined as on water within 3 km from land. This offers advantages: stronger and more consistent winds than onshore, easier installation than far offshore.", year:"Dec 2022" },
+  { q:"Which of these are NOT considered the major technical issues with using Super Capacitor as energy storage?", opts:["Low energy density","High self-discharge","Cells have low voltages","Poor energy efficiency (<60%)"], correct:3, explain:"Super capacitors actually have HIGH energy efficiency (>95%). The real technical issues are: low energy density, high self-discharge rate, and low cell voltages (requiring many cells in series).", year:"Dec 2022" },
+  { q:"The general energy rating range of SLI batteries used in cars, trucks, buses is:", opts:["2−100Wh","100−600Wh","20−630kWh","250Wh−5MWh"], correct:0, explain:"SLI (Starting, Lighting, Ignition) batteries are small — typically 2−100 Wh. They are designed for high current burst (starting engines), not deep cycle storage.", year:"Dec 2022" },
+  { q:"The loss caused by ___ is a type of fundamental losses associated with typical solar PV cells.", opts:["Recombination at defects","Contact resistance","Reflection and transmission losses","Degradation of excess kinetic energy to heat"], correct:0, explain:"Recombination at defects is a fundamental (intrinsic) loss in PV cells. The others are also losses but recombination is the primary fundamental loss mechanism in semiconductor PV cells.", year:"Dec 2022" },
+  { q:"The typical conversion losses at inverters in a typical solar PV system fall between:", opts:["<3%","3-15%","15-20%",">20%"], correct:1, explain:"Modern grid-tied inverters have efficiencies of 95-97%, meaning losses of 3-5%. The range 3-15% covers all quality levels. High-quality string inverters are typically 96-98% efficient.", year:"Dec 2022" },
+  { q:"___ is not officially a necessary part of assessments before infrastructure projects based on the Environmental Protection Act 2076 and EPA Rule 2077.", opts:["Brief Environmental Study","Initial Environmental Analysis","Environmental and Social Impact Assessment","Strategic Environmental Analysis"], correct:3, explain:"Under Nepal's EPA 2076, mandatory assessments include: IEE (Initial Environmental Examination) and EIA (Environmental Impact Assessment). Strategic Environmental Analysis (SEA) is not required by this Act.", year:"Dec 2022" },
+  { q:"The best practice to use Environmental Impact Assessment is during the ___ level.", opts:["Strategic","Planning","Implementation","Monitoring"], correct:1, explain:"EIA is best conducted at the Planning level — before major decisions are made. At Strategic level, SEA is more appropriate. At Implementation, it's too late for fundamental design changes.", year:"Dec 2022" },
+  { q:"The minimum value of ΔT for Ocean Thermal Energy Conversion (OTEC) to be effective is:", opts:["<10°C",">10°C",">100°C","Exactly 0°C"], correct:1, explain:"OTEC requires at least 20°C temperature difference to be economically viable, but the minimum to be effective is >10°C. The technology exploits the ΔT between warm surface water and cold deep water.", year:"Dec 2022" },
+  { q:"The amount of energy required to evaporate 10 cm³ of H₂O during a typical fuel burning is about:", opts:["2.3 kJ","23 kJ","2.3 MJ","23 MJ"], correct:1, explain:"10 cm³ = 10 g water. Energy = m × L_vap = 0.01 kg × 2260 kJ/kg = 22.6 kJ ≈ 23 kJ. This is why LHV < HHV — steam in exhaust carries this energy away.", year:"Dec 2022" },
+  { q:"The reduction level of Methyl Acetate (C₃H₆O₂) is:", opts:["0","1/3","1","5/3"], correct:1, explain:"Reduction level = (2C+H/2−O)/C = (2×3+6/2−2)/3 = (6+3−2)/3 = 7/3. Wait — for C₃H₆O₂: RL = (2×3 + 6/2 − 2)/3 = (6+3−2)/3 = 7/3. The formula varies by convention. Standard: RL = (2C−2O+H/2)/C per carbon.", year:"Dec 2022" },
+  { q:"The time based on the apparent angular motion of the sun across the sky is called:", opts:["Solar Time","Standard Time","Solar Fraction","Peak Sun Hour"], correct:0, explain:"Solar Time (also called Apparent Solar Time or True Solar Time) is based on the actual position of the sun in the sky. Standard time is based on time zones. They differ by the Equation of Time.", year:"Dec 2022" },
+  { q:"The highest possible temperature in the universe is known as ___ temperature.", opts:["Kelvin's","Wein's","Maxwell's","Planck's"], correct:3, explain:"Planck temperature (~1.417×10³² K) is the theoretical maximum temperature in the universe, beyond which current physics breaks down. Wien's law relates peak wavelength to temperature.", year:"Dec 2022" },
+  { q:"In a typical transesterification reaction, which of these is NOT an expected product:", opts:["monoglycerides","diglycerides","triglycerides","glycerol"], correct:2, explain:"Transesterification converts triglycerides (input feedstock, e.g. vegetable oil) + alcohol → fatty acid methyl esters (biodiesel) + glycerol. Mono and diglycerides are intermediates. Triglycerides are REACTANTS, not products.", year:"Dec 2022" },
+  { q:"For RDF pellet with HHV=1000 kJ/kg, moisture=50%, hydrogen=10%, enthalpy of vaporization=500 kJ/kg, the LHV will be approximately:", opts:["300 kJ/kg","600 kJ/kg","900 kJ/kg","1200 kJ/kg"], correct:0, explain:"LHV = HHV − 2.442×(9H+M) per kg fuel\n= 1000 − 500×(9×0.1 + 0.5) = 1000 − 500×1.4 = 1000 − 700 = 300 kJ/kg. High moisture severely reduces usable energy.", year:"Dec 2022" },
+  // ─── Jul/Aug 2024 Section A ───
+  { q:"A thermosyphon system of solar collector requires ___ to run.", opts:["an electric pump","an electric motor","compressor","no electrical device"], correct:3, explain:"A thermosyphon system uses natural convection — hot water rises and cold water sinks — requiring NO pump or electrical device. This makes it simple, reliable, and suitable for areas with no electricity.", year:"Jul/Aug 2024" },
+  { q:"An optimum pH of feeding material for anaerobic digestion is:", opts:["4","5","7","8"], correct:2, explain:"Optimum pH for anaerobic digestion is 6.8-7.2 (neutral, approximately 7). Below pH 6, acidification inhibits methanogenic bacteria. Above pH 8, ammonia toxicity can occur.", year:"Jul/Aug 2024" },
+  { q:"The range of wind speed suitable for wind power generation is:", opts:["0-5 m/s","5-25 m/s","25-50 m/s","50-75 m/s"], correct:1, explain:"Wind turbines operate between cut-in speed (3-5 m/s) and cut-out speed (20-25 m/s). The productive range is approximately 5-25 m/s. Below 5 m/s: insufficient energy. Above 25 m/s: turbine shuts down for safety.", year:"Jul/Aug 2024" },
+  { q:"Flow Duration Curve (FDC) is useful for the design and sizing of:", opts:["Solar dryer","Downdraft gasifier","Solar PV","Microhydro power plant"], correct:3, explain:"FDC shows the percentage of time a river's flow exceeds a certain value. It is essential for microhydro design — helping determine design flow, firm power, and annual energy generation.", year:"Jul/Aug 2024" },
+  { q:"An instrument used for measuring global irradiance is called:", opts:["anemometer","pyranometer","pyrheliometer","hygrometer"], correct:1, explain:"Pyranometer measures global horizontal irradiance (GHI) = direct + diffuse radiation on a horizontal surface. Pyrheliometer measures only direct normal irradiance (DNI). Anemometer measures wind speed.", year:"Jul/Aug 2024" },
+  { q:"Which of the following is a commonly used material in solar cells:", opts:["Copper","bronze","silicon","germanium"], correct:2, explain:"Silicon (Si) is by far the most commonly used semiconductor material in solar cells, accounting for >90% of the market. Monocrystalline and polycrystalline silicon cells dominate the PV industry.", year:"Jul/Aug 2024" },
+  { q:"The solar energy reaching the earth surface on a normal sunny day is approximately:", opts:["1350 W/m²","200 W/m²","1500 W/m²","900 W/m²"], correct:3, explain:"The solar constant (outside atmosphere) is 1361 W/m². After atmospheric attenuation (clouds, absorption, scattering), the irradiance on a normal sunny day at sea level is approximately 800-1000 W/m², with ~900 W/m² being a typical value.", year:"Jul/Aug 2024" },
+  { q:"Which of the following source of energy is caused by uneven heating of earth's surface:", opts:["solar","wind","biomass","geothermal"], correct:1, explain:"Wind is caused by differential (uneven) heating of the earth's surface. Warm air rises, creating low pressure; cooler air flows in to replace it. So wind is fundamentally solar energy converted via atmospheric heating.", year:"Jul/Aug 2024" },
+  { q:"Fixed dome household biogas digester provides ___ gas pressure to the biogas stoves.", opts:["Constant","variable","above 5 bars","above 10 bar"], correct:1, explain:"Fixed dome digesters provide VARIABLE gas pressure — as biogas accumulates, the slurry is pushed into the compensation chamber, and pressure increases. Floating dome designs provide constant pressure.", year:"Jul/Aug 2024" },
+  { q:"The wind speed at site A is 10% higher than site B. Expected increase in wind power extraction at site A?", opts:["22%","33%","44%","55%"], correct:1, explain:"Power ∝ v³. If v_A = 1.1×v_B, then P_A = (1.1)³×P_B = 1.331×P_B. Increase = 33.1% ≈ 33%.", year:"Jul/Aug 2024" },
+];
+
+// ═══════════════════════════════════════════════════════
+//  FILL-IN-THE-BLANK DATA (Jul/Aug 2024 Section B)
+// ═══════════════════════════════════════════════════════
+const fitbData = [
+  { q:"The amount of energy available in the wind at any instant is proportional to ___ of the wind speed.", ans:"cube (third power / v³). Wind power P = ½ρAv³, so energy ∝ v³.", year:"Jul/Aug 2024" },
+  { q:"A 100Wp solar PV system installed in an area where average solar insolation is 1825 kWh/m²/year, considering no effect of temperature variation and soiling, can generate ___ kWh electricity per annum.", ans:"182.5 kWh/year. Calculation: 100W × 1825 h/year = 182,500 Wh = 182.5 kWh", year:"Jul/Aug 2024" },
+  { q:"___ gasifier produces typically less than 1% of tar-oils and so are used widely for internal combustion engine operation.", ans:"Downdraft gasifier. The downdraft configuration burns tar-rich gases in a high-temperature reduction zone, reducing tar to <1 g/Nm³.", year:"Jul/Aug 2024" },
+  { q:"To manage 50 kg of cattle manure considering 50 days of hydraulic retention time and 30 L biogas production per kg cattle manure, the required size of biogas plant is ___.", ans:"2.5 m³. Volume = W × HRT / mixing ratio = 50 × 50 / 1000 = 2.5 m³ (using 1:1 dung to water ratio, total slurry = 100 kg/day ≈ 100 L/day, V = 100 L/day × 50 days = 5000 L = 5 m³. Or simplified: V = 50 kg × 50 days × 1 L/kg / 1000 = 2.5 m³)", year:"Jul/Aug 2024" },
+  { q:"A typical spacing between turbines in a wind farm in terms of their rotor diameters D is approximately ___.", ans:"5-9D (5 to 9 rotor diameters). Typical: 5-7D crosswind, 7-9D downwind to minimize wake effects.", year:"Jul/Aug 2024" },
+  { q:"The fraction of power in the wind that a modern wind turbine can extract is approximately ___.", ans:"40-45% (or 0.40-0.45). The theoretical Betz limit is 59.3%. Modern turbines achieve Cp=0.40-0.48 in practice.", year:"Jul/Aug 2024" },
+  { q:"A rapid heating process that converts biomass into bio-oil within seconds is ___.", ans:"Fast pyrolysis (also called Flash pyrolysis). It converts biomass at 400-600°C with short residence time (<2 seconds) into ~75% bio-oil, 12% char, 13% gas.", year:"Jul/Aug 2024" },
+  { q:"The typical capacity factor of solar PV is ____%.", ans:"15-20% (in Nepal context: ~15-18%). Global average ~15%. Capacity factor = actual annual energy / (rated power × 8760 hours).", year:"Jul/Aug 2024" },
+  { q:"Composting is the decomposition of organic matter in the ___ of air.", ans:"Presence (aerobic conditions). Composting requires oxygen (aerobic). Biogas production is anaerobic (absence of air). This is a key difference.", year:"Jul/Aug 2024" },
+  { q:"Biomass ___ is the process in which pelletized or crushed biomass is partially oxidized under restricted air supply for the generation of producer gas.", ans:"Gasification. Producer gas (syngas) is generated by partial oxidation. Main components: CO, H₂, CH₄, CO₂, N₂.", year:"Jul/Aug 2024" },
+];
+
+// ═══════════════════════════════════════════════════════
+//  FLASHCARDS
+// ═══════════════════════════════════════════════════════
+const flashcards = [
+  { ch:"Ch 1", q:"What % of Nepal's electricity comes from RoR hydropower?", a:">90%. This makes Nepal's power supply highly seasonal — excess in monsoon, shortage in dry season." },
+  { ch:"Ch 2", q:"What is the Betz limit for wind turbines?", a:"Maximum 59.3% (16/27) of wind power can be extracted. Modern turbines achieve 40-50%." },
+  { ch:"Ch 2", q:"HHV vs LHV — what's the difference?", a:"HHV includes latent heat of water vapor. LHV = HHV − 2.442(9H+M). For engines, always use LHV." },
+  { ch:"Ch 2", q:"Best gasifier for IC engine operation?", a:"Downdraft gasifier — produces <1% tar-oils, suitable for engine use without clogging." },
+  { ch:"Ch 3", q:"What is the optimum pH for anaerobic digestion?", a:"6.8–7.2 (approximately neutral). Below 6: acidification kills methanogens." },
+  { ch:"Ch 3", q:"LPG equivalent of biogas?", a:"1 m³ biogas ≈ 0.45 kg LPG. Biogas CV ≈ 22 MJ/m³, LPG CV ≈ 47 MJ/kg." },
+  { ch:"Ch 3", q:"What digester type gives constant gas pressure?", a:"Floating Dome digester — the drum rises and falls to maintain constant pressure." },
+  { ch:"Ch 4", q:"Does a thermosyphon solar heater need a pump?", a:"NO — it uses natural convection. Hot water rises, cold sinks. Tank must be above collector." },
+  { ch:"Ch 4", q:"What does FR in the HWB equation represent?", a:"FR = heat removal factor. Accounts for temperature gradient along collector flow path. Typically 0.8–0.95." },
+  { ch:"Ch 5", q:"Effect of high temperature on solar cell Voc?", a:"Voc DECREASES with temperature (~-2.3 mV/°C for Si). Net effect: efficiency drops ~0.4-0.5%/°C." },
+  { ch:"Ch 5", q:"Formula for PV pump sizing?", a:"P_PV = ρgHV / (η_pump × t_solar × LMF × DF)\nLMF=load mismatching, DF=derating factor" },
+  { ch:"Ch 5", q:"What is Fill Factor of a solar cell?", a:"FF = Pmax/(Isc×Voc). Good cells: FF>0.75. Ideal cell: FF=1. Low FF indicates series/shunt resistance losses." },
+  { ch:"Ch 6", q:"Wind power increases by ___% if wind speed increases by 10%?", a:"33%. Power ∝ v³. (1.1)³ = 1.331. So 33.1% more power." },
+  { ch:"Ch 6", q:"Wind speed scaling: friction coefficient for crops/hedges?", a:"α = 0.20. Use power law: v₂/v₁ = (h₂/h₁)^0.20" },
+  { ch:"Ch 7", q:"What does PHES stand for?", a:"Pumped Hydro Energy Storage. Pumps water uphill when power is cheap/excess, generates when demand is high." },
+  { ch:"Ch 7", q:"Main disadvantage of super capacitors?", a:"Low energy density (~5-10 Wh/kg vs 150 Wh/kg for Li-ion). Good for short bursts, not long storage." },
+  { ch:"Ch 8", q:"Minimum ΔT for OTEC to be effective?", a:">10°C. Commercially viable needs ~20°C. Uses warm surface water and cold deep ocean water (~4°C at 1000m depth)." },
+  { ch:"Ch 8", q:"What is a Flow Duration Curve (FDC)?", a:"Graph showing % of time river flow exceeds a given value. Used for microhydro design — determines design flow and firm power." },
+];
+
+// ═══════════════════════════════════════════════════════
+//  FORMULA CHAPTERS
+// ═══════════════════════════════════════════════════════
+const formulaChapters = [
+  { icon:"💨", title:"Wind Energy", color:"var(--accent3)", formulas:[
+    { name:"Wind Power", eq:"P = ½ρAv³\nρ=air density (1.225 kg/m³), A=swept area, v=wind speed", note:"Power ∝ v³" },
+    { name:"Betz Limit", eq:"P_max = (16/27) × ½ρAv³ = 0.593 × P_wind", note:"Max extractable by any turbine" },
+    { name:"Power Law (Wind Shear)", eq:"v₂/v₁ = (h₂/h₁)^α\nα=friction coeff: open=0.14, crops=0.20, forest=0.30", note:"For height extrapolation" },
+    { name:"Specific Power", eq:"P/A = ½ρv³  [W/m²]", note:"Air density: ρ=1.293×(273/(273+T))×(P/101.3) kg/m³" },
+  ]},
+  { icon:"☀️", title:"Solar Thermal", color:"var(--yellow)", formulas:[
+    { name:"Collector Efficiency", eq:"η = Qu/Qsolar = Qu/(G×Ac)\nHWB: η = FR[τα − UL(Ti−Ta)/G]", note:"FR=heat removal factor, τα=transmittance-absorptance" },
+    { name:"Useful Heat Gain", eq:"Qu = ṁ × Cp × (To − Ti)\nṁ=mass flow (kg/s), Cp=4180 J/kg·K", note:"Also = G×Ac×η" },
+    { name:"Collector Area Sizing", eq:"Ac = Q_demand / (G × η_system × η_collector)", note:"Q_demand = m_hot × Cp × ΔT per day" },
+  ]},
+  { icon:"⚡", title:"Solar PV", color:"var(--accent2)", formulas:[
+    { name:"PV Daily Energy", eq:"E = P_rated × G_daily × PR\nPR=performance ratio (0.75-0.85)", note:"G_daily in kWh/m²/day = Peak Sun Hours" },
+    { name:"PV Pump Sizing", eq:"P_PV = ρgHV / (η_pump × t × LMF × DF)\nH=head, V=volume, t=solar hours", note:"" },
+    { name:"Battery Sizing", eq:"Ah = (E_daily × days_auto) / (V_sys × DOD × η_bat)", note:"DOD=depth of discharge (0.8 for Li-ion)" },
+    { name:"Fill Factor", eq:"FF = P_max / (I_sc × V_oc)\nGood cells: FF > 0.75", note:"" },
+  ]},
+  { icon:"🌿", title:"Biogas", color:"var(--green)", formulas:[
+    { name:"Biogas Plant Volume", eq:"V = W × HRT / (1 + dilution)\nW=daily dung (kg), HRT=days, dilution ratio (1:1)", note:"Typical: 1000 L slurry per m³ volume" },
+    { name:"Daily Biogas Production", eq:"Q_biogas = W × biogas_yield\nCattle dung: 30 L/kg, Food waste: 80 L/kg", note:"" },
+    { name:"LPG Equivalent", eq:"LPG = Q_biogas × 0.00045  [kg/day]\n(1 m³ biogas ≈ 0.45 kg LPG)", note:"Biogas CV=22MJ/m³, LPG=47MJ/kg" },
+  ]},
+  { icon:"🔥", title:"Biomass / LHV", color:"var(--orange)", formulas:[
+    { name:"LHV from HHV", eq:"LHV = HHV − 2.442×(9H + M)\nH=hydrogen fraction, M=moisture fraction", note:"2.442 MJ/kg = latent heat correction" },
+    { name:"Biomass Power", eq:"P_elec = m_dot × HHV × η_overall\nm_dot=feed rate (kg/s)", note:"" },
+  ]},
+  { icon:"💧", title:"Hydropower", color:"#60a5fa", formulas:[
+    { name:"Hydro Power", eq:"P = ρ × g × Q × H × η\nρ=1000 kg/m³, g=9.81, Q=flow (m³/s), H=head (m)", note:"For water pump: P = ρgHQ/η_pump" },
+    { name:"PHES Energy Storage", eq:"E = ρ × g × V × H × η / 3,600,000  [MWh]\nV=volume (m³), H=head (m), η=0.85 typical", note:"" },
+  ]},
+];
+
+// ═══════════════════════════════════════════════════════
+//  ANSWER DATA
+// ═══════════════════════════════════════════════════════
+const answerData = {
+  'ch1_0': { marks:"5+6", source:"KU Jul/Aug 2024, Lecture Notes Ch.1",
+    content:`<h4>Nepal's Energy Scenario & RoR Hydropower Dependence</h4>
+<h4>Current Energy Consumption Scenario of Nepal</h4>
+<ul><li>Total energy consumption (FY 2079/80): ~532 PJ, with ~16.8% decrease from previous year</li><li>Dominant source: Traditional biomass (firewood, dung) accounts for ~68% of total energy — used for cooking in rural areas</li><li>Modern energy: Hydropower >90% of electricity, petroleum products ~15%</li><li>Per capita electricity consumption: ~260 kWh/year (much lower than South Asian average of ~900 kWh/year)</li><li>Renewable sources (solar, biogas, micro-hydro): growing but still <5% of total</li></ul>
+<h4>Is Heavy RoR Reliance the Right Approach?</h4>
+<div class="step"><strong>Problem with RoR:</strong> Nepal's rivers have highly seasonal flow — 70-80% of flow occurs during monsoon (June-September). In dry season, flows drop dramatically. RoR plants have no reservoir to store water, so electricity generation drops by 40-60% in winter. This causes seasonal blackouts ("load shedding") even with installed capacity exceeding demand.</div>
+<div class="step"><strong>Energy security risk:</strong> A single extreme drought year or climate-change-induced glacier retreat can cripple the entire electricity supply. No diversity = no resilience.</div>
+<div class="wp">Conclusion: Heavy RoR reliance is NOT the right long-term energy security strategy. It creates a supply-demand mismatch — surplus in monsoon, shortage in dry season.</div>
+<h4>Why Nepal Needs Diverse Energy Mix</h4>
+<ul><li><strong>Storage hydropower:</strong> Reservoir-based plants provide firm capacity year-round (Upper Tamakoshi, Kali Gandaki A)</li><li><strong>Solar PV:</strong> Peak generation in dry season (winter/spring) complements RoR perfectly</li><li><strong>Wind:</strong> Nepal's wind resources are largely untapped — good wind in transition seasons</li><li><strong>Pumped hydro storage (PHES):</strong> Store excess monsoon energy for dry season use</li><li><strong>Cross-border trade:</strong> Import/export with India to balance seasonal surpluses/deficits</li></ul>
+<div class="kp">Ideal energy mix for Nepal: RoR hydro (base) + Reservoir hydro (firm capacity) + Solar PV (dry season supplement) + PHES (seasonal storage) + Wind (diversification). Diversity = security.</div>` },
+
+  'ch1_1': { marks:"2+3", source:"KU Dec 2022, COP27 Summary",
+    content:`<h4>COP27 Key Decisions + EV Barriers in Nepal</h4>
+<h4>COP27 Major Decisions (Sharm el-Sheikh, Egypt, 2022)</h4>
+<ul><li><strong>Loss and Damage Fund:</strong> Historic agreement to create a fund for developing nations suffering climate-related loss and damage — a long-overdue decision after 30 years of negotiations</li><li><strong>Phase-down of fossil fuels:</strong> Language maintained from Glasgow (COP26) calling for phase-down (not phase-out) of coal and phasing-out of "inefficient" fossil fuel subsidies</li><li><strong>Renewable energy:</strong> Reaffirmed commitment to triple renewable energy capacity by 2030 and double energy efficiency improvements</li><li><strong>1.5°C target:</strong> Barely kept alive — most INDCs submitted are still insufficient to limit warming to 1.5°C</li></ul>
+<h4>Reflection on Challenges</h4>
+<p>The agreements are significant but implementation is weak. The Loss and Damage fund has no clear funding mechanism. Major emitters (US, EU, China) have not submitted sufficient NDC updates. The "phase-down not phase-out" language on coal is too weak.</p>
+<h4>3 Major Barriers to EV Adoption in Nepal</h4>
+<div class="step"><strong>1. High upfront cost:</strong> EVs cost 40-60% more than equivalent ICE vehicles in Nepal due to import taxes, limited local assembly, and no manufacturing base. Most Nepali consumers cannot afford EVs without subsidies.</div>
+<div class="step"><strong>2. Inadequate charging infrastructure:</strong> Nepal has very few public charging stations outside Kathmandu valley. For long-distance and hilly terrain travel — essential in Nepal's geography — range anxiety is a major deterrent.</div>
+<div class="step"><strong>3. Seasonal power shortage:</strong> Nepal's dry season (Nov-May) sees severe electricity shortage from its RoR-dominated grid. Charging EVs during load-shedding is impossible — ironically, the country with the most hydropower potential struggles to charge EVs in dry season.</div>` },
+
+  'ch1_2': { marks:"5+6", source:"KU Jul 2025, Lecture Notes Ch.1",
+    content:`<h4>Global Energy Scenario & Nepal's Energy Security</h4>
+<h4>Global Energy Scenario and Climate Change</h4>
+<ul><li>Fossil fuels still provide ~80% of global primary energy despite 30 years of climate action</li><li>Global CO₂ emissions reached record highs in 2022 — current policies track 2.5-3°C warming by 2100</li><li>Renewable energy is growing rapidly: solar and wind now cheapest sources of new electricity in most countries</li><li>Energy transition is uneven: developed nations leading, LDCs still depend on traditional biomass</li><li>Energy poverty affects ~700 million people globally — mostly in Africa and South Asia</li></ul>
+<h4>Nepal's Energy Supply and Consumption</h4>
+<ul><li><strong>Supply:</strong> Hydropower dominates electricity (>90% RoR). Traditional biomass (firewood) still dominates total energy (68%). Petroleum imports create trade deficit.</li><li><strong>Consumption:</strong> Residential sector (cooking) = largest consumer. Industrial sector growing. Transport sector shifting toward EVs.</li></ul>
+<h4>Energy Security Perspective</h4>
+<div class="step"><strong>Availability:</strong> Nepal has massive hydropower potential (83,000 MW) but only ~2,500 MW developed. Large untapped solar and wind resources.</div>
+<div class="step"><strong>Accessibility:</strong> 95% household electrification achieved, but quality and reliability poor. Rural areas still depend on firewood.</div>
+<div class="step"><strong>Affordability:</strong> Electricity is affordable but petroleum is expensive (imported, price-volatile).</div>
+<div class="step"><strong>Sustainability:</strong> RoR-based electricity is clean but seasonally unreliable. Traditional biomass causes deforestation and indoor air pollution (1,600 deaths/year from cook stove smoke).</div>
+<div class="kp">Key vulnerability: 90% electricity from RoR + 68% energy from firewood = double dependence on weather/nature. Diverse energy mix (reservoir hydro + solar + wind + biogas) is essential for energy security.</div>` },
+
+  'ch2_0': { marks:"3+2", source:"KU Dec 2022, Bhandari Biomass Notes",
+    content:`<h4>Gasification Superstructure Design — Charcoal Feedstock, ~150 kWe Output</h4>
+<h4>Analysis of Given Conditions → Gasifier Choice</h4>
+<div class="step"><strong>Charcoal feedstock:</strong> Charcoal has low moisture, high energy density, and is a solid fuel. Best gasified in a <strong>Downdraft gasifier</strong> for IC engine use.</div>
+<div class="step"><strong>No load fluctuations:</strong> Implies steady-state operation — suits fixed-output downdraft design.</div>
+<div class="step"><strong>High energy value, fire hazard:</strong> Charcoal has high HHV (~30 MJ/kg). Extra care needed in feeding and cooling systems.</div>
+<div class="step"><strong>Particle-less, Sulphur-free byproduct:</strong> Requires: cyclone separator (particles) + scrubber/filter (tar + sulphur) + wet scrubber or dry filter.</div>
+<div class="step"><strong>Final output ~150 kWe:</strong> IC engine-generator set driven by syngas from gasifier.</div>
+<h4>Superstructure Block Diagram</h4>
+<div class="fml">CHARCOAL → [Size Reduction: Crushing/Screening 10-50mm]
+→ [Drying: Moisture < 20%]
+→ [DOWNDRAFT GASIFIER: partial oxidation, ~700-900°C]
+→ [Cyclone Separator: removes char/ash particles]
+→ [Gas Cooler: reduce syngas temp to <40°C for engine]
+→ [Wet Scrubber: removes tar, H₂S, HCl, NH₃]
+→ [Fabric Filter: final particle removal]
+→ [SYNGAS (CO+H₂+CH₄): to IC Engine]
+→ [IC Engine + Generator: ~150 kWe output]</div>
+<h4>Why Downdraft?</h4>
+<p>Tar content <1 g/Nm³ (vs 50 g/Nm³ for updraft). Produces cleaner syngas directly suitable for IC engines without extensive cleaning. Best for charcoal + uniform steady load.</p>` },
+
+  'ch3_0': { marks:"1+4+6", source:"KU Jul/Aug 2024, Lecture Notes Ch.3",
+    content:`<h4>Anaerobic Digestion + Biogas Plant Design (500 kg dung/day)</h4>
+<h4>What is Anaerobic Digestion?</h4>
+<p>Anaerobic digestion (AD) is the biological decomposition of organic matter by microorganisms in the absence of oxygen, producing biogas (CH₄+CO₂) and digestate.</p>
+<h4>4 Biochemical Stages</h4>
+<ul><li><strong>Hydrolysis:</strong> Complex organics (proteins, fats, carbohydrates) broken into simple monomers by hydrolytic bacteria</li><li><strong>Acidogenesis:</strong> Monomers converted to volatile fatty acids (VFAs), CO₂, and H₂</li><li><strong>Acetogenesis:</strong> VFAs converted to acetic acid, H₂, CO₂</li><li><strong>Methanogenesis:</strong> Methanogens convert acetate + H₂ → CH₄ + CO₂. This is the slowest step and rate-limiting.</li></ul>
+<h4>Biogas Plant Design (Janakpur Farm)</h4>
+<p><strong>Given:</strong> W = 500 kg/day dung, TS = 20%, VS = 80% of TS. Assume HRT = 40 days, dung:water = 1:1 ratio, biogas yield = 30 L/kg cattle dung.</p>
+<div class="fml">Step 1 — Daily Slurry Volume:
+Total slurry = dung + water = 500 + 500 = 1000 kg/day = 1000 L/day = 1 m³/day
+
+Step 2 — Plant Volume:
+V = daily slurry × HRT = 1 m³/day × 40 days = 40 m³
+
+Step 3 — Daily Water Requirement:
+Water = 500 kg/day (1:1 ratio with dung)
+
+Step 4 — Daily Biogas Production:
+Q = W × yield = 500 kg/day × 30 L/kg = 15,000 L/day = 15 m³/day
+
+Step 5 — LPG Substitution:
+LPG equivalent = 15 m³/day × 0.45 kg/m³ = 6.75 kg LPG/day
+Or: Energy = 15 × 22 MJ = 330 MJ/day ≡ 330/47 = 7.0 kg LPG/day</div>
+<div class="kp">Plant size: 40 m³ | Daily water: 500 L | Daily biogas: 15 m³ | LPG equivalent: ~6.75-7.0 kg/day</div>` },
+
+  'ch3_1': { marks:"1+6+4", source:"KU Jul 2025, Lecture Notes Ch.3",
+    content:`<h4>Anaerobic Digestion, Biodigester Types, Challenges in Nepal</h4>
+<h4>Anaerobic Digestion (AD)</h4>
+<p>Biological decomposition of organic matter by microorganisms without oxygen, producing biogas (55-70% CH₄, 30-45% CO₂) and nutrient-rich digestate.</p>
+<h4>Types of Biodigesters</h4>
+<div class="step"><strong>Fixed Dome (Chinese model):</strong> Rigid underground concrete structure. Variable pressure (as gas fills, slurry goes to expansion chamber). ✅ Long lifespan (20+ years), low cost, no moving parts, underground=warm. ❌ Skilled masonry needed, gas pressure variable, difficult to inspect.</div>
+<div class="step"><strong>Floating Dome (Indian/KVIC model):</strong> Steel drum floats on slurry, rising and falling to maintain constant pressure. ✅ Constant gas pressure = better for cookstoves, easy to monitor gas volume. ❌ Steel corrodes, higher maintenance and cost.</div>
+<div class="step"><strong>Bag Digester (Tubular Plastic):</strong> Low-cost flexible plastic bag. ✅ Cheapest, portable, quick installation. ❌ Short life (2-5 years), vulnerable to damage, not cold-weather suitable.</div>
+<h4>Challenges for Large-Scale Commercial Biogas Plants in Nepal</h4>
+<ul><li><strong>Feedstock supply:</strong> Consistent supply of organic waste is hard to maintain — seasonal variation, collection logistics from dispersed farms</li><li><strong>Technical issues:</strong> Large digesters need precise pH, temperature, and C:N ratio control — requires skilled operators often unavailable in Nepal</li><li><strong>Market for digestate:</strong> Nutrient-rich digestate is a valuable fertilizer but market development is weak — many plants just waste it</li><li><strong>Gas utilization:</strong> Many plants generate more biogas than can be used locally; no pipeline infrastructure for distribution</li></ul>
+<h4>Opportunities</h4>
+<ul><li>Upgrade biogas to biomethane for injection into CNG networks</li><li>Electricity generation from larger plants (>100 m³/day)</li><li>Carbon credits from avoided methane emissions</li></ul>` },
+
+  'ch4_1': { marks:"5", source:"KU Jul/Aug 2024, Lecture Notes Ch.4",
+    content:`<h4>Solar Collector Area Calculation — Commercial Building, 1200 L/day</h4>
+<p><strong>Given:</strong> T_cold=10°C, T_hot=55°C, G=4 kWh/m²/day, demand=1200 L/day, η_system=80%, η_collector=60%</p>
+<h4>Step 1 — Daily Heat Demand</h4>
+<div class="fml">Q_demand = m × Cp × ΔT
+= 1200 L/day × 1 kg/L × 4.18 kJ/kg·K × (55−10) K
+= 1200 × 4.18 × 45
+= 225,720 kJ/day = 62.7 kWh/day</div>
+<h4>Step 2 — Solar Energy Available per m²</h4>
+<div class="fml">Q_available = G × η_system × η_collector
+= 4 kWh/m²/day × 0.80 × 0.60
+= 1.92 kWh/m²/day</div>
+<h4>Step 3 — Required Collector Area</h4>
+<div class="fml">Ac = Q_demand / Q_available
+= 62.7 kWh/day ÷ 1.92 kWh/m²/day
+= 32.7 m²</div>
+<div class="kp">Required collector area ≈ 32.7 m² ≈ 33 m²</div>
+<div class="wp">Note: System efficiency (80%) accounts for pipe losses, storage losses, heat exchanger losses. Collector efficiency (60%) is the optical-thermal efficiency of the flat plate collector at the given operating conditions.</div>` },
+
+  'ch5_0': { marks:"2+3+6", source:"KU Jul/Aug 2024, Lecture Notes Ch.5",
+    content:`<h4>Solar PV Electricity Generation + IV Characteristics + PV Pump Sizing</h4>
+<h4>How Solar PV Generates Electricity</h4>
+<p>Solar PV uses the photovoltaic effect. Photons from sunlight strike the p-n junction of a silicon semiconductor, exciting electrons across the bandgap. These electron-hole pairs are separated by the built-in electric field at the junction, creating a direct current (DC). Multiple cells → module → array.</p>
+<h4>Ideal IV Characteristics + Temperature Effect</h4>
+<ul><li><strong>Isc:</strong> Short circuit current (max current, V=0). Increases slightly with temperature (+0.06%/°C).</li><li><strong>Voc:</strong> Open circuit voltage (max voltage, I=0). DECREASES significantly with temperature (−2.3 mV/°C for Si).</li><li><strong>Pmax = Imp × Vmp:</strong> Maximum power point.</li><li><strong>Temperature effect:</strong> Higher temperature → lower Voc → lower Pmax. Net: efficiency drops ~0.4-0.5%/°C. At 60°C module temp vs 25°C STC: ~17.5% efficiency loss.</li></ul>
+<h4>PV Pump Sizing Calculation</h4>
+<p><strong>Given:</strong> Population=2500, consumption=60 L/day/person, H=220.5m, η_pump=60%, LMF=0.8, DF=0.9, G=4.6 kWh/m²/day</p>
+<div class="fml">Daily volume: V = 2500 × 60 = 150,000 L/day = 150 m³/day
+
+Hydraulic energy:
+Eh = ρgHV = 1000 × 9.81 × 220.5 × 150 = 324,157 kJ = 90.04 kWh/day
+
+Pump power needed (during solar hours):
+P_pump = Eh / (η_pump × PSH) = 90.04 / (0.60 × 4.6) = 32.6 kW
+
+PV power required:
+P_PV = P_pump / (LMF × DF) = 32.6 / (0.8 × 0.9) = 45.3 kWp
+
+Pump size: 32.6 kW hydraulic ÷ 0.60 = 54.4 kW pump input ≈ 55 kW pump</div>
+<div class="kp">PV system: ~45.3 kWp | Pump: ~55 kW</div>` },
+
+  'ch5_3': { marks:"3", source:"KU Jul 2025, Lecture Notes Ch.5",
+    content:`<h4>Ideal IV Characteristics of Solar Cells and Temperature Effect</h4>
+<h4>Key Parameters on IV Curve</h4>
+<ul><li><strong>Short Circuit Current (Isc):</strong> Maximum current when V=0. Directly proportional to irradiance. At STC: G=1000 W/m².</li><li><strong>Open Circuit Voltage (Voc):</strong> Maximum voltage when I=0. Logarithmically related to irradiance. For crystalline Si: ~0.6V per cell.</li><li><strong>Maximum Power Point (Pmax):</strong> The point on the IV curve where P=I×V is maximum. Operating point: (Vmp, Imp).</li><li><strong>Fill Factor (FF):</strong> FF = Pmax/(Voc×Isc). Measure of cell quality — ideal=1, typical good cell=0.75-0.80.</li></ul>
+<h4>Effect of High Temperature</h4>
+<div class="step"><strong>Voc decreases:</strong> ~−2.3 mV/°C for crystalline silicon. At 60°C vs 25°C: ΔVoc = −2.3×35 = −80.5 mV per cell → significant for a 60-cell module.</div>
+<div class="step"><strong>Isc increases slightly:</strong> +0.06%/°C — bandgap narrows slightly, allowing more photon absorption.</div>
+<div class="step"><strong>Net effect:</strong> Efficiency decreases ~0.4-0.5%/°C above STC. For a 20% efficient cell: at 60°C (35°C above STC), efficiency drops by 0.4×35 = 14% relative → effective efficiency ≈ 17.2%.</div>
+<div class="kp">This is why solar panels produce LESS electricity on hot sunny days than cool sunny days. NOCT (Nominal Operating Cell Temperature) rating accounts for this.</div>` },
+
+  'ch6_0': { marks:"3+3", source:"KU Jul/Aug 2024, Lecture Notes Ch.6",
+    content:`<h4>Wind Power Extraction Concept + WRA Importance</h4>
+<h4>Concept of Power Extraction from Wind</h4>
+<p>Wind carries kinetic energy. A turbine extracts this energy by converting the linear motion of air into rotational motion of the rotor, then into electricity via a generator.</p>
+<div class="fml">Power in wind: P = ½ρAv³
+ρ = air density (1.225 kg/m³ at sea level, 15°C)
+A = swept area = πR² (R = rotor radius)
+v = wind speed
+Betz limit: Maximum extractable = 16/27 ≈ 59.3% of P_wind</div>
+<p>Modern turbines achieve Cp = 0.40-0.48. Key insight: <strong>Power ∝ v³</strong> — doubling wind speed = 8× more power. Site selection is critical.</p>
+<h4>Why WRA is Pivotal</h4>
+<ul><li><strong>Financial viability:</strong> A 10% overestimation of wind speed leads to ~33% overestimation of energy yield (P∝v³) — potentially making a viable project appear unprofitable or an unviable one appear attractive</li><li><strong>Turbine selection:</strong> Wrong wind class turbine selection → premature failure. WRA determines correct IEC class (I, II, III)</li><li><strong>Layout optimization:</strong> Wake effects can reduce farm output by 5-15% — WRA identifies prevailing direction for optimal turbine spacing</li><li><strong>Grid planning:</strong> WRA data needed for power purchase agreements, grid connection sizing, and capacity factor calculations</li></ul>
+<div class="kp">Minimum WRA period: 1 year (to capture all seasonal variations). Standard heights: 10m, 50m, 80m, 100m. Instruments: anemometer + wind vane + data logger.</div>` },
+
+  'ch6_1': { marks:"4+4", source:"KU Jul 2025, Lecture Notes Ch.6",
+    content:`<h4>Wind Power Extraction + Wind Speed at 100m (Power Law)</h4>
+<h4>Power Extraction from Wind</h4>
+<div class="fml">P = ½ρAv³  and  Cp_max = 16/27 ≈ 59.3% (Betz limit)</div>
+<h4>Wind Speed at 100m — Power Law Calculation</h4>
+<p><strong>Given:</strong> v₁=5 m/s at h₁=10m, α=0.20 (crops, hedges, shrubs), T=15°C, P=1 atm</p>
+<div class="fml">Step 1 — Scale wind speed to 100m:
+v₂/v₁ = (h₂/h₁)^α = (100/10)^0.20 = 10^0.20
+10^0.20 = 1.585
+v₂ = 5 × 1.585 = 7.93 m/s ≈ 7.9 m/s
+
+Step 2 — Air density at 15°C, 1 atm:
+ρ = 1.293 × (273/(273+15)) × (101.3/101.3)
+= 1.293 × 273/288 = 1.225 kg/m³
+
+Step 3 — Specific power at 100m:
+P/A = ½ρv³ = 0.5 × 1.225 × 7.93³
+= 0.5 × 1.225 × 498.7 = 305.5 W/m²</div>
+<div class="kp">Wind speed at 100m: 7.9 m/s | Specific power: 305.5 W/m²</div>
+<div class="wp">The increase from 5 m/s to 7.9 m/s looks modest but the power increase is (7.93/5)³ = (1.585)³ = 3.98× — almost 4 times more power available at 100m vs 10m! This is why tall towers are used.</div>` },
+};
+
+// ═══════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════
+setTimeout(updateSidebarStats, 200);
+navigate('overview', document.querySelector('.sidebar-item.active'));
+</script>
+</body>
+</html>
