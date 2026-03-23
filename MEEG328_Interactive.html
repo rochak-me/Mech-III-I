@@ -1667,6 +1667,149 @@ body::before {
   line-height: 1.5;
   font-style: italic;
 }
+
+/* ══ COLLAPSIBLE SIDEBAR ══ */
+.sidebar {
+  transition: width 0.28s cubic-bezier(0.4,0,0.2,1),
+              transform 0.28s cubic-bezier(0.4,0,0.2,1);
+}
+
+.sidebar.collapsed {
+  width: 52px;
+}
+
+.sidebar.collapsed .sidebar-logo-text,
+.sidebar.collapsed .sidebar-section-label,
+.sidebar.collapsed .sidebar-item span:not(.dot):not(.sidebar-icon),
+.sidebar.collapsed .sidebar-item .ch-num,
+.sidebar.collapsed .home-link-text,
+.sidebar.collapsed .sidebar-stats {
+  opacity: 0;
+  pointer-events: none;
+  width: 0;
+  overflow: hidden;
+  display: none;
+}
+
+.sidebar.collapsed .sidebar-item {
+  justify-content: center;
+  padding: 9px 0;
+}
+
+.sidebar.collapsed .sidebar-logo {
+  padding: 16px 8px;
+  display: flex;
+  justify-content: center;
+}
+
+.sidebar.collapsed .home-link {
+  justify-content: center;
+  padding: 8px 0;
+}
+
+.sidebar.collapsed + .main {
+  margin-left: 52px;
+}
+
+.sidebar-toggle-btn {
+  position: absolute;
+  top: 16px;
+  right: -14px;
+  width: 28px;
+  height: 28px;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  color: var(--text2);
+  z-index: 201;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+
+.sidebar-toggle-btn:hover {
+  background: var(--surface2);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+@media (max-width: 768px) {
+  .sidebar-toggle-btn { display: none; }
+}
+
+/* Sidebar icon for collapsed state */
+.sidebar-icon {
+  font-size: 15px;
+  flex-shrink: 0;
+  width: 20px;
+  text-align: center;
+}
+
+/* Smooth main area transition */
+.main {
+  transition: margin-left 0.28s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* ── COMPACT SIDEBAR ITEMS ── */
+.sidebar-item {
+  padding: 8px var(--sp-5);
+  min-height: 36px;
+}
+
+.sidebar-section-label {
+  padding: 10px var(--sp-5) 4px;
+}
+
+/* ══ TOOLTIP FOR COLLAPSED SIDEBAR ══ */
+.sidebar.collapsed .sidebar-item {
+  position: relative;
+}
+.sidebar.collapsed .sidebar-item::after {
+  content: attr(data-label);
+  position: absolute;
+  left: 56px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--surface3);
+  color: var(--text);
+  font-size: 11px;
+  font-family: var(--font-body);
+  padding: 5px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border2);
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+  z-index: 300;
+  box-shadow: var(--shadow-md);
+}
+.sidebar.collapsed .sidebar-item:hover::after {
+  opacity: 1;
+}
+
+/* ══ AUTO-COLLAPSE HINT at medium screens ══ */
+@media (min-width: 769px) and (max-width: 1150px) {
+  /* Slightly narrower sidebar on medium screens */
+  :root { --sidebar-w: 220px; }
+  .sidebar-item { font-size: 12px; }
+  .sidebar-logo h1 { font-size: 15px; }
+}
+
+/* ══ BETTER CONTENT PADDING ON MEDIUM SCREENS ══ */
+@media (min-width: 769px) and (max-width: 1150px) {
+  .content { padding: 20px 22px; }
+  .chapter-hero { padding: 20px 22px; }
+  .overview-hero { padding: 20px 22px; }
+  .summary-grid { grid-template-columns: 1fr; }
+  .concept-grid { grid-template-columns: 1fr; }
+  .qa-grid { grid-template-columns: repeat(2, 1fr); }
+  .dashboard-grid { grid-template-columns: 1fr; }
+}
 </style>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
@@ -1687,39 +1830,40 @@ MathJax = {
 
 <!-- ═══ SIDEBAR ═══ -->
 <aside class="sidebar" id="sidebar">
+  <button class="sidebar-toggle-btn" id="sidebar-toggle" onclick="toggleSidebar()" title="Collapse sidebar">‹</button>
   <div class="sidebar-logo">
     <div class="badge">MEEG 328</div>
     <h1>Renewable Energy</h1>
     <p>KU · BE III Year · Sem I</p>
   </div>
-  <a class="home-link" href="index.html">← Back to Study Hub</a>
+  <a class="home-link" href="index.html"><span class="home-link-text">← Back to Study Hub</span></a>
 
   <div class="sidebar-section-label">Overview</div>
-  <div class="sidebar-item active" onclick="navigate('overview',this)"><div class="dot"></div>Overview & Priority List</div>
+  <div class="sidebar-item active" onclick="navigate('overview',this)" data-label="Overview"><div class="dot"></div>Overview & Priority List</div>
 
   <div class="sidebar-section-label">Chapters</div>
-  <div class="sidebar-item" onclick="navigate('dashboard',this)"><div class="dot"></div>📊 Nepal Energy Dashboard</div>
-  <div class="sidebar-item" onclick="navigate('ch1',this)"><div class="dot"></div>Ch 1 — Energy Overview<span class="ch-num">6Q</span></div>
-  <div class="sidebar-item" onclick="navigate('ch2',this)"><div class="dot"></div>Ch 2 — Biomass Energy<span class="ch-num">8Q</span></div>
-  <div class="sidebar-item" onclick="navigate('ch3',this)"><div class="dot"></div>Ch 3 — Biogas Energy<span class="ch-num">9Q</span></div>
-  <div class="sidebar-item" onclick="navigate('ch4',this)"><div class="dot"></div>Ch 4 — Solar Thermal<span class="ch-num">8Q</span></div>
-  <div class="sidebar-item" onclick="navigate('ch5',this)"><div class="dot"></div>Ch 5 — Solar PV<span class="ch-num">10Q</span></div>
-  <div class="sidebar-item" onclick="navigate('ch6',this)"><div class="dot"></div>Ch 6 — Wind Energy<span class="ch-num">8Q</span></div>
-  <div class="sidebar-item" onclick="navigate('ch7',this)"><div class="dot"></div>Ch 7 — Energy Storage<span class="ch-num">5Q</span></div>
-  <div class="sidebar-item" onclick="navigate('ch8',this)"><div class="dot"></div>Ch 8 — Hydro & Others<span class="ch-num">6Q</span></div>
-  <div class="sidebar-item" onclick="navigate('references',this)"><div class="dot"></div>📚 References & Sources</div>
+  <div class="sidebar-item" onclick="navigate('dashboard',this)" data-label="📊 Dashboard"><div class="dot"></div>📊 Nepal Energy Dashboard</div>
+  <div class="sidebar-item" onclick="navigate('ch1',this)" data-label="Ch 1 — Energy"><div class="dot"></div>Ch 1 — Energy Overview<span class="ch-num">6Q</span></div>
+  <div class="sidebar-item" onclick="navigate('ch2',this)" data-label="Ch 2 — Biomass"><div class="dot"></div>Ch 2 — Biomass Energy<span class="ch-num">8Q</span></div>
+  <div class="sidebar-item" onclick="navigate('ch3',this)" data-label="Ch 3 — Biogas"><div class="dot"></div>Ch 3 — Biogas Energy<span class="ch-num">9Q</span></div>
+  <div class="sidebar-item" onclick="navigate('ch4',this)" data-label="Ch 4 — Solar Thermal"><div class="dot"></div>Ch 4 — Solar Thermal<span class="ch-num">8Q</span></div>
+  <div class="sidebar-item" onclick="navigate('ch5',this)" data-label="Ch 5 — Solar PV"><div class="dot"></div>Ch 5 — Solar PV<span class="ch-num">10Q</span></div>
+  <div class="sidebar-item" onclick="navigate('ch6',this)" data-label="Ch 6 — Wind Energy"><div class="dot"></div>Ch 6 — Wind Energy<span class="ch-num">8Q</span></div>
+  <div class="sidebar-item" onclick="navigate('ch7',this)" data-label="Ch 7 — Storage"><div class="dot"></div>Ch 7 — Energy Storage<span class="ch-num">5Q</span></div>
+  <div class="sidebar-item" onclick="navigate('ch8',this)" data-label="Ch 8 — Hydro"><div class="dot"></div>Ch 8 — Hydro & Others<span class="ch-num">6Q</span></div>
+  <div class="sidebar-item" onclick="navigate('references',this)" data-label="📚 References"><div class="dot"></div>📚 References & Sources</div>
 
   <div class="sidebar-section-label">Practice</div>
-  <div class="sidebar-item" onclick="navigate('search',this)"><div class="dot"></div>🔍 Search</div>
-  <div class="sidebar-item" onclick="navigate('mcq',this)"><div class="dot"></div>MCQ Practice</div>
-  <div class="sidebar-item" onclick="navigate('fitb',this)"><div class="dot"></div>Fill in the Blank</div>
-  <div class="sidebar-item" onclick="navigate('flashcards',this)"><div class="dot"></div>Flashcards</div>
-  <div class="sidebar-item" onclick="navigate('formulas',this)"><div class="dot"></div>Formula Sheet</div>
+  <div class="sidebar-item" onclick="navigate('search',this)" data-label="🔍 Search"><div class="dot"></div>🔍 Search</div>
+  <div class="sidebar-item" onclick="navigate('mcq',this)" data-label="MCQ Practice"><div class="dot"></div>MCQ Practice</div>
+  <div class="sidebar-item" onclick="navigate('fitb',this)" data-label="Fill in Blank"><div class="dot"></div>Fill in the Blank</div>
+  <div class="sidebar-item" onclick="navigate('flashcards',this)" data-label="Flashcards"><div class="dot"></div>Flashcards</div>
+  <div class="sidebar-item" onclick="navigate('formulas',this)" data-label="Formula Sheet"><div class="dot"></div>Formula Sheet</div>
 
   <div class="sidebar-section-label">Exam</div>
-  <div class="sidebar-item" onclick="navigate('exam',this)"><div class="dot"></div>Exam Simulator</div>
-  <div class="sidebar-item" onclick="navigate('bookmarks',this)"><div class="dot"></div>🔖 Bookmarks <span class="ch-num" id="sb-bookmarks">0</span></div>
-  <div class="sidebar-item" onclick="navigate('progress',this)"><div class="dot"></div>My Progress</div>
+  <div class="sidebar-item" onclick="navigate('exam',this)" data-label="Exam Simulator"><div class="dot"></div>Exam Simulator</div>
+  <div class="sidebar-item" onclick="navigate('bookmarks',this)" data-label="🔖 Bookmarks"><div class="dot"></div>🔖 Bookmarks <span class="ch-num" id="sb-bookmarks">0</span></div>
+  <div class="sidebar-item" onclick="navigate('progress',this)" data-label="My Progress"><div class="dot"></div>My Progress</div>
 
   <div class="sidebar-stats">
     <div class="stat-grid">
@@ -5233,6 +5377,29 @@ window.renderView = function(view){
 
 setTimeout(updateSidebarStats, 200);
 navigate('overview', document.querySelector('.sidebar-item.active'));
+
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const btn = document.getElementById('sidebar-toggle');
+  const isCollapsed = sidebar.classList.toggle('collapsed');
+  btn.textContent = isCollapsed ? '›' : '‹';
+  btn.title = isCollapsed ? 'Expand sidebar' : 'Collapse sidebar';
+  try { localStorage.setItem('sidebar_collapsed', isCollapsed ? '1' : '0'); } catch(e){}
+}
+
+// Restore sidebar state on load
+(function(){
+  try {
+    const collapsed = localStorage.getItem('sidebar_collapsed');
+    if (collapsed === '1') {
+      const sidebar = document.getElementById('sidebar');
+      const btn = document.getElementById('sidebar-toggle');
+      if (sidebar) sidebar.classList.add('collapsed');
+      if (btn) { btn.textContent = '›'; btn.title = 'Expand sidebar'; }
+    }
+  } catch(e) {}
+})();
+
 </script>
 </body>
 </html>
