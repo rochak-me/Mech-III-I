@@ -1602,8 +1602,8 @@ MathJax = {
 
   <div class="sidebar-stats">
     <div class="stat-grid">
-      <div class="stat-box"><div class="num" id="sb-questions">60</div><div class="label">Questions</div></div>
-      <div class="stat-box"><div class="num" id="sb-mcq" style="font-size:14px">45</div><div class="label">MCQs+FITB</div></div>
+      <div class="stat-box"><div class="num" id="sb-questions">81</div><div class="label">Questions</div></div>
+      <div class="stat-box"><div class="num" id="sb-mcq" style="font-size:14px">55</div><div class="label">MCQs+FITB</div></div>
       <div class="stat-box"><div class="num" id="sb-progress">0%</div><div class="label">Progress</div></div>
       <div class="stat-box"><div class="num" id="mcq-score-sidebar">0%</div><div class="label">MCQ Score</div></div>
     </div>
@@ -1873,7 +1873,7 @@ function updateSidebarStats(){
   const sbProg = document.getElementById('sb-progress');
   const sbBm = document.getElementById('sb-bookmarks');
   if(sbQ) sbQ.textContent = total;
-  if(sbMcq) sbMcq.textContent = (typeof mcqData!=='undefined'?mcqData.length:45) + ' MCQ / ' + (typeof fitbData!=='undefined'?fitbData.length:10) + ' FITB';
+  if(sbMcq) sbMcq.textContent = (typeof mcqData!=='undefined'?mcqData.length:55) + ' MCQ / ' + (typeof fitbData!=='undefined'?fitbData.length:10) + ' FITB';
   if(sbProg) sbProg.textContent = pct+'%';
   if(sbBm) sbBm.textContent = bm;
 }
@@ -1914,7 +1914,7 @@ function renderOverview(){
     '<div style="display:flex;gap:12px;flex-wrap:wrap;">' +
     [
       {n:totalQ, l:'Past Questions', c:'var(--accent2)'},
-      {n:typeof mcqData!=='undefined'?mcqData.length:45, l:'MCQs', c:'var(--accent3)'},
+      {n:typeof mcqData!=='undefined'?mcqData.length:55, l:'MCQs', c:'var(--accent3)'},
       {n:'8', l:'Chapters', c:'var(--purple)'},
       {n:'3', l:'Exam Papers', c:'var(--yellow)'},
       {n:overallPct+'%', l:'Your Progress', c:'var(--green)'},
@@ -2177,7 +2177,7 @@ function renderProgress(){
     ['overall','mcq','bm','study'].map((type,i) => {
       const vals = [
         {n:overallPct+'%', l:'Overall Completion', c:'var(--accent)'},
-        {n:Object.keys(mcqAnswers||{}).length + '/' + (typeof mcqData!=='undefined'?mcqData.length:45), l:'MCQs Attempted', c:'var(--accent3)'},
+        {n:Object.keys(mcqAnswers||{}).length + '/' + (typeof mcqData!=='undefined'?mcqData.length:55), l:'MCQs Attempted', c:'var(--accent3)'},
         {n:bm.length, l:'Bookmarked', c:'var(--yellow)'},
         {n:totalDone + '/' + total, l:'Answers Read', c:'var(--green)'},
       ][i];
@@ -2693,7 +2693,7 @@ const chapterSummaries = {
     hours: 6, totalMarks: '8–11', examFreq: 'Every paper',
     syllabus: [
       { main: '1.1 National & Global Energy Resources', subs: ['Nepal energy mix (firewood 63.87%, hydro, petroleum)', 'Global scenario — IEA data', 'Per capita consumption comparison'] },
-      { main: '1.2 Future Energy Requirements', subs: ['Role of renewables in meeting future demand', 'Energy transition pathways', 'Nepal 15th Plan targets (15,000 MW by 2030)'] },
+      { main: '1.2 Future Energy Requirements', subs: ['Role of renewables in meeting future demand', 'Energy transition pathways', 'Nepal 16th Periodic Plan targets (15,000 MW by 2030)'] },
       { main: '1.3 Energy, Sustainability & Environment', subs: ['Energy Trilemma (security, equity, sustainability)', 'Climate change → COP27 decisions', 'Loss & Damage fund', 'EV barriers in Nepal'] },
       { main: '1.4 National RE Policy & Strategy', subs: ['NDC targets', 'WECS, AEPC roles', 'Renewable Energy Subsidy Policy', 'Hydropower Development Policy'] },
     ],
@@ -2707,7 +2707,7 @@ const chapterSummaries = {
     strategy: [
       { icon:'🎯', text:'<strong>Section C question guaranteed</strong> — Nepal energy scenario + energy security appears in all 3 papers. Always write: RoR problem → diversity solution → PHES + Solar PV.' },
       { icon:'📝', text:'<strong>COP27 + EV barriers</strong> (Dec 2022, 5 marks) — memorise: Loss & Damage Fund + 3 specific EV barriers with Nepal context.' },
-      { icon:'📊', text:'<strong>Use data</strong> — 532 PJ, 63.87%, 98%, 260 kWh/capita. Answers with statistics score higher than vague answers.' },
+      { icon:'📊', text:'<strong>Use data</strong> — 532 PJ, 63.87%, 98%, 369 kWh/capita. Answers with statistics score higher than vague answers.' },
       { icon:'⏱️', text:'<strong>Time allocation:</strong> 11-mark questions → spend 15-18 min. Write structured answer: define → current status → problem → solution → Nepal relevance.' },
     ],
     keyFormulas: ['Energy Balance: Production + Imports − Exports ± Stock = Consumption', 'Sankey diagram: arrow width ∝ energy quantity'],
@@ -3332,7 +3332,7 @@ const chapters = {
       { q: "Compare Nepal's per capita energy consumption with regional SAARC neighbors. What are the main reasons for the difference?", marks:"3", topic:"Global Scenario" },
     ],
     concepts: [
-      { label:"Nepal Energy Mix", title:"Nepal's Energy Sources (2023)", body:"Hydropower: >90% of electricity\nFirewood: ~68% of total energy\nPetroleum: ~15%\nBiogas: ~1.2%\nSolar/Wind: ~3%\nTotal installed hydro capacity: ~2500 MW\nPer capita electricity: ~260 kWh/year (low)" },
+      { label:"Nepal Energy Mix", title:"Nepal's Energy Sources (2023)", body:"Hydropower: >90% of electricity\nFirewood: ~68% of total energy\nPetroleum: ~15%\nBiogas: ~1.2%\nSolar/Wind: ~3%\nTotal installed hydro capacity: ~2500 MW\nPer capita electricity: ~369 kWh/year (FY 2079/80)" },
       { label:"Energy Security", title:"3 Pillars of Energy Trilemma", body:"1. Energy Security: reliable supply, no blackouts\n2. Energy Equity: affordable access for all\n3. Environmental Sustainability: low carbon\nNepal's problem: over-reliance on RoR → seasonal blackouts in dry season" },
       { label:"Climate Policy", title:"COP & NDC Key Points", body:"COP27 (Sharm el-Sheikh 2022): Loss & damage fund established\nNepal's NDC: 15% renewable energy by 2030\nSDG 7: Affordable and clean energy\nNepal target: 15,000 MW hydro by 2030" },
     ]
@@ -3564,7 +3564,7 @@ const mcqData = [
   { q:"Biogas composition by volume is approximately:", opts:["90% CH₄, 10% CO₂","55-70% CH₄, 30-45% CO₂","50% CH₄, 50% H₂","40% CH₄, 60% N₂"], correct:1, explain:"Biogas from anaerobic digestion of cattle dung contains 55-70% methane (CH₄) and 30-45% carbon dioxide (CO₂), plus trace amounts of H₂S. The methane content determines calorific value (~22 MJ/m³). Source: KU Lecture Slides Ch.3.", year:"Possible" },
   { q:"Which instrument measures DIRECT normal irradiance (DNI) only?", opts:["Pyranometer","Pyrheliometer","Anemometer","Pygeometer"], correct:1, explain:"Pyrheliometer (with collimating tube) measures only beam/direct radiation on a surface normal to the sun. Pyranometer measures GLOBAL irradiance (direct + diffuse) on a horizontal surface. Anemometer = wind speed. Source: KU Jul/Aug 2024 MCQ.", year:"Jul/Aug 2024" },
   { q:"The efficiency of a downdraft gasifier for electricity generation is typically:", opts:["5-10%","15-25%","40-50%","60-70%"], correct:1, explain:"Gasifier-engine systems achieve 15-25% electrical efficiency. The gasifier converts biomass to syngas at ~70-80% thermal efficiency, but the IC engine converts syngas to electricity at only ~25-30%, giving overall electrical efficiency of 15-25%. Source: Basu (2010).", year:"Possible" },
-  { q:"Nepal's per capita electricity consumption (FY 2079/80) is approximately:", opts:["100 kWh/year","260 kWh/year","500 kWh/year","900 kWh/year"], correct:1, explain:"Nepal's per capita electricity consumption is approximately 260 kWh/year — far below the South Asian average (~900 kWh/year) and global average (~3,000 kWh/year). Despite 98% electrification, consumption remains low due to poverty and small system sizes. Source: WECS 2024.", year:"Possible" },
+  { q:"Nepal's per capita electricity consumption (FY 2079/80) is approximately:", opts:["100 kWh/year","369 kWh/year","500 kWh/year","900 kWh/year"], correct:1, explain:"Nepal's per capita electricity consumption is approximately 369 kWh/year — far below the South Asian average (~900 kWh/year) and global average (~3,000 kWh/year). Despite 98% electrification, consumption remains low due to poverty and small system sizes. Source: WECS 2024.", year:"Possible" },
   { q:"The Betz limit states that a wind turbine can extract a maximum of:", opts:["100% of wind power","59.3% of wind power","45% of wind power","33% of wind power"], correct:1, explain:"The Betz limit = 16/27 ≈ 59.3% is the theoretical maximum fraction of wind power extractable by any turbine. Derived from conservation of momentum — if all kinetic energy were extracted, the air would stop and block the rotor. Modern turbines achieve Cp ≈ 0.40-0.48. Source: Twidell & Weir (2015).", year:"Possible" },
   { q:"In Nepal, the primary fuel used for cooking in rural households is:", opts:["LPG","Biogas","Firewood","Kerosene"], correct:2, explain:"According to CBS 2021 census data, 51.02% of Nepal's 6.67 million households use firewood (wood) as their primary cooking fuel. LPG is second at 44.29%, followed by cow dung (2.88%), biogas (1.18%), electricity (0.49%), and kerosene (0.05%). Source: CBS 2021.", year:"Possible" },
   { q:"The hydraulic retention time (HRT) for a typical household biogas plant in Nepal is:", opts:["5-10 days","20-30 days","30-60 days","90-120 days"], correct:2, explain:"Typical HRT for fixed dome household biogas plants in Nepal's climate is 30-60 days (mesophilic conditions at 20-35°C ambient). Colder mountain regions need longer HRT. The GGC 2047 standard design uses 40-60 days. Source: KU Lecture Slides Ch.3.", year:"Possible" },
@@ -3792,7 +3792,7 @@ function buildRefs(keys){
 }const answerData = {
   'ch1_0': { marks:"5+6", refs:['ku-slides', 'wecs-2024', 'ku-exam-2024'], content:`<h4>Nepal's Energy Scenario & RoR Hydropower Dependence</h4>
 <h4>Current Energy Consumption Scenario of Nepal</h4>
-<ul><li>Total energy consumption (FY 2079/80): ~532 PJ, with ~16.8% decrease from previous year</li><li>Dominant source: Traditional biomass (firewood, dung) accounts for ~68% of total energy — used for cooking in rural areas</li><li>Modern energy: Hydropower >90% of electricity, petroleum products ~15%</li><li>Per capita electricity consumption: ~260 kWh/year (much lower than South Asian average of ~900 kWh/year)</li><li>Renewable sources (solar, biogas, micro-hydro): growing but still <5% of total</li></ul>
+<ul><li>Total energy consumption (FY 2079/80): ~532 PJ, with ~16.8% decrease from previous year</li><li>Dominant source: Traditional biomass (firewood, dung) accounts for ~68% of total energy — used for cooking in rural areas</li><li>Modern energy: Hydropower >90% of electricity, petroleum products ~15%</li><li>Per capita electricity consumption: ~369 kWh/year (much lower than South Asian average of ~900 kWh/year)</li><li>Renewable sources (solar, biogas, micro-hydro): growing but still <5% of total</li></ul>
 <h4>Is Heavy RoR Reliance the Right Approach?</h4>
 <div class="step"><strong>Problem with RoR:</strong> Nepal's rivers have highly seasonal flow — 70-80% of flow occurs during monsoon (June-September). In dry season, flows drop dramatically. RoR plants have no reservoir to store water, so electricity generation drops by 40-60% in winter. This causes seasonal blackouts ("load shedding") even with installed capacity exceeding demand.</div>
 <div class="step"><strong>Energy security risk:</strong> A single extreme drought year or climate-change-induced glacier retreat can cripple the entire electricity supply. No diversity = no resilience.</div>
@@ -4240,7 +4240,8 @@ LPG: ✅ Portable, available everywhere. ✅ Higher energy density = less gas ne
 <p>A flat plate solar collector absorbs solar radiation and transfers the heat to a fluid (water or glycol). Components: transparent cover glass (reduces convection losses), absorber plate (dark-coated metal — absorbs radiation), fluid tubes, insulated back panel.</p>
 <div class="math-eq">$$G A_c \\tau\\alpha = Q_u + U_L A_c (T_i - T_a) \\quad \\Rightarrow \\quad \\eta = F_R\\left[\\tau\\alpha - U_L\\frac{T_i-T_a}{G}\\right]$$</div>
 <h4>PV Plant Row Spacing Calculation (5MW at 27°N)</h4>
-<div class="derivation"><span class="step-num">Step 1 — Tilt angle: β ≈ L = 27°</span>$$\\alpha_{min} = 90° - L - 23.45° = 90 - 27 - 23.45 = 39.55° \\text{ (winter solstice elevation)}$$</div><div class="derivation"><span class="step-num">Step 2 — Row Spacing</span>$$h = 2.2 \\sin(27°) = 0.999 \\text{ m} \\quad D = \\frac{h}{\\tan(39.55°)} = \\frac{0.999}{0.824} = 1.21 \\text{ m}$$$$\\text{Row pitch} = 2.2\\cos(27°) + 1.21 = 1.96 + 1.21 = \\boxed{3.17 \\text{ m}}$$</div><div class="derivation"><span class="step-num">Step 3 & 4 — Module count and total area</span>$$N_{modules} = \\frac{5{,}000{,}000}{600} = 8{,}334 \\text{ modules} \\quad \\Rightarrow \\text{Total area} \\approx \\boxed{1.72 \\text{ ha (min)}}$$</div><div style="display:none">` },
+<div class="derivation"><span class="step-num">Step 1 — Tilt angle: β ≈ L = 27°</span>$$\\alpha_{min} = 90° - L - 23.45° = 90 - 27 - 23.45 = 39.55° \\text{ (winter solstice elevation)}$$</div><div class="derivation"><span class="step-num">Step 2 — Row Spacing</span>$$h = 2.2 \\sin(27°) = 0.999 \\text{ m} \\quad D = \\frac{h}{\\tan(39.55°)} = \\frac{0.999}{0.824} = 1.21 \\text{ m}$$$$\\text{Row pitch} = 2.2\\cos(27°) + 1.21 = 1.96 + 1.21 = \\boxed{3.17 \\text{ m}}$$</div><div class="derivation"><span class="step-num">Step 3 & 4 — Module count and total area</span>$$N_{modules} = \\frac{5{,}000{,}000}{600} = 8{,}334 \\text{ modules} \\quad \\Rightarrow \\text{Total area} \\approx \\boxed{1.72 \\text{ ha (min)}}$$<div class="kp">Key Point: Row pitch = D_horizontal + D_spacing. For 2 rows × 30 modules each = 60 modules per string. Total strings = 8334/60 ≈ 139 strings. Total ground area = 8334 × (row pitch × module width) = 8334 × (3.17 × 1.3) ≈ 34,380 m² = <strong>3.44 ha</strong> minimum land requirement. Add access roads → ~4–5 ha typically.</div>
+<div class="kp">Note: "Use sun path diagram" means read α_min = 39.55° at winter solstice from the diagram for latitude 27°N. In exam, always state: tilt = latitude, use winter solstice for worst-case shading.</div>` },
 
   'ch4_2': { marks:3, refs:['ku-slides', 'ku-exam-2022', 'duffie'], content:`<h4>Thermosyphon Technology — Principle and Thermal Circuit Diagram</h4>
 <h4>Working Principle</h4>
@@ -4370,7 +4371,7 @@ Applications: Space satellites (multi-junction), research, building-integrated (
 
   'ch5_6': { marks:3, refs:['ku-slides', 'masters'], content:`<h4>Battery Sizing for Standalone PV — 3 Days Autonomy, 2kWh/day</h4>
 <p><strong>Given:</strong> Daily load E=2 kWh/day, autonomy=3 days, V_system=12V, DOD=80%=0.8</p>
-<div class="derivation"><span class="step-num">Battery Sizing Formula</span>$$Ah = \\frac{E_{daily} \\times N_{auto}}{V_{sys} \\times DOD \\times \\eta_{bat}} = \\frac{2000 \\times 3}{12 \\times 0.80 \\times 0.90} = \\boxed{694 \\text{ Ah}}$$</div><div class="note-box">Simplified (no $\\eta_{bat}$): $Ah = \\frac{2000 \\times 3}{12 \\times 0.80} = 625$ Ah. In KU exams, simplified form is usually accepted unless stated otherwise.</div><div style="display:none">
+<div class="derivation"><span class="step-num">Battery Sizing Formula</span>$$Ah = \\frac{E_{daily} \\times N_{auto}}{V_{sys} \\times DOD \\times \\eta_{bat}} = \\frac{2000 \\times 3}{12 \\times 0.80 \\times 0.90} = \\boxed{694 \\text{ Ah}}$$</div><div class="note-box">Simplified (no $\\eta_{bat}$): $Ah = \\frac{2000 \\times 3}{12 \\times 0.80} = 625$ Ah. In KU exams, simplified form is usually accepted unless stated otherwise.</div>
 <div class="kp">Answer: ~625–694 Ah at 12V (depending on battery efficiency assumed). This would require, for example, 5× 130Ah batteries in parallel for a 12V system, or 3× 250Ah batteries in parallel.</div>
 <div class="wp">Exam tip: Always state your assumptions — the exact answer depends on whether η_battery is included. In KU exams, simplified formula (without η_bat) is usually expected unless stated.</div>` },
 
@@ -4690,8 +4691,8 @@ function initDashboardCharts(){
       data: {
         labels: ['Electrification (%)', 'Renewables Share (%)', 'Hydro Cap (×100 MW)', 'Per Capita (kWh/yr)'],
         datasets: [
-          { label: 'Current (FY 2079/80)', data: [98, 9.09, 26.84, 260], backgroundColor: '#22d3a0', borderRadius: 4 },
-          { label: '15th Plan Target 2030', data: [100, 15, 150, 700], backgroundColor: '#38bdf8', borderRadius: 4, borderDash: [5,5] },
+          { label: 'Current (FY 2079/80)', data: [98, 9.09, 26.84, 369], backgroundColor: '#22d3a0', borderRadius: 4 },
+          { label: '16th Plan Target 2030', data: [100, 15, 150, 1500], backgroundColor: '#38bdf8', borderRadius: 4, borderDash: [5,5] },
         ]
       },
       options: {
