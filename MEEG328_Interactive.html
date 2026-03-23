@@ -94,7 +94,12 @@ body::before {
 
 /* ═══ LAYOUT SHELL ═══ */
 .layout { display: flex; min-height: 100vh; position: relative; }
-
+/* Sidebar scroll + body lock */
+html, body { height: 100%; }
+body { overflow: hidden; }              /* stop body from scrolling past sidebar */
+.layout { height: 100vh; }
+.sidebar { height: 100vh; overflow-y: auto; }
+.main { height: 100vh; overflow-y: auto; }
 /* ═══ SIDEBAR ═══ */
 .sidebar {
   width: var(--sidebar-w);
