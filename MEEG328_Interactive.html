@@ -8,7 +8,324 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
+/* ═══════════════════════════════════════════════<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>MEEG 328 — Renewable Energy Study Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
 /* ═══════════════════════════════════════════════
+   MEEG 328 RENEWABLE ENERGY — v2 UPGRADE
+   Author: KU Study Hub
+═══════════════════════════════════════════════ */
+:root {
+  --bg:        #080c10;
+  --surface:   #0d1318;
+  --surface2:  #121a20;
+  --border:    #1a2530;
+  --accent:    #22d3a0;
+  --accent2:   #6ee7c7;
+  --accent3:   #38bdf8;
+  --green:     #22d3a0;
+  --yellow:    #fbbf24;
+  --red:       #f87171;
+  --text:      #e2eff5;
+  --text2:     #7a9ab0;
+  --text3:     #3a5568;
+  --font-head: 'Syne', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --radius:    12px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg); color: var(--text); font-family: var(--font-body);
+  font-size: 15px; line-height: 1.7; min-height: 100vh; display: flex;
+}
+
+.sidebar {
+  width: 260px; background: var(--surface); border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; padding: 20px 0;
+}
+.sidebar h1 { color: var(--text); font-family: var(--font-head); font-size: 18px; padding: 0 20px 20px; border-bottom: 1px solid var(--border); }
+.nav-item { padding: 12px 20px; color: var(--text2); cursor: pointer; transition: 0.2s; font-size: 14px; }
+.nav-item:hover, .nav-item.active { background: var(--surface2); color: var(--accent); border-left: 3px solid var(--accent); }
+
+.main { flex: 1; padding: 40px; overflow-y: auto; height: 100vh; }
+.header-bar { display: flex; gap: 10px; margin-bottom: 30px; }
+.tab-btn { background: var(--surface2); border: 1px solid var(--border); color: var(--text2); padding: 8px 16px; border-radius: 8px; cursor: pointer; font-family: var(--font-mono); font-size: 12px; }
+.tab-btn.active { background: rgba(34,211,160,0.1); color: var(--accent); border-color: var(--accent); }
+
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin-bottom: 20px; }
+.q-title { font-weight: 600; font-size: 16px; margin-bottom: 12px; }
+.q-meta { font-size: 12px; color: var(--yellow); font-family: var(--font-mono); margin-bottom: 16px; display: inline-block; background: rgba(251,191,36,0.1); padding: 4px 8px; border-radius: 4px; }
+
+/* MCQ Styles */
+.options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
+.opt-btn { background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 12px; border-radius: 8px; cursor: pointer; text-align: left; transition: 0.2s; }
+.opt-btn:hover { border-color: var(--accent); }
+.opt-btn.correct { background: rgba(34,211,160,0.2); border-color: var(--green); color: var(--green); }
+.opt-btn.wrong { background: rgba(248,113,113,0.2); border-color: var(--red); color: var(--red); }
+
+/* FITB Styles */
+.fitb-ans { display: none; background: var(--surface2); padding: 10px; border-radius: 8px; color: var(--accent); font-family: var(--font-mono); margin-top: 10px; border: 1px dashed var(--accent); }
+.show-ans-btn { background: transparent; border: 1px solid var(--border); color: var(--text3); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 11px; margin-top: 10px; }
+.show-ans-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+#content-area { animation: fadeIn 0.3s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+  <h1>MEEG 328<br><span style="color:var(--text3);font-size:12px;font-weight:400;">Renewable Energy Hub</span></h1>
+  <div style="margin-top: 20px;">
+    <div class="nav-item active" onclick="switchView('overview')">📊 Course Overview</div>
+    <div class="nav-item" onclick="switchView('mcq')">🎯 Practice MCQs</div>
+    <div class="nav-item" onclick="switchView('fitb')">📝 Fill in the Blanks</div>
+    <div class="nav-item" onclick="switchView('theory')">📚 Subjective Questions</div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="header-bar" id="tabs-container" style="display:none;">
+    <button class="tab-btn active" onclick="filterData('All')">All Topics</button>
+    <button class="tab-btn" onclick="filterData('2019')">2019 Past Paper</button>
+  </div>
+  <div id="content-area">
+    </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// NEW 2019-UPDATED DATA STRUCTURES
+// ═══════════════════════════════════════════════════════
+
+const mcqData = [
+  {
+    q: "A solar module in a solar panel refers to:",
+    options: ["Series arrangement of solar cells", "Parallel arrangements of solar cell", "Series and parallel arrangements of solar cells", "No specific arrangements of solar cell"],
+    correct: 2,
+    year: "2019",
+    topic: "Solar Energy"
+  },
+  {
+    q: "What is Zero Net Energy?",
+    options: ["Not using any energy", "Not using energy for the internet", "Total amount of energy used is equal to the amount of renewable energy created on site", "Using a net to try and capture energy"],
+    correct: 2,
+    year: "2019",
+    topic: "Energy Overview"
+  },
+  {
+    q: "The amount of oil that can be technically recovered at any price is called oil:",
+    options: ["Reserves", "Reservoirs", "Resources", "Traps"],
+    correct: 0,
+    year: "2019",
+    topic: "Energy Overview"
+  },
+  {
+    q: "The fraction of power in the wind that a modern wind turbine can extract is approximately:",
+    options: ["50-60%", "40-50%", "70-80%", "20-30%"],
+    correct: 1,
+    year: "2019",
+    topic: "Wind Energy"
+  },
+  {
+    q: "The collection efficiency of a Flat plate collector can be improved by:",
+    options: ["Putting a selective coating on the absorber plate", "Filling the air on the space above the absorber plate", "Removing the glazing of the collector", "Placing horizontally in our geography"],
+    correct: 0,
+    year: "2019",
+    topic: "Solar Energy"
+  },
+  {
+    q: "State of Charge (SOC) is defined as the percentage of the battery capacity:",
+    options: ["Available for discharge", "That has been discharged", "Available for charging", "That has been no use"],
+    correct: 0,
+    year: "2019",
+    topic: "Energy Storage"
+  },
+  {
+    q: "The amount of energy available in the wind at any instant is proportional to ________ of the wind speed.",
+    options: ["Square root power of two", "Square root power of three", "Square power", "Cube power"],
+    correct: 3,
+    year: "2019",
+    topic: "Wind Energy"
+  },
+  {
+    q: "Low carbon-nitrogen (C:N) ratio could stop anaerobic digestion process due to:",
+    options: ["too acidic environment", "too alkaline environment (ammonia toxicity)", "neither acidic nor alkaline", "unpredictable changes"],
+    correct: 1,
+    year: "2019",
+    topic: "Biomass Energy"
+  }
+];
+
+const fitbData = [
+  {
+    q: "A solar farm is installed in a region where the insolation is 200 kWh/m² per month. To produce 1200 kWh of electricity per month, approximate 20% efficiency would be required. ________ m² of solar panels are needed.",
+    ans: "30",
+    year: "2019"
+  },
+  {
+    q: "Fixed dome biodigester provides ________ gas pressure to the biogas stoves.",
+    ans: "variable",
+    year: "2019"
+  },
+  {
+    q: "The mean wind speed at site A for a wind farm is 20% higher than at site B. The expected increase in electricity production at site A compared to site B is ________ %.",
+    ans: "72.8",
+    year: "2019"
+  },
+  {
+    q: "A feed-in tariff guarantees producers of renewable energy a ________ price per unit of supplied electricity.",
+    ans: "fixed",
+    year: "2019"
+  },
+  {
+    q: "Anaerobic digestion is the decomposition of organic matter in the ________ of air by microorganisms.",
+    ans: "absence",
+    year: "2019"
+  },
+  {
+    q: "Time required to heat the fuel to the pyrolysis temperature is much shorter than the characteristic pyrolysis reaction time is called ________ pyrolysis.",
+    ans: "fast (or flash)",
+    year: "2019"
+  }
+];
+
+const theoryData = [
+  {
+    q: "Discuss about the importance of biochemical process in an anaerobic digestion. A farmer needs to manage cattle dung of 100 kg daily (animal dung contains 16% VS) in his farm house. Estimate biogas yield.",
+    topic: "Biomass Energy",
+    year: "2019"
+  },
+  {
+    q: "Explain flywheel energy storage. What are its advantages and limitations compared to batteries?",
+    topic: "Energy Storage",
+    year: "2019"
+  }
+];
+
+// ═══════════════════════════════════════════════════════
+// RENDER LOGIC
+// ═══════════════════════════════════════════════════════
+
+let currentView = 'overview';
+let currentFilter = 'All';
+
+function switchView(view) {
+  currentView = view;
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  
+  const tabs = document.getElementById('tabs-container');
+  if(view === 'overview') tabs.style.display = 'none';
+  else tabs.style.display = 'flex';
+
+  renderContent();
+}
+
+function filterData(filter) {
+  currentFilter = filter;
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.classList.remove('active');
+    if(btn.innerText.includes(filter)) btn.classList.add('active');
+  });
+  renderContent();
+}
+
+function renderContent() {
+  const container = document.getElementById('content-area');
+  let html = '';
+
+  if (currentView === 'overview') {
+    html = `
+      <div class="card" style="border-color: var(--accent);">
+        <h2 style="color:var(--accent); margin-bottom: 10px;">Welcome to MEEG 328 Hub!</h2>
+        <p style="color:var(--text2);">The database has been successfully updated with the <strong>2019 Past Board Exam Questions</strong>. Select a category from the sidebar to start practicing.</p>
+        <br>
+        <div style="display:flex; gap:20px;">
+            <div style="background:var(--surface2); padding:15px; border-radius:8px; flex:1;">
+                <h3 style="color:var(--yellow);">${mcqData.length}</h3>
+                <p style="font-size:12px; color:var(--text3);">Total MCQs Available</p>
+            </div>
+            <div style="background:var(--surface2); padding:15px; border-radius:8px; flex:1;">
+                <h3 style="color:var(--accent3);">${fitbData.length}</h3>
+                <p style="font-size:12px; color:var(--text3);">Fill in the Blanks</p>
+            </div>
+        </div>
+      </div>
+    `;
+  } 
+  else if (currentView === 'mcq') {
+    const filtered = currentFilter === 'All' ? mcqData : mcqData.filter(d => d.year === currentFilter);
+    filtered.forEach((item, index) => {
+      html += `
+        <div class="card">
+          <span class="q-meta">${item.year} | ${item.topic}</span>
+          <div class="q-title">${index + 1}. ${item.q}</div>
+          <div class="options-grid">
+            ${item.options.map((opt, i) => `
+              <button class="opt-btn" onclick="checkMCQ(this, ${i === item.correct})">${opt}</button>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    });
+  }
+  else if (currentView === 'fitb') {
+    const filtered = currentFilter === 'All' ? fitbData : fitbData.filter(d => d.year === currentFilter);
+    filtered.forEach((item, index) => {
+      html += `
+        <div class="card">
+          <span class="q-meta">${item.year}</span>
+          <div class="q-title">${index + 1}. ${item.q}</div>
+          <button class="show-ans-btn" onclick="this.nextElementSibling.style.display='block'; this.style.display='none';">Reveal Answer</button>
+          <div class="fitb-ans">Answer: ${item.ans}</div>
+        </div>
+      `;
+    });
+  }
+  else if (currentView === 'theory') {
+    const filtered = currentFilter === 'All' ? theoryData : theoryData.filter(d => d.year === currentFilter);
+    filtered.forEach((item, index) => {
+      html += `
+        <div class="card">
+          <span class="q-meta">${item.year} | ${item.topic}</span>
+          <div class="q-title">Q: ${item.q}</div>
+        </div>
+      `;
+    });
+  }
+
+  container.innerHTML = html;
+}
+
+function checkMCQ(btn, isCorrect) {
+  const parent = btn.parentElement;
+  // Disable all buttons in this grid
+  parent.querySelectorAll('.opt-btn').forEach(b => {
+    b.style.pointerEvents = 'none';
+  });
+  
+  if(isCorrect) {
+    btn.classList.add('correct');
+  } else {
+    btn.classList.add('wrong');
+  }
+}
+
+// Init
+renderContent();
+</script>
+</body>
+</html>
    MEEG 328 RENEWABLE ENERGY — v2 UPGRADE
    Goals: mobile-first, polished UI, less bloat
    Author: KU Study Hub
