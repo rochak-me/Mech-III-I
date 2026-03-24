@@ -537,6 +537,7 @@ body { overflow: hidden; }              /* stop body from scrolling past sidebar
 .year-tag.y2022 { color:#34d399; border-color:rgba(52,211,153,0.3);  background:rgba(52,211,153,0.07); }
 .year-tag.y2024 { color:#38bdf8; border-color:rgba(56,189,248,0.3);  background:rgba(56,189,248,0.07); }
 .year-tag.y2025 { color:#a78bfa; border-color:rgba(167,139,250,0.3); background:rgba(167,139,250,0.07); }
+.year-tag.y2019 { color:#fb923c; border-color:rgba(251,146,60,0.3);  background:rgba(251,146,60,0.07); }
 .year-tag.yposs { color:#fbbf24; border-color:rgba(251,191,36,0.3);  background:rgba(251,191,36,0.07); }
 
 .possible-badge {
@@ -1872,8 +1873,8 @@ MathJax = {
 
   <div class="sidebar-stats">
     <div class="stat-grid">
-      <div class="stat-box"><div class="num" id="sb-questions">81</div><div class="label">Questions</div></div>
-      <div class="stat-box"><div class="num" id="sb-mcq" style="font-size:14px">55</div><div class="label">MCQs+FITB</div></div>
+      <div class="stat-box"><div class="num" id="sb-questions">107</div><div class="label">Questions</div></div>
+      <div class="stat-box"><div class="num" id="sb-mcq" style="font-size:14px">107</div><div class="label">MCQs+FITB</div></div>
       <div class="stat-box"><div class="num" id="sb-progress">0%</div><div class="label">Progress</div></div>
       <div class="stat-box"><div class="num" id="mcq-score-sidebar">0%</div><div class="label">MCQ Score</div></div>
     </div>
@@ -1890,7 +1891,7 @@ MathJax = {
       <span id="bc-sub">Overview</span>
     </div>
     <div class="topbar-right">
-      <span class="year-badge">3 Exam Papers</span>
+      <span class="year-badge">5 Exam Papers</span>
     </div>
   </div>
 
@@ -2014,7 +2015,7 @@ function renderChapterTab(view, tab){
       const isViewed = viewed[key];
       const years = q.years||[];
       const yearTags = years.map(y=>{
-        const cls = y.includes('2022')?'y2022':y.includes('2024')?'y2024':y.includes('2025')?'y2025':'yposs';
+        const cls = y.includes('2022')?'y2022':y.includes('2024')?'y2024':y.includes('2025')?'y2025':y.includes('2019')?'y2019':'yposs';
         return `<span class="year-tag ${cls}">${y}</span>`;
       }).join('');
       return `<div class="q-card" id="qcard-${key}">
@@ -2137,13 +2138,13 @@ function updateSidebarStats(){
   const viewed = Object.keys(p.viewed||{}).length;
   const total = Object.values(chapters).reduce((s,c)=>s+(c.theory||[]).length,0);
   const pct = total>0 ? Math.round(viewed/total*100) : 0;
-  const bm = getBookmarks ? getBookmarks().length : 0;
+  const bm = Object.keys(p.bookmarks||{}).length;
   const sbQ = document.getElementById('sb-questions');
   const sbMcq = document.getElementById('sb-mcq');
   const sbProg = document.getElementById('sb-progress');
   const sbBm = document.getElementById('sb-bookmarks');
   if(sbQ) sbQ.textContent = total;
-  if(sbMcq) sbMcq.textContent = (typeof mcqData!=='undefined'?mcqData.length:55) + ' MCQ / ' + (typeof fitbData!=='undefined'?fitbData.length:10) + ' FITB';
+  if(sbMcq) sbMcq.textContent = (typeof mcqData!=='undefined'?mcqData.length:84) + ' MCQ / ' + (typeof fitbData!=='undefined'?fitbData.length:23) + ' FITB';
   if(sbProg) sbProg.textContent = pct+'%';
   if(sbBm) sbBm.textContent = bm;
 }
@@ -2180,13 +2181,13 @@ function renderOverview(){
     '<div style="position:absolute;top:-40px;right:-40px;width:160px;height:160px;border-radius:50%;background:var(--accent);opacity:0.04;filter:blur(30px);"></div>' +
     '<div style="font-family:var(--font-mono);font-size:10px;color:var(--accent);background:rgba(34,211,160,0.1);border:1px solid rgba(34,211,160,0.2);padding:3px 10px;border-radius:100px;display:inline-block;margin-bottom:12px;">MEEG 328 — Renewable Energy</div>' +
     '<div style="font-family:var(--font-head);font-size:26px;font-weight:800;margin-bottom:8px;">Priority List & Exam Guide</div>' +
-    '<div style="font-size:13px;color:var(--text2);margin-bottom:18px;">Compiled from 3 past exam papers (Dec 2022, Jul/Aug 2024, Jul 2025). Topics ranked by frequency and marks weight.</div>' +
+    '<div style="font-size:13px;color:var(--text2);margin-bottom:18px;">Compiled from 5 past exam papers (Feb/Mar 2019, May/Jun 2019, Dec 2022, Jul/Aug 2024, Jul 2025). Topics ranked by frequency and marks weight.</div>' +
     '<div style="display:flex;gap:12px;flex-wrap:wrap;">' +
     [
       {n:totalQ, l:'Past Questions', c:'var(--accent2)'},
       {n:typeof mcqData!=='undefined'?mcqData.length:55, l:'MCQs', c:'var(--accent3)'},
       {n:'8', l:'Chapters', c:'var(--purple)'},
-      {n:'3', l:'Exam Papers', c:'var(--yellow)'},
+      {n:'5', l:'Exam Papers', c:'var(--yellow)'},
       {n:overallPct+'%', l:'Your Progress', c:'var(--green)'},
     ].map(s=>'<div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 16px;text-align:center;">' +
       '<div style="font-family:var(--font-head);font-size:22px;font-weight:800;color:' + s.c + ';">' + s.n + '</div>' +
@@ -2219,7 +2220,7 @@ function renderOverview(){
 }
 
 function renderMCQ(){
-  const yearOrder = ['Dec 2022','Jul/Aug 2024','Fill-in-Blank 2024'];
+  const yearOrder = ['Dec 2022','Jul/Aug 2024','Feb/Mar 2019','May/Jun 2019','Fill-in-Blank 2024'];
   let html = `<div class="score-bar">
     <div class="score-box"><div class="sv" id="score-attempted">0/${mcqData.length}</div><div class="sl">Attempted</div></div>
     <div class="score-box"><div class="sv" id="score-correct">0</div><div class="sl">Correct</div></div>
@@ -2241,7 +2242,7 @@ function getMcqHtml(filter){
   filtered.forEach((q,gi)=>{
     const idx = mcqData.indexOf(q);
     if(q.year!==lastYear){
-      const cls = q.year.includes('2022')?'y2022':q.year.includes('Fill')?'yposs':'y2024';
+      const cls = q.year.includes('2022')?'y2022':q.year.includes('2024')?'y2024':q.year.includes('2025')?'y2025':q.year.includes('2019')?'y2019':'yposs';
       html += `<div class="mcq-section-header"><span class="year-tag ${cls}">${q.year}</span></div>`;
       lastYear = q.year;
     }
@@ -2249,7 +2250,7 @@ function getMcqHtml(filter){
     html += `<div class="mcq-card ${answered?'answered':''}" id="mcq-${idx}">
       <div class="mcq-num-row">
         <span class="q-num">Q${gi+1}</span>
-        <span class="year-tag ${q.year.includes('2022')?'y2022':q.year.includes('Fill')?'yposs':'y2024'}">${q.year}</span>
+        <span class="year-tag ${q.year.includes('2022')?'y2022':q.year.includes('2024')?'y2024':q.year.includes('2025')?'y2025':q.year.includes('2019')?'y2019':'yposs'}">${q.year}</span>
       </div>
       <div class="mcq-q-text">${q.q}</div>
       <div class="mcq-options">
@@ -2307,6 +2308,21 @@ const fitbData = [
   { q:"The typical capacity factor of solar PV is ____%.", ans:"15-20% (in Nepal context: ~15-18%). Global average ~15%. Capacity factor = actual annual energy / (rated power × 8760 hours).", year:"Jul/Aug 2024" },
   { q:"Composting is the decomposition of organic matter in the ___ of air.", ans:"Presence (aerobic conditions). Composting requires oxygen (aerobic). Biogas production is anaerobic (absence of air). This is a key difference.", year:"Jul/Aug 2024" },
   { q:"Biomass ___ is the process in which pelletized or crushed biomass is partially oxidized under restricted air supply for the generation of producer gas.", ans:"Gasification. Producer gas (syngas) is generated by partial oxidation. Main components: CO, H₂, CH₄, CO₂, N₂.", year:"Jul/Aug 2024" },
+  // ─── Feb/Mar 2019 Section B ───
+  { q:"A solar farm is installed in a region where the insolation is 200 kWh/m² per month. To produce 1200 kWh of electricity per month, approximately ___ m² of solar panels with 20% efficiency would be required.", ans:"30 m². Area = Energy needed / (Insolation × Efficiency) = 1200 / (200 × 0.20) = 1200 / 40 = 30 m².", year:"Feb/Mar 2019" },
+  { q:"Gasification converts ___ percentage of the energy in the biomass into energy in the syngas.", ans:"70-80% (typically ~75%). This is the gasification efficiency or cold gas efficiency — ratio of chemical energy in the syngas to the energy in the original biomass feedstock.", year:"Feb/Mar 2019" },
+  { q:"In order to manage 30 kg of cattle manure considering 40 days of hydraulic retention time and specific biogas production 34 L per kg manure, the required size of biogas plant is ___?", ans:"1.2 m³. Volume = Daily input × HRT / 1000 = (30 kg × 1 L/kg) × 40 days / 1000 = 1200 L / 1000 = 1.2 m³. Daily biogas = 30 × 34 = 1020 L/day = 1.02 m³/day.", year:"Feb/Mar 2019" },
+  { q:"The mean wind speed at site A for a wind farm is 20% higher than at site B. The expected increase in electricity production at site A compared to site B is ___?", ans:"72.8% more. Power ∝ v³. P_A/P_B = (1.2v)³/v³ = 1.2³ = 1.728. Increase = 72.8%. Compare: 10% faster wind = 33% more power; 20% faster = 72.8% more — shows the cube relationship dramatically.", year:"Feb/Mar 2019" },
+  { q:"A feed-in tariff guarantees producers of renewable energy a ___ price per unit of supplied electricity.", ans:"Fixed (guaranteed fixed) price. Feed-in tariffs provide a fixed, above-market price for every unit of RE exported to the grid, usually for 15-20 years. This reduces investment risk and has driven RE deployment in many countries.", year:"Feb/Mar 2019" },
+  { q:"Time required to heat the fuel to the pyrolysis temperature is much shorter than the characteristic pyrolysis reaction time — this is called ___ pyrolysis.", ans:"Slow pyrolysis (conventional pyrolysis). When heat-up time << reaction time, the fuel heats slowly and pyrolysis reactions dominate → maximizes char/biochar production (~35%). Contrast: Fast pyrolysis = extremely rapid heating, very short reaction time → maximizes bio-oil.", year:"Feb/Mar 2019" },
+  // ─── May/Jun 2019 Section B ───
+  { q:"The typical capacity factor of a wind turbine is ___.", ans:"25-45% (onshore: 25-40%, offshore: 35-50%). Capacity factor = actual annual energy / (rated power × 8760 h). Modern onshore turbines at good sites achieve 35-40%. Much lower than thermal plants (~85%) due to variable wind.", year:"May/Jun 2019" },
+  { q:"Depth of discharge (DOD) is defined as the ___ of the battery capacity that has been discharged.", ans:"Percentage (or fraction). DOD = (discharged capacity / total capacity) × 100%. Li-ion: max DOD = 80-90%. Lead-acid: max DOD = 50% for long life. DOD + SOC = 100% always.", year:"May/Jun 2019" },
+  { q:"___ is produced by the Transesterification process.", ans:"Biodiesel (FAME — Fatty Acid Methyl Esters). Reaction: Triglycerides (vegetable oil/animal fat) + Methanol → Biodiesel + Glycerol. Catalyst: NaOH or KOH. Glycerol is the valuable byproduct used in cosmetics.", year:"May/Jun 2019" },
+  { q:"Time required to heat the fuel to the pyrolysis temperature is longer than the characteristic pyrolysis reaction time — this is called ___ pyrolysis.", ans:"Fast pyrolysis. When heating rate is very high (heat-up time << reaction time), the process is fast pyrolysis → maximizes bio-oil production (~75%). Note: Feb/Mar 2019 paper had the opposite wording for slow pyrolysis.", year:"May/Jun 2019" },
+  { q:"The wind velocity is 5 m/s at a height of 10 m above a surface with friction coefficient α=0.2. The wind speed at a height of 55 m is ___.", ans:"7.04 m/s. Using power law: v₂ = v₁ × (h₂/h₁)^α = 5 × (55/10)^0.2 = 5 × (5.5)^0.2 = 5 × 1.408 = 7.04 m/s. Power at 55m = 7.04³/5³ × P₁ = 2.78 × P₁ (178% more power).", year:"May/Jun 2019" },
+  { q:"By 2030 all municipality will have a ___ for municipal waste management.", ans:"Sanitary landfill (engineered landfill). Nepal's National Urban Solid Waste Management Policy targets a sanitary landfill in every municipality by 2030, transitioning from open dumping to engineered waste management.", year:"May/Jun 2019" },
+  { q:"In order to manage 20 kg of cattle manure considering 40 days of hydraulic retention time and specific biogas production 34 L per kg manure, ___ m³ size of the biogas plant is required.", ans:"0.8 m³. Volume = 20 kg × 1 L/kg × 40 days / 1000 = 800 L = 0.8 m³. Daily biogas = 20 × 34 = 680 L/day = 0.68 m³/day.", year:"May/Jun 2019" },
 ];
 
 
@@ -2319,7 +2335,7 @@ function renderFITB(){
       <div class="fitb-q">${i+1}. ${q.q}</div>
       <div style="display:flex;align-items:center;gap:10px;">
         <button class="fitb-reveal-btn" onclick="revealFitb(${i})">Reveal Answer</button>
-        <span class="year-tag ${q.year.includes('2022')?'y2022':'y2024'}">${q.year}</span>
+        <span class="year-tag ${q.year.includes('2022')?'y2022':q.year.includes('2025')?'y2025':q.year.includes('2019')?'y2019':'y2024'}">${q.year}</span>
       </div>
       <div class="fitb-ans" id="fitb-ans-${i}">→ ${q.ans}</div>
     </div>`;
@@ -2544,7 +2560,60 @@ function renderProgress(){
 
 function resetMcqScores(){ mcqAnswers={}; renderView('progress'); }
 
-function clearProgress(){ saveProgress({}); renderView('progress'); updateSidebarStats(); }
+function renderBookmarks(){
+  const p = loadProgress();
+  const bk = p.bookmarks || {};
+  const keys = Object.keys(bk);
+  if(keys.length===0){
+    return '<div style="text-align:center;padding:60px 20px;">' +
+      '<div style="font-size:40px;margin-bottom:12px;">🔖</div>' +
+      '<div style="font-family:var(--font-head);font-size:18px;font-weight:700;margin-bottom:8px;">No Bookmarks Yet</div>' +
+      '<div style="font-size:13px;color:var(--text2);">Click the ★ bookmark icon on any question to save it here for quick review.</div>' +
+      '</div>';
+  }
+  let html = '<div style="font-family:var(--font-head);font-size:20px;font-weight:800;margin-bottom:18px;">🔖 Bookmarked Questions</div>';
+  html += '<div style="display:flex;justify-content:flex-end;margin-bottom:12px;">' +
+    '<button onclick="clearBookmarks()" style="font-family:var(--font-mono);font-size:11px;padding:6px 14px;border-radius:8px;border:1px solid rgba(248,113,113,0.3);background:rgba(248,113,113,0.06);color:var(--red);cursor:pointer;">Clear All</button></div>';
+  keys.forEach(key=>{
+    const [chKey, qIdx] = key.split('_q');
+    const ch = chapters[chKey];
+    if(!ch) return;
+    const q = ch.theory[parseInt(qIdx)];
+    if(!q) return;
+    const hasAns = answerData[chKey+'_'+qIdx] !== undefined;
+    html += '<div class="q-card" style="border-left:3px solid var(--yellow);">' +
+      '<div class="q-header">' +
+        '<span class="q-num">' + ch.tag + '·Q' + (parseInt(qIdx)+1) + '</span>' +
+        '<span class="q-text">' + q.q + '</span>' +
+      '</div>' +
+      '<div class="q-meta">' +
+        '<span class="marks-pill">[' + q.marks + ' marks]</span>' +
+        '<button class="bookmark-btn active" onclick="toggleBookmark(\'' + chKey + '\',\'' + qIdx + '\',this)">★</button>' +
+        (hasAns ? '<button class="view-ans-btn" onclick="showAnswer(\'' + chKey + '\',' + parseInt(qIdx) + ')">📖 View Answer</button>' : '') +
+      '</div>' +
+    '</div>';
+  });
+  return html;
+}
+
+function toggleBookmark(chKey, qIdx, btn){
+  const p = loadProgress();
+  if(!p.bookmarks) p.bookmarks = {};
+  const k = chKey+'_q'+qIdx;
+  if(p.bookmarks[k]){ delete p.bookmarks[k]; if(btn){ btn.classList.remove('active'); btn.textContent='☆'; } }
+  else { p.bookmarks[k]=1; if(btn){ btn.classList.add('active'); btn.textContent='★'; } }
+  saveProgress(p);
+  updateSidebarStats();
+}
+
+function clearBookmarks(){
+  const p = loadProgress();
+  p.bookmarks = {};
+  saveProgress(p);
+  updateSidebarStats();
+  renderView('bookmarks');
+}
+
 
 function renderDashboard(){
   return `
@@ -2643,7 +2712,7 @@ function renderReferences(){
     <div class="ref-list">
       <div class="ref-item"><strong>Course:</strong> MEEG 328 — Renewable Energy | Credit: 3 | KU BE Mechanical Engineering, Year III Sem I</div>
       <div class="ref-item"><strong>Instructor:</strong> Prof. Sunil Prasad Lohani, PhD — Kathmandu University, Department of Mechanical Engineering</div>
-      <div class="ref-item"><strong>Exam Pattern:</strong> Section A (MCQ/Fill-blank, 20-30 marks) + Section B (Short answer) + Section C (Long answer, 55 marks). Total: 50-75 marks depending on year.</div>
+      <div class="ref-item"><strong>Exam Pattern:</strong> Section A (MCQ/Fill-blank, 10-20 marks) + Section B (Short/Long answer) + Section C (Long answer). Total: 50-85 marks depending on year.</div>
     </div>
   </div>
 
@@ -2686,7 +2755,9 @@ function renderReferences(){
   <div class="ref-section" style="margin-bottom:14px;">
     <div class="ref-title">📝 Past Exam Papers Used</div>
     <div class="ref-list">
-      <div class="ref-item"><strong>Dec 2022</strong> — End Semester Examination, MEEG 328 (FM: 50 marks). Section A: 20 MCQ × 0.5 marks. Section B: 31 marks. Section C: 9 marks.</div>
+      <div class="ref-item"><strong>Feb/Mar 2019</strong> — End Semester Examination, MEEG 328 (FM: 20+55=75 marks). Section A: 10 MCQ × 1 mark. Section B: 10 Fill-blank × 1 mark. Section C: 5 × 11 = 55 marks.</div>
+      <div class="ref-item"><strong>May/Jun 2019</strong> — End Semester Examination [C], MEEG 328 (FM: 20+55=75 marks). Section A: 10 MCQ × 1 mark. Section B: 10 Fill-blank × 1 mark. Section C: 5 × 11 = 55 marks.</div>
+      <div class="ref-item"><strong>Dec 2022</strong> — End Semester Examination, MEEG 328 (FM: 50 marks). Section A: 20 MCQ × 0.5 marks. Section B: 31 marks. Section C: 3 × 3 = 9 marks.</div>
       <div class="ref-item"><strong>Jul/Aug 2024</strong> — End Semester Examination, MEEG 328 (FM: 75 marks). Section A: 10 MCQ × 1 mark. Section B: 10 Fill-blank × 1 mark. Section C: 55 marks.</div>
       <div class="ref-item"><strong>Jul 2025</strong> — End Semester Examination, MEEG 328 (FM: 55 marks). Section B: 55 marks (long answer).</div>
     </div>
@@ -3778,12 +3849,14 @@ const chapters = {
       { q: "Discuss the major decisions and points of agreement made at the recent COP27 held in Egypt in relation to renewable energy and climate change; provide your reflection on the challenges for these agreements. Elaborate on any 3 possible major barriers in the widespread use of Electric Vehicle for Nepal.", marks:"2+3", years:["Dec 2022"] },
       { q: "How would you evaluate the current global energy scenario in relation to climate change challenges? Discuss Nepal's current energy supply and consumption patterns from the perspective of energy security.", marks:"5+6", years:["Jul 2025"] },
       { q: "Write a short note on the Hydrograph and Flow Duration Curve.", marks:"3", years:["Jul/Aug 2024"] },
+      { q: "How do you evaluate the policies and strategies of Nepal's renewable energy development program? Show Fuel energy mix of Nepal and discuss about your understanding on it.", marks:"3+4", years:["May/Jun 2019"] },
+      { q: "Write short notes on: i. Solar Water Pumping System ii. Hydrograph and Flow Duration Curve iii. Renewable energy policies and strategies in Nepal", marks:"4+3+4", years:["Feb/Mar 2019"] },
       { q: "⚡ What is the energy trilemma? How does Nepal's energy situation relate to the three dimensions of energy security, energy equity, and environmental sustainability?", marks:"4", years:[] },
       { q: "⚡ Explain the concept of Sankey diagram. Describe Nepal's energy flow from primary sources to end use with approximate percentages.", marks:"3", years:[] },
     ],
     possible: [
       { q: "Explain the concept of Energy Balance. Write the governing equation and explain each term. Why is it important for national energy planning?", marks:"3", topic:"Energy Policy" },
-      { q: "What is the 15th Five-Year Plan's target for Nepal's renewable energy development? Discuss the key targets and current status.", marks:"3", topic:"Nepal Policy" },
+      { q: "What is the 16th Five-Year Plan's target for Nepal's renewable energy development? Discuss the key targets and current status.", marks:"3", topic:"Nepal Policy" },
       { q: "Compare Nepal's per capita energy consumption with regional SAARC neighbors. What are the main reasons for the difference?", marks:"3", topic:"Global Scenario" },
     ],
     concepts: [
@@ -3807,6 +3880,8 @@ const chapters = {
       { q: "⚡ Distinguish between updraft and downdraft gasifiers in terms of gas quality, tar content and suitable applications.", marks:"3", years:[] },
       { q: "⚡ What are the main products of pyrolysis and how do the three operating modes (slow, fast, flash) differ in terms of product distribution?", marks:"3", years:[] },
       { q: "⚡ Describe the Water Boiling Test (WBT) for improved cookstove testing. What parameters does it measure?", marks:"3", years:[] },
+      { q: "What is Improved Cook Stove (ICS)? Briefly explain and show the biofuel production process from waste plastics (Polyethylene, Polypropylene, and Polystyrene) with the help of a suitable schematic diagram. Discuss in short about Flow Duration Curve (FDC) and gasification process.", marks:"2+5+4", years:["May/Jun 2019"] },
+      { q: "Briefly discuss about the concept of power extraction from wind. Discuss the importance of Weibull distribution and wind rose for wind resource assessment. Briefly discuss the working principle of updraft gasifier with the help of necessary diagram.", marks:"3+4+4", years:["Feb/Mar 2019"] },
     ],
     possible: [
       { q: "A biomass power plant uses rice husk with HHV=15 MJ/kg. If the plant generates 500 kW electrical power with an overall efficiency of 25%, calculate the biomass consumption rate in kg/hour.", marks:"4", topic:"Biomass Numericals" },
@@ -3835,6 +3910,8 @@ const chapters = {
       { q: "⚡ Compare biogas with LPG in terms of calorific value, composition, and suitability as a cooking fuel for Nepali rural households.", marks:"3", years:[] },
       { q: "⚡ What is the optimum pH for anaerobic digestion? Why does pH control matter and what happens if pH drops below 6?", marks:"2", years:[] },
       { q: "⚡ Describe the working principle of a fixed dome biogas plant with a labeled diagram. Why is it most commonly used in Nepal?", marks:"4", years:[] },
+      { q: "Discuss about the importance of biochemical process in an anaerobic digestion. A farmer needs to manage cattle dung of 100 kg daily (animal dung contains 16% VS) in his farm house located in Biratnagar, Morang. Calculate the required plant size, daily water requirement and daily biogas and fertilizer production from his waste. Also, suggest operation and maintenance of biogas plant for efficient operation.", marks:"3+6+2", years:["Feb/Mar 2019"] },
+      { q: "What is anaerobic digestion? How is domestic biogas system relevant for the national development? Discuss briefly about different types of bio-digester used in domestic biogas system. Estimate the biogas plant size, daily water requirement and daily biogas and fertilizer production while managing 100 kg/day cattle manure in Morang.", marks:"1+3+3+4", years:["May/Jun 2019"] },
     ],
     possible: [
       { q: "A biogas plant serves a family of 5 using 40 kg cattle dung/day. If average biogas consumption is 0.4 m³/person/day for cooking, is the plant sufficient? Calculate the shortfall or surplus.", marks:"4", topic:"Biogas Sizing" },
@@ -3861,6 +3938,8 @@ const chapters = {
       { q: "⚡ What is solar time? How does it differ from standard time? What is the equation of time?", marks:"2", years:[] },
       { q: "⚡ Explain the concept of solar declination, hour angle, and zenith angle. How are they used to calculate beam radiation on a tilted surface?", marks:"4", years:[] },
       { q: "⚡ Compare flat plate collectors with evacuated tube collectors in terms of efficiency, cost, operating temperature range, and suitable applications.", marks:"3", years:[] },
+      { q: "Briefly discuss about the vacuum tube solar water heating system with the help of schematic diagram. How do you estimate the efficiency of flat plate solar collector? Hot water demand of a building is 50 L/person/day and an average occupancy is 50 people. The supplied cold water temperature is 20°C and the hot water temperature at the storage is 55°C. The average solar radiation of the site is 4.5 kWh/m²/day. Estimate the collector area requirement when system efficiency is 80% and collector efficiency is 60%.", marks:"3+4+4", years:["Feb/Mar 2019"] },
+      { q: "In an institution, hot water demand is 1000 L/d at 55°C where the cold water available is at 15°C. Estimate the required area of collector array. Assume a reasonable value for irradiation (or equivalent solar hour) while using collector efficiency of 65% and overall system efficiency of 75%.", marks:"4", years:["May/Jun 2019"] },
     ],
     possible: [
       { q: "A solar water heater is installed at Kathmandu (latitude 27.7°N). The collector area is 3 m². Average daily insolation is 5 kWh/m²/day. If the collector efficiency is 55%, calculate the daily useful heat gain and the water temperature rise for 200 L storage.", marks:"5", topic:"Solar Thermal Design" },
@@ -3890,6 +3969,8 @@ const chapters = {
       { q: "⚡ A battery bank for a standalone PV system must store 3 days of autonomy for a 2 kWh/day load. If battery voltage is 12V and depth of discharge is 80%, calculate required ampere-hours.", marks:"3", years:[] },
       { q: "⚡ What is the effect of shading on a PV array? How do bypass diodes help mitigate this effect?", marks:"2", years:[] },
       { q: "⚡ Explain what Maximum Power Point Tracking (MPPT) is and why it is important in PV systems.", marks:"2", years:[] },
+      { q: "What are the 3 generations of solar PV? Describe ideal IV characteristics of solar cell and the influence of temperature and solar radiation on it. Estimate the solar PV, charge controller, inverter and battery sizing for AC supply system of off-grid solar PV in a rural household with the following loads: Kitchen 115W×3h, Living 100W×4h, Bedroom 140W×2h, TV 80W×4h, Refrigerator 60W×2h.", marks:"2+3+6", years:["May/Jun 2019"] },
+      { q: "Discuss briefly about three generations of solar photovoltaic (PV). Explain with the help of schematic diagram grid connected and off-grid solar PV system. Estimate the inter-row spacing and the total area requirement for the installation of 1 MW grid connected solar PV plant, when solar PV of 315 Wp (length=1.95m and breadth=0.96m), latitude of installed location is 27° North and the lowest sun inclination to horizontal is 25°. (Take 22 solar panels in each row.)", marks:"2+4+5", years:["Feb/Mar 2019"] },
     ],
     possible: [
       { q: "Compare on-grid (grid-tied) and off-grid (standalone) PV systems in terms of components, cost, reliability, and suitability for Nepal.", marks:"4", topic:"PV Systems" },
@@ -3917,6 +3998,8 @@ const chapters = {
       { q: "⚡ A wind turbine has a rotor diameter of 80m and operates at a site with average wind speed of 8 m/s. Calculate: (a) swept area, (b) theoretical maximum power using Betz limit (air density=1.225 kg/m³).", marks:"4", years:[] },
       { q: "⚡ Explain the concept of capacity factor for wind turbines. What is a typical capacity factor for onshore wind in Nepal, and why is it lower than the theoretical maximum?", marks:"3", years:[] },
       { q: "⚡ Describe the main components of a horizontal axis wind turbine (HAWT) and the function of each component.", marks:"4", years:[] },
+      { q: "Draw an idealized power curve of the wind turbine and discuss it. A wind turbine is installed at 10m tower height in Dhulikhel. The power produced is 132 W/m² at 15°C and 1 atm. If this turbine tower height increases from 10m to 80m, estimate the power production from the same turbine. What important message can be drawn? (Assume terrain: high crops, hedge and shrubs, α=0.20). Briefly discuss about the wind farm.", marks:"4+4+3", years:["May/Jun 2019"] },
+      { q: "Briefly discuss about the concept of power extraction from wind. Discuss the importance of Weibull distribution and wind rose for wind resource assessment. Briefly discuss the working principle of updraft gasifier with the help of necessary diagram.", marks:"3+4+4", years:["Feb/Mar 2019"] },
     ],
     possible: [
       { q: "What are the key criteria for site selection of a wind farm? Discuss with reference to Nepal's wind resource potential.", marks:"3", topic:"Wind Farm Design" },
@@ -4012,6 +4095,24 @@ const mcqData = [
   { q:"Which of the following source of energy is caused by uneven heating of earth's surface:", opts:["solar","wind","biomass","geothermal"], correct:1, explain:"Wind is caused by differential (uneven) heating of the earth's surface. Warm air rises, creating low pressure; cooler air flows in to replace it. So wind is fundamentally solar energy converted via atmospheric heating.", year:"Jul/Aug 2024" },
   { q:"Fixed dome household biogas digester provides ___ gas pressure to the biogas stoves.", opts:["Constant","variable","above 5 bars","above 10 bar"], correct:1, explain:"Fixed dome digesters provide VARIABLE gas pressure — as biogas accumulates, the slurry is pushed into the compensation chamber, and pressure increases. Floating dome designs provide constant pressure.", year:"Jul/Aug 2024" },
   { q:"The wind speed at site A is 10% higher than site B. Expected increase in wind power extraction at site A?", opts:["22%","33%","44%","55%"], correct:1, explain:"Power ∝ v³. If v_A = 1.1×v_B, then P_A = (1.1)³×P_B = 1.331×P_B. Increase = 33.1% ≈ 33%.", year:"Jul/Aug 2024" },
+  // ─── Feb/Mar 2019 Section A ───
+  { q:"A solar module in a solar panel refers to:", opts:["Series arrangement of solar cells","Parallel arrangement of solar cells","Series and parallel arrangement of solar cells","No specific arrangement"], correct:2, explain:"A solar module consists of solar cells connected in BOTH series (to increase voltage) and parallel (to increase current). Series connection raises voltage to useful levels while parallel connection provides sufficient current capacity.", year:"Feb/Mar 2019" },
+  { q:"What is Zero Net Energy?", opts:["Not using any energy","Not using energy for the internet","Total energy used equals renewable energy created on site","Using a net to capture energy"], correct:2, explain:"Zero Net Energy (ZNE) means the total amount of energy used by a building or system equals the amount of renewable energy generated on site over a year. The grid is used as a 'battery' — exporting excess and importing when needed.", year:"Feb/Mar 2019" },
+  { q:"The amount of oil that can be technically recovered at any price is called oil:", opts:["Reserves","Reservoirs","Resources","Traps"], correct:2, explain:"Resources = total technically recoverable at any cost (largest). Reserves = economically recoverable at current prices (smaller subset). Reservoirs = geological formations. Traps = structural features that hold oil.", year:"Feb/Mar 2019" },
+  { q:"A typical spacing between turbines in a wind farm in terms of their rotor diameters D is approximately:", opts:["4D × 7D","2D × 3D","10D × 12D","15D × 20D"], correct:0, explain:"Standard wind farm turbine spacing is approximately 4-5D crosswind and 7-9D downwind to minimize wake losses. This 4D×7D rule minimizes aerodynamic interference between turbines while maximizing land use efficiency.", year:"Feb/Mar 2019" },
+  { q:"The fraction of power in the wind that a modern wind turbine can extract is approximately:", opts:["50-60%","40-50%","70-80%","20-30%"], correct:1, explain:"The Betz limit (theoretical maximum) is 59.3%. Modern wind turbines achieve a power coefficient Cp of 0.40-0.48 (40-48%), well below Betz. Commercial large turbines typically achieve 45-50% peak Cp.", year:"Feb/Mar 2019" },
+  { q:"The collection efficiency of a flat plate collector can be improved by:", opts:["Putting a selective coating on the absorber plate","Filling air in the space above the absorber plate","Removing the glazing of the collector","Placing horizontally in our geography"], correct:0, explain:"Selective coatings (e.g. black chrome, TiNOX) have high solar absorptance (α≈0.95) but low thermal emittance (ε≈0.05), drastically reducing radiation losses. This is the most effective efficiency improvement technique.", year:"Feb/Mar 2019" },
+  { q:"State of Charge (SOC) is defined as the percentage of the battery capacity:", opts:["Available for discharge","That has been discharged","Available for charging","That has been of no use"], correct:0, explain:"SOC = (remaining capacity / total capacity) × 100%. SOC=100% means fully charged, SOC=0% means fully discharged. DOD (Depth of Discharge) = 100% − SOC. Both are critical for battery management systems.", year:"Feb/Mar 2019" },
+  { q:"Nominal Operating Cell Temperature (NOCT) is conducted at Irradiance ___, Surface temperature ___, Ambient Temperature ___ and Wind speed ___:", opts:["650 W/m², 45°C, 20°C, 2 m/s","1000 W/m², 35°C, 25°C, 1 m/s","800 W/m², 45°C, 20°C, 1 m/s","800 W/m², 35°C, 20°C, 2 m/s"], correct:2, explain:"NOCT standard conditions: 800 W/m² irradiance, cell temperature 45°C, ambient temperature 20°C, wind speed 1 m/s. NOCT is used to estimate real-world cell temperature: T_cell = T_amb + (NOCT−20)/800 × G.", year:"Feb/Mar 2019" },
+  { q:"Low carbon-nitrogen (C:N) ratio could stop anaerobic digestion process due to:", opts:["too acidic","too alkaline","neither acidic nor alkaline","unpredictable"], correct:1, explain:"Low C:N ratio means excess nitrogen relative to carbon. Excess nitrogen is converted to ammonia (NH₃), making the environment alkaline. High ammonia is toxic to methanogens, inhibiting or stopping biogas production. Optimal C:N = 20-30.", year:"Feb/Mar 2019" },
+  // ─── May/Jun 2019 Section A ───
+  { q:"The efficiency of various types of solar water collectors ___ with ___ temperature difference between absorber and ambient:", opts:["Decreases, decreasing","Decreases, increasing","Remains same, increasing","Depends upon type of collector"], correct:1, explain:"From HWB equation: η = FR[τα − UL(Ti−Ta)/G]. As (Ti−Ta) increases, the heat loss term UL(Ti−Ta)/G increases, so efficiency DECREASES. This is why flat plate collectors work best when the fluid temperature is close to ambient.", year:"May/Jun 2019" },
+  { q:"Which one of the following best describes or defines Biomass?", opts:["Natural gas","Petroleum","Inorganic matter that can be converted to fuel","Organic matter that can be converted to fuel"], correct:3, explain:"Biomass is any organic (carbon-based) material derived from plants, animals, or microorganisms that can be used as fuel or converted to other forms of energy. Examples: wood, agricultural residues, animal dung, food waste.", year:"May/Jun 2019" },
+  { q:"A liquid flat plate collector is usually held tilted in a fixed position, facing ___ if located in the southern hemisphere:", opts:["North","South","East","West"], correct:0, explain:"In the Southern Hemisphere, the sun is always in the NORTHERN part of the sky. So collectors must face NORTH to maximize solar capture. In the Northern Hemisphere (like Nepal), collectors face SOUTH.", year:"May/Jun 2019" },
+  { q:"Which of the following is the biggest source of biogas in rural Nepal?", opts:["Kitchen waste","Leaves","Cattle dung","Industrial waste"], correct:2, explain:"Cattle dung is by far the biggest biogas feedstock in rural Nepal. Nepal has ~7 million cattle producing substantial dung. The GGC-2047 fixed dome biogas program is largely based on cattle dung. 450,000+ domestic biogas plants installed.", year:"May/Jun 2019" },
+  { q:"A suitable range of carbon-nitrogen (C:N) ratio for methanogenesis is:", opts:["2-40","4-60","15-30","4-10"], correct:2, explain:"Optimal C:N ratio for anaerobic digestion and methanogenesis is 15-30 (often stated as 20-30). Below 15: excess N → ammonia toxicity → alkaline pH. Above 30: nitrogen deficiency → microorganisms can't grow properly → reduced biogas production.", year:"May/Jun 2019" },
+  { q:"In the 1970s there was interest in developing wind power because of:", opts:["An oil crisis","Concern over global warming","Improvements in wind turbine","Low production cost in wind turbine"], correct:0, explain:"The 1973 Arab Oil Embargo and subsequent oil crisis tripled oil prices and caused severe energy shortages. This drove massive research investment in alternative energy sources including wind, solar, and nuclear — the origin of modern RE industry.", year:"May/Jun 2019" },
+  { q:"A 40 Wp solar PV installed in an area where average solar insolation is 4.5 kWh/m²/day (no temperature variation effect) can generate ___ electricity daily:", opts:["200 Wh","150 Wh","180 Wh","175 Wh"], correct:2, explain:"Daily energy = Rated power × Peak Sun Hours = 40 W × 4.5 h = 180 Wh. This simple calculation assumes no losses. In reality, performance ratio (~0.75-0.85) would reduce this to ~135-153 Wh.", year:"May/Jun 2019" },
   // ─── Additional MCQs from slide content ───
   { q:"The HWB (Hottel-Whillier-Bliss) equation for flat plate collector efficiency relates η to:", opts:["(Ti+Ta)/G","(Ti-Ta)/G","(To-Ti)/G","G/(Ti-Ta)"], correct:1, explain:"η = FR[τα − UL×(Ti−Ta)/G]. The parameter (Ti−Ta)/G is the reduced temperature difference — as inlet temperature rises above ambient, losses increase and efficiency decreases. Source: Duffie & Beckman (2013).", year:"Possible" },
   { q:"In a standalone PV system, the battery bank autonomy days refer to:", opts:["days of full sun per year","days the system can operate without sunshine","number of charge cycles","days of peak load"], correct:1, explain:"Autonomy (or 'days of storage') = number of days the battery bank can supply the load WITHOUT any solar input. Typical design: 2-5 days for Nepal's partly cloudy conditions. Source: Masters (2004).", year:"Possible" },
