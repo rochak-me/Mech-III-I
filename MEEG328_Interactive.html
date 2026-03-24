@@ -2409,58 +2409,15 @@ function renderExamSetup(){
       </div>
       <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px;">
         <div style="font-family:var(--font-head);font-weight:700;margin-bottom:4px;">Section B — Fill in Blank</div>
-        <div style="font-size:12px;color:var(--text2);margin-bottom:12px;">10 questions × 1 mark = 10 marks | 20 min</div>
-        <button onclick="navigate('fitb')" style="background:var(--accent);color:var(--surface);border:none;padding:8px 16px;border-radius:6px;font-family:var(--font-head);font-weight:700;font-size:12px;cursor:pointer;">Practice FITB</button>
+        <div style="font-size:12px;color:var(--text2);">10 questions × 1 mark = 10 marks | 20 min</div>
       </div>
       <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px;">
         <div style="font-family:var(--font-head);font-weight:700;margin-bottom:4px;">Section C — Long Answer</div>
         <div style="font-size:12px;color:var(--text2);">5 questions × 11 marks = 55 marks | 90 min</div>
       </div>
     </div>
-    <div style="margin-top:18px;font-size:12px;color:var(--text3);">Practice with MCQs and Fill-in-Blank sections. Full simulated exam tracking coming soon.</div>
+    <div style="margin-top:18px;font-size:12px;color:var(--text3);">Full exam simulator coming soon. Practice with MCQs and Fill-in-Blank sections in the sidebar.</div>
   </div>`;
-}
-
-// ═══════════════════════════════════════════════════════
-//  FILL-IN-THE-BLANK RENDER FUNCTION
-// ═══════════════════════════════════════════════════════
-let fitbRevealed = {};
-
-function revealFITB(i) {
-  fitbRevealed[i] = true;
-  document.getElementById('fitb-ans-'+i).style.display = 'block';
-  document.getElementById('fitb-btn-'+i).style.display = 'none';
-}
-
-function renderFITB() {
-  if(typeof fitbData === 'undefined' || fitbData.length === 0) {
-    return `<div style="padding:20px;text-align:center;color:var(--text3);">No Fill-in-the-Blank data available.</div>`;
-  }
-  
-  let html = `<div style="font-family:var(--font-head);font-size:24px;font-weight:800;margin-bottom:6px;">✍️ Fill in the Blank Practice</div>
-    <p style="font-size:13px;color:var(--text2);margin-bottom:24px;">Practice Section B questions from past papers (10 marks). Total: ${fitbData.length} questions.</p>
-    <div style="display:flex;flex-direction:column;gap:16px;">`;
-    
-  fitbData.forEach((item, i) => {
-    const isRev = fitbRevealed[i];
-    html += `
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;position:relative;">
-      <div style="position:absolute;top:16px;right:16px;font-family:var(--font-mono);font-size:10px;color:var(--text3);background:var(--surface2);padding:2px 6px;border-radius:4px;">${item.year}</div>
-      <div style="font-size:14px;color:var(--text);line-height:1.6;margin-bottom:16px;max-width:90%;">
-        <span style="color:var(--accent);font-weight:700;margin-right:8px;">Q${i+1}.</span> ${item.q.replace('_____', '<span style="border-bottom:1px solid var(--text2);color:var(--accent3);padding:0 12px;display:inline-block;min-width:60px;"></span>')}
-      </div>
-      
-      <button id="fitb-btn-${i}" onclick="revealFITB(${i})" style="display:${isRev?'none':'inline-block'};background:var(--surface2);border:1px solid var(--border);color:var(--text2);padding:6px 14px;border-radius:6px;font-size:12px;cursor:pointer;transition:all 0.2s;">Show Answer</button>
-      
-      <div id="fitb-ans-${i}" style="display:${isRev?'block':'none'};background:rgba(34,211,160,0.05);border-left:3px solid var(--accent);padding:12px 14px;border-radius:0 6px 6px 0;margin-top:8px;">
-        <div style="font-weight:700;color:var(--accent);font-size:13px;margin-bottom:4px;">Answer:</div>
-        <div style="font-size:13px;color:var(--text2);line-height:1.5;">${item.ans}</div>
-      </div>
-    </div>`;
-  });
-  
-  html += `</div>`;
-  return html;
 }
 
 function renderProgress(){
@@ -3823,7 +3780,6 @@ const chapters = {
       { q: "Write a short note on the Hydrograph and Flow Duration Curve.", marks:"3", years:["Jul/Aug 2024"] },
       { q: "⚡ What is the energy trilemma? How does Nepal's energy situation relate to the three dimensions of energy security, energy equity, and environmental sustainability?", marks:"4", years:[] },
       { q: "⚡ Explain the concept of Sankey diagram. Describe Nepal's energy flow from primary sources to end use with approximate percentages.", marks:"3", years:[] },
-      { q: "How do you evaluate the policies and strategies of Nepal's renewable energy development program? Show the Fuel energy mix of Nepal and discuss your understanding on it.", marks:"3+4", years:["May/Jun 2019"] },
     ],
     possible: [
       { q: "Explain the concept of Energy Balance. Write the governing equation and explain each term. Why is it important for national energy planning?", marks:"3", topic:"Energy Policy" },
@@ -3851,7 +3807,6 @@ const chapters = {
       { q: "⚡ Distinguish between updraft and downdraft gasifiers in terms of gas quality, tar content and suitable applications.", marks:"3", years:[] },
       { q: "⚡ What are the main products of pyrolysis and how do the three operating modes (slow, fast, flash) differ in terms of product distribution?", marks:"3", years:[] },
       { q: "⚡ Describe the Water Boiling Test (WBT) for improved cookstove testing. What parameters does it measure?", marks:"3", years:[] },
-      { q: "What is Improved Cook Stove (ICS)? Briefly explain the biofuel production process from waste plastics (Polyethylene, Polypropylene, Polystyrene etc.) with a schematic diagram. Discuss briefly about the Flow Duration Curve and the gasification process.", marks:"2+5+4", years:["May/Jun 2019"] },
     ],
     possible: [
       { q: "A biomass power plant uses rice husk with HHV=15 MJ/kg. If the plant generates 500 kW electrical power with an overall efficiency of 25%, calculate the biomass consumption rate in kg/hour.", marks:"4", topic:"Biomass Numericals" },
@@ -3880,8 +3835,6 @@ const chapters = {
       { q: "⚡ Compare biogas with LPG in terms of calorific value, composition, and suitability as a cooking fuel for Nepali rural households.", marks:"3", years:[] },
       { q: "⚡ What is the optimum pH for anaerobic digestion? Why does pH control matter and what happens if pH drops below 6?", marks:"2", years:[] },
       { q: "⚡ Describe the working principle of a fixed dome biogas plant with a labeled diagram. Why is it most commonly used in Nepal?", marks:"4", years:[] },
-      { q: "What is anaerobic digestion? How is the domestic biogas system relevant for national development? Estimate the biogas plant size, daily water requirement, daily biogas production and fertilizer production for a farm managing 100 kg cattle dung per day in Biratnagar, Morang. (Animal dung contains 16% VS) Suggest operation and maintenance for efficient plant operation.", marks:"3+6+2", years:["Feb/Mar 2019"] },
-      { q: "What is anaerobic digestion? How is the domestic biogas system relevant for national development? Discuss different types of biodigesters. Estimate the biogas plant size, daily water requirement and daily biogas and fertilizer production while managing 100 kg/day cattle manure in Morang.", marks:"1+3+3+4", years:["May/Jun 2019"] },
     ],
     possible: [
       { q: "A biogas plant serves a family of 5 using 40 kg cattle dung/day. If average biogas consumption is 0.4 m³/person/day for cooking, is the plant sufficient? Calculate the shortfall or surplus.", marks:"4", topic:"Biogas Sizing" },
@@ -3908,8 +3861,6 @@ const chapters = {
       { q: "⚡ What is solar time? How does it differ from standard time? What is the equation of time?", marks:"2", years:[] },
       { q: "⚡ Explain the concept of solar declination, hour angle, and zenith angle. How are they used to calculate beam radiation on a tilted surface?", marks:"4", years:[] },
       { q: "⚡ Compare flat plate collectors with evacuated tube collectors in terms of efficiency, cost, operating temperature range, and suitable applications.", marks:"3", years:[] },
-      { q: "Briefly discuss about the vacuum tube solar water heating system with the help of a schematic diagram. How do you estimate the efficiency of a flat plate solar collector? Hot water demand of a building is 50 L/person/day, average occupancy = 50 people, Ti=20°C, To=55°C, G=4.5 kWh/m²/day, ηsys=80%, ηcoll=60%. Estimate the collector area.", marks:"3+4+4", years:["Feb/Mar 2019"] },
-      { q: "In an institution, hot water demand is 1000 L/day at 55°C. Cold water is available at 15°C. The average solar radiation of the site is 4.5 kWh/m²/day. Estimate the required collector area when collector efficiency is 65% and overall system efficiency is 85%.", marks:"4", years:["May/Jun 2019"] },
     ],
     possible: [
       { q: "A solar water heater is installed at Kathmandu (latitude 27.7°N). The collector area is 3 m². Average daily insolation is 5 kWh/m²/day. If the collector efficiency is 55%, calculate the daily useful heat gain and the water temperature rise for 200 L storage.", marks:"5", topic:"Solar Thermal Design" },
@@ -3939,8 +3890,6 @@ const chapters = {
       { q: "⚡ A battery bank for a standalone PV system must store 3 days of autonomy for a 2 kWh/day load. If battery voltage is 12V and depth of discharge is 80%, calculate required ampere-hours.", marks:"3", years:[] },
       { q: "⚡ What is the effect of shading on a PV array? How do bypass diodes help mitigate this effect?", marks:"2", years:[] },
       { q: "⚡ Explain what Maximum Power Point Tracking (MPPT) is and why it is important in PV systems.", marks:"2", years:[] },
-      { q: "Discuss briefly about three generations of solar PV. Explain with schematic diagrams a grid-connected and an off-grid solar PV system. Estimate the inter-row spacing and total area requirement for a 1 MW grid-connected solar PV plant with 315 Wp modules (length=1.95m, breadth=0.96m) at latitude 27°N where minimum sun inclination to horizontal is 25°. (Take 22 solar panels per row)", marks:"2+4+5", years:["Feb/Mar 2019"] },
-      { q: "What are the three generations of solar PV? Describe the ideal IV characteristics of a solar cell and the influence of temperature and solar radiation on them. Estimate the solar PV array, charge controller, inverter and battery sizing for an AC supply off-grid system for a rural household with: Kitchen Lights 115W×3h, Living Room 100W×4h, Bedroom 140W×2h, Television 80W×4h, Refrigerator 60W×2h.", marks:"2+3+6", years:["May/Jun 2019"] },
     ],
     possible: [
       { q: "Compare on-grid (grid-tied) and off-grid (standalone) PV systems in terms of components, cost, reliability, and suitability for Nepal.", marks:"4", topic:"PV Systems" },
@@ -3968,8 +3917,6 @@ const chapters = {
       { q: "⚡ A wind turbine has a rotor diameter of 80m and operates at a site with average wind speed of 8 m/s. Calculate: (a) swept area, (b) theoretical maximum power using Betz limit (air density=1.225 kg/m³).", marks:"4", years:[] },
       { q: "⚡ Explain the concept of capacity factor for wind turbines. What is a typical capacity factor for onshore wind in Nepal, and why is it lower than the theoretical maximum?", marks:"3", years:[] },
       { q: "⚡ Describe the main components of a horizontal axis wind turbine (HAWT) and the function of each component.", marks:"4", years:[] },
-      { q: "Briefly discuss about the concept of power extraction from wind. Discuss the importance of Weibull distribution and wind rose for wind resource assessment. Briefly discuss the working principle of an updraft gasifier with the help of a necessary diagram.", marks:"3+4+4", years:["Feb/Mar 2019"] },
-      { q: "Draw an idealized power curve of a wind turbine and discuss it. A wind turbine is installed at 10m tower height in Dhulikhel. The power produced from the turbine is 132 W/m² at 15°C and 1 atm. If the tower height increases from 10m to 80m, what would be the estimated power production? (Terrain = high crops, hedges and shrubs, α=0.2) Briefly discuss about the wind farm.", marks:"4+4+3", years:["May/Jun 2019"] },
     ],
     possible: [
       { q: "What are the key criteria for site selection of a wind farm? Discuss with reference to Nepal's wind resource potential.", marks:"3", topic:"Wind Farm Design" },
@@ -4017,8 +3964,6 @@ const chapters = {
       { q: "Geothermal energy generated by radioactive decays are not majorly produced from the decay of long-lived radioactive isotopes of: a) Potassium b) Plutonium c) Thorium d) Uranium", marks:"0.5", years:["Dec 2022 MCQ"] },
       { q: "Power density of H₂O with 5m/s velocity in a tidal energy power is about: a) 125 kW/m² b) 62.5 kW/m² c) 25 kW/m² d) 12.5 kW/m²", marks:"0.5", years:["Dec 2022 MCQ"] },
       { q: "⚡ Explain the working principle of a run-of-river (RoR) hydropower plant. What are the advantages and limitations of RoR for Nepal's energy security?", marks:"4", years:[] },
-      { q: "Write short notes on: i. Solar Water Pumping System. ii. Hydrograph and Flow Duration Curve. iii. Renewable energy policies and strategies in Nepal.", marks:"4+3+4", years:["Feb/Mar 2019"] },
-      { q: "Provide any 2 technical differences between Flash Steam, Dry Steam and Binary cycle power plant in Geothermal Energy Harnessing.", marks:"3", years:["May/Jun 2019"] },
     ],
     possible: [
       { q: "A microhydro plant is to be designed for a stream with a flow rate of 50 l/s and a net head of 30 m. Calculate the power output assuming an overall efficiency of 70%.", marks:"3", topic:"Microhydro Design" },
@@ -4083,50 +4028,11 @@ const mcqData = [
   { q:"The standard monitoring height for wind resource assessment is:", opts:["5 m only","10 m (reference standard)","50 m only","100 m only"], correct:1, explain:"The international standard reference height for wind speed measurement is 10 m above ground. WRA masts typically measure at 10m (reference), 50m, 80m, and 100m (hub height) to characterize the wind profile and extrapolate to hub height using the power law. Source: KU Lecture Slides Ch.6.", year:"Possible" },
   { q:"The transesterification reaction produces biodiesel from:", opts:["Cellulose + water","Vegetable oil + methanol","Starch + yeast","Lignin + hydrogen"], correct:1, explain:"Transesterification: Triglycerides (vegetable/animal oil) + methanol (with catalyst NaOH/KOH) → Fatty Acid Methyl Esters (FAME = biodiesel) + glycerol. The glycerol is a valuable byproduct used in cosmetics/pharmaceuticals. Source: KU Dec 2022 MCQ.", year:"Dec 2022" },
   { q:"In a binary cycle geothermal power plant, the working fluid in the turbine is:", opts:["Steam from the geothermal well","A secondary fluid like isobutane","Liquid water","Hydrogen gas"], correct:1, explain:"Binary cycle plants use a secondary organic working fluid (isobutane, pentane, or ammonia) with a lower boiling point. The geothermal brine heats this fluid in a heat exchanger — the brine never contacts the turbine. This allows use of moderate-temperature resources (100-180°C) with ZERO direct emissions. Source: KU Lecture Slides Ch.8.", year:"Possible" },
-  // ─── Feb/Mar 2019 Section A ───
-  { q:"A solar module in a solar panel refers to:", opts:["Series arrangement of solar cells","Parallel arrangement of solar cells","Series and parallel arrangement of solar cells","No specific arrangement of solar cells"], correct:2, explain:"A solar module (panel) connects cells in BOTH series (to raise voltage) and parallel (to raise current). Series connection increases Voc; parallel increases Isc. The combined configuration gives the panel its rated Wp output. Source: KU Lecture Slides Ch.5.", year:"Feb/Mar 2019" },
-  { q:"What is Zero Net Energy (ZNE)?", opts:["ZNE means not using any energy","ZNE means not using energy for the internet","ZNE means the total energy used equals the renewable energy created on site","ZNE means using a net to try and capture the energy"], correct:2, explain:"A Zero Net Energy building or system produces as much renewable energy on-site as it consumes over a year. Example: a solar-powered net-zero restaurant where PV generation equals total electricity use. Source: KU MEEG 328 Lecture Slides.", year:"Feb/Mar 2019" },
-  { q:"The amount of oil that can be technically recovered at any price is called:", opts:["Reserves","Reservoirs","Resources","Traps"], correct:2, explain:"'Resources' refers to ALL oil technologically recoverable regardless of economic viability. 'Reserves' is the economically viable subset. Resources ⊃ Reserves. 'Reservoirs' are geological features; 'Traps' prevent oil migration. Source: KU MEEG 328 Lecture Slides.", year:"Feb/Mar 2019" },
-  { q:"The fraction of power in the wind that a modern wind turbine can extract is approximately:", opts:["50–60%","40–50%","70–80%","20–30%"], correct:1, explain:"The Betz limit is the theoretical maximum at 59.3% (16/27). In practice, modern wind turbines achieve a power coefficient Cp ≈ 0.40–0.48, meaning they extract 40–50% of available wind power. Source: Twidell & Weir (2015).", year:"Feb/Mar 2019" },
-  { q:"The collection efficiency of a flat plate solar collector can be improved by:", opts:["Putting a selective coating on the absorber plate","Filling the air space above the absorber plate","Removing the glazing of the collector","Placing the collector horizontally"], correct:0, explain:"A selective coating (e.g., black chrome, TiNOX) maximises solar absorptance (α ≈ 0.95) while minimising infrared emittance (ε ≈ 0.05). This dramatically reduces radiation losses at high operating temperatures, improving efficiency. Source: Duffie & Beckman (2013).", year:"Feb/Mar 2019" },
-  { q:"State of Charge (SOC) is defined as the percentage of battery capacity:", opts:["Available for discharge","That has been discharged","Available for charging","That has no use"], correct:0, explain:"SOC = (Remaining charge / Total capacity) × 100%. SOC = 100% → fully charged (all available for discharge). SOC = 20% → 80% already discharged. DOD (Depth of Discharge) = 100% − SOC. Source: KU Lecture Slides Ch.7.", year:"Feb/Mar 2019" },
-  { q:"Nominal Operating Cell Temperature (NOCT) is measured at Irradiance, Cell Temperature, Ambient Temperature and Wind Speed of:", opts:["650 W/m², 45°C, 20°C and 2 m/s","1000 W/m², 35°C, 25°C and 1 m/s","800 W/m², 45°C, 20°C and 1 m/s","800 W/m², 35°C, 20°C and 2 m/s"], correct:2, explain:"Standard NOCT measurement conditions: G = 800 W/m², ambient temperature Ta = 20°C, wind speed = 1 m/s, no electrical load. Under these conditions, the cell temperature reaches approximately 45°C (NOCT). Used to estimate real-world cell temperature: T_cell = Ta + (NOCT − 20) × G/800. Source: KU Lecture Slides Ch.5.", year:"Feb/Mar 2019" },
-  { q:"Low Carbon-Nitrogen (C:N) ratio could stop the anaerobic digestion process due to:", opts:["Too acidic","Too alkaline","Neither acidic nor alkaline","Unpredictable"], correct:0, explain:"A very low C:N ratio (< 15) means excess nitrogen. Excess N becomes ammonia (NH₃), which inhibits methanogens. The resulting VFA accumulation drops pH below 6.5, making the digester too acidic and halting methanogenesis. Optimal C:N = 20–30:1. Source: KU Lecture Slides Ch.3.", year:"Feb/Mar 2019" },
-  // ─── May/Jun 2019 Section A ───
-  { q:"The efficiency of solar water collectors _____ with _____ temperature difference between absorber and ambient:", opts:["Decreases, decreasing","Decreases, increasing","Remains same, increasing","Depends on type of collector"], correct:1, explain:"From the HWB equation: η = FR[τα − UL(Ti−Ta)/G]. As the temperature difference (Ti−Ta) INCREASES, heat losses increase → efficiency DECREASES. So the two blanks are: 'Decreases, increasing'. This gives a straight line with negative slope on an η vs (Ti−Ta)/G plot. Source: Duffie & Beckman (2013).", year:"May/Jun 2019" },
-  { q:"Which of the following best describes Biomass?", opts:["Natural gas","Petroleum","Inorganic matter that can be converted to fuel","Organic matter that can be converted to fuel"], correct:3, explain:"Biomass is organic material of biological origin — wood, agricultural residues, animal dung, energy crops, and organic waste. It can be converted to heat, electricity, or liquid/gas fuels via thermochemical (combustion, gasification, pyrolysis) or biochemical (fermentation, anaerobic digestion) processes. Source: KU Lecture Slides Ch.2.", year:"May/Jun 2019" },
-  { q:"A flat plate solar collector is usually tilted facing _____ if located in the southern hemisphere:", opts:["North","South","East","West"], correct:0, explain:"In the southern hemisphere, the sun traces its arc through the northern sky. To maximise annual solar irradiance, panels must face NORTH. In the northern hemisphere (e.g., Nepal at 27°N), panels face SOUTH. Tilt angle ≈ latitude of the site. Source: Duffie & Beckman (2013).", year:"May/Jun 2019" },
-  { q:"Which of the following is the biggest source of feedstock for biogas in rural Nepal?", opts:["Kitchen waste","Leaves","Cattle dung","Industrial waste"], correct:2, explain:"In rural Nepal, cattle dung (from cows and buffaloes) is by far the most abundant and consistently available organic feedstock. Nepal's ~450,000+ household biogas plants are almost exclusively fed with cattle dung (biogas yield ≈ 30 L/kg). Source: AEPC 2023; KU Lecture Slides Ch.3.", year:"May/Jun 2019" },
-  { q:"A suitable range of Carbon-Nitrogen (C:N) ratio for methanogenesis is:", opts:["2–40","4–60","15–30","4–10"], correct:2, explain:"Optimal C:N ratio for anaerobic digestion and methanogenesis is 20–30:1 (the range 15–30 covers this). Carbon provides energy for microorganisms; nitrogen builds cell structure. Too high C:N → nitrogen deficiency → slow digestion. Too low C:N → ammonia inhibition. Source: KU Lecture Slides Ch.3.", year:"May/Jun 2019" },
-  { q:"In the 1970s there was great interest in developing wind power because of:", opts:["An oil crisis","Concern over global warming","Improvements in wind turbine design","Low production cost in wind turbines"], correct:0, explain:"The 1973 OPEC oil embargo and 1979 Iranian Revolution caused severe oil price shocks (the 'oil crisis'). This triggered massive government and research interest in alternative/renewable energy sources, including wind power in Denmark, USA, and Germany — leading to the modern wind industry. Source: KU MEEG 328 Lecture Slides.", year:"May/Jun 2019" },
-  { q:"A 40 Wp solar PV where average solar insolation is 4.5 kWh/m²/day can generate _____ electricity daily (no temperature effect):", opts:["200 Wh","150 Wh","180 Wh","175 Wh"], correct:2, explain:"Daily energy = Rated power × Peak Sun Hours = 40 W × 4.5 h = 180 Wh/day. Note: 'kWh/m²/day' numerically equals 'peak sun hours'. This assumes ideal conditions (PR = 1.0, no temperature losses, no soiling). Source: Masters (2004).", year:"May/Jun 2019" },
 ];
 
 // ═══════════════════════════════════════════════════════
-//  FILL-IN-THE-BLANK DATA (All Exam Years)
+//  FILL-IN-THE-BLANK DATA (Jul/Aug 2024 Section B)
 // ═══════════════════════════════════════════════════════
-const fitbData = [
-  // ─── Feb/Mar 2019 Section B ───
-  { q:"A solar farm installed in a region where insolation is 200 kWh/m² per month. To produce 1200 kWh of electricity per month, approximately _____ m² of solar panels with 20% efficiency would be required.", ans:"30 m² — Area = Energy / (Insolation × η) = 1200 / (200 × 0.20) = 1200 / 40 = 30 m². Source: KU Feb/Mar 2019 Exam.", year:"Feb/Mar 2019" },
-  { q:"Gasification converts _____ percentage of the energy in the biomass into energy in the syngas.", ans:"70–80% — Gasification thermal efficiency is typically 70–80%. This means 70–80% of the chemical energy in the biomass feedstock is transferred to the syngas (CO + H₂ + CH₄ mixture). Source: Basu (2010).", year:"Feb/Mar 2019" },
-  { q:"Fixed dome biodigester provides _____ gas pressure to the biogas stoves.", ans:"Variable — In a fixed dome digester, as biogas accumulates in the fixed dome space the slurry is pushed into the expansion chamber. This changes the pressure, giving variable gas pressure unlike floating dome which gives constant pressure. Source: KU Lecture Slides Ch.3.", year:"Feb/Mar 2019" },
-  { q:"In order to manage 30 kg of cattle manure considering 40 days of hydraulic retention time and specific biogas production of 34 L per kg manure, the required size of biogas plant is _____.", ans:"2.4 m³ — Daily slurry = 30 kg dung + 30 kg water (1:1 ratio) = 60 L/day = 0.06 m³/day. V = 0.06 × 40 = 2.4 m³. Daily biogas = 30 × 34 = 1020 L/day ≈ 1.02 m³/day. Source: KU Feb/Mar 2019 Exam.", year:"Feb/Mar 2019" },
-  { q:"The mean wind speed at site A for a wind farm is 20% higher than at site B. The expected increase in electricity production at site A compared to site B is _____.", ans:"72.8% — Power ∝ v³. If v_A = 1.2 × v_B, then P_A = (1.2)³ × P_B = 1.728 × P_B. Increase = 72.8%. Remember: P ∝ v³ (cube law). Source: KU Feb/Mar 2019 Exam.", year:"Feb/Mar 2019" },
-  { q:"A feed-in tariff guarantees producers of renewable energy a _____ price per unit of supplied electricity.", ans:"Fixed (guaranteed) — Feed-in tariff (FiT) provides a fixed premium price per kWh generated from renewable energy. This guaranteed above-market price reduces investment risk and incentivises RE development. Nepal uses a similar mechanism for small hydropower. Source: KU MEEG 328 Policy Module.", year:"Feb/Mar 2019" },
-  { q:"Modern renewable energy supply is approximately _____ of the total primary energy use in Nepal.", ans:"~3% (approximately 3–5%) — Despite having massive hydropower potential, modern renewables (solar, wind, biogas, micro-hydro excluding traditional biomass) contribute only about 3% of Nepal's total primary energy. Traditional biomass dominates at 63.87%. Source: WECS Energy Synopsis 2024.", year:"Feb/Mar 2019" },
-  { q:"_____ produces typically less than 1% of tar-oils and so are widely used for engine operation.", ans:"Downdraft gasifiers — Downdraft (countercurrent) gasifiers produce tar content < 1 g/Nm³ (vs. 50-100 g/Nm³ for updraft). The gas passes through the hot reduction zone (700–900°C) where tar is thermally cracked, producing clean syngas suitable for IC engines. Source: Basu (2010).", year:"Feb/Mar 2019" },
-  { q:"Anaerobic digestion is the decomposition of organic matter in the _____ of air by microorganisms.", ans:"Absence — Anaerobic digestion occurs in the COMPLETE absence of air (oxygen). The word 'anaerobic' literally means 'without air'. The presence of even small amounts of oxygen would kill the methanogenic archaea and stop biogas production. Source: KU Lecture Slides Ch.3.", year:"Feb/Mar 2019" },
-  { q:"Time required to heat the fuel to the pyrolysis temperature is much shorter than the characteristic pyrolysis reaction time — this is called _____ pyrolysis.", ans:"Flash pyrolysis — When heating time ≪ reaction time, it is Flash pyrolysis (very high heating rates, > 1000°C/s, very short residence time). Compare: Slow pyrolysis = heating time > reaction time. Fast pyrolysis = heating time ≈ reaction time. Flash → maximises liquid bio-oil yield. Source: Bridgwater (2012).", year:"Feb/Mar 2019" },
-  // ─── May/Jun 2019 Section B ───
-  { q:"The typical capacity factor of a wind turbine is _____.", ans:"25–35% (onshore) — Capacity factor = Actual annual energy / (Rated power × 8760 h). For onshore wind: CF = 25–35%. Offshore wind: 35–45%. Solar PV: 15–20%. The capacity factor is always less than 100% due to variable wind speeds. Source: KU Lecture Slides Ch.6.", year:"May/Jun 2019" },
-  { q:"The fill factor (FF) is the ratio of _____.", ans:"Pmax / (Voc × Isc) = (Vmp × Imp) / (Voc × Isc) — Fill Factor measures how 'square' the IV curve is. A good quality solar cell has FF > 0.75. High series resistance or shunting reduces FF. Ideal cell: FF → 1.0. Source: KU Lecture Slides Ch.5.", year:"May/Jun 2019" },
-  { q:"Depth of discharge (DOD) is defined as the _____ of the battery capacity that has been discharged.", ans:"Percentage — DOD = (Discharged capacity / Total capacity) × 100%. DOD = 100% − SOC. For Li-ion: max recommended DOD = 80%. For lead-acid: 50% DoD to preserve cycle life. Example: DOD = 80% means 80% of total capacity has been used. Source: KU Lecture Slides Ch.7.", year:"May/Jun 2019" },
-  { q:"_____ is produced by the transesterification process.", ans:"Biodiesel (Fatty Acid Methyl Esters — FAME) — Transesterification reaction: Triglycerides (vegetable/animal oil) + Methanol (with NaOH/KOH catalyst) → Biodiesel (FAME) + Glycerol. The glycerol is a valuable by-product. Note: triglycerides are the REACTANT, not the product. Source: KU Lecture Slides Ch.2.", year:"May/Jun 2019" },
-  { q:"Time required to heat the fuel to the pyrolysis temperature is LONGER than the characteristic pyrolysis reaction time — this is called _____ pyrolysis.", ans:"Slow pyrolysis — When heating time > reaction time, the process is Slow pyrolysis (low temperature 300–400°C, slow heating rate). This maximises BIOCHAR production (~35%). Traditional charcoal-making is slow pyrolysis. Compare: Flash pyrolysis = heating time much shorter than reaction time. Source: Bridgwater (2012).", year:"May/Jun 2019" },
-  { q:"The wind velocity is 5 m/s at a height of 10 m above a surface with friction coefficient 0.2. The wind speed at a height of 55 m is _____.", ans:"≈7.03 m/s — Using Power Law: v₂ = v₁ × (h₂/h₁)^α = 5 × (55/10)^0.2 = 5 × (5.5)^0.2. Calculate: 5.5^0.2 = e^(0.2 × ln 5.5) = e^(0.2 × 1.7047) = e^0.3409 = 1.406. v₂ = 5 × 1.406 ≈ 7.03 m/s. Source: KU May/Jun 2019 Exam; Power Law (Masters 2004).", year:"May/Jun 2019" },
-  { q:"By 2030 all municipalities will have a _____ for municipal waste management.", ans:"Biogas plant / waste-to-energy facility — Nepal's government target: by 2030, all municipalities should have waste management facilities including biogas plants to process organic municipal solid waste (MSW). This converts waste CH₄ emissions into useful energy while managing urban waste. Source: KU Lecture Slides; Nepal RE Policy.", year:"May/Jun 2019" },
-  { q:"In order to manage 20 kg of cattle manure considering 40 days of HRT and specific biogas production of 34 L per kg manure, _____ m³ size of biogas plant is required.", ans:"1.6 m³ — With 1:1 dung:water ratio: daily slurry = 20 + 20 = 40 L/day = 0.04 m³/day. Digester volume = 0.04 × 40 = 1.6 m³. Daily biogas = 20 × 34 = 680 L/day = 0.68 m³/day. Source: KU May/Jun 2019 Exam.", year:"May/Jun 2019" },
-];
 
 
 // ═══════════════════════════════════════════════════════
