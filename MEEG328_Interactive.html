@@ -2138,7 +2138,7 @@ function updateSidebarStats(){
   const viewed = Object.keys(p.viewed||{}).length;
   const total = Object.values(chapters).reduce((s,c)=>s+(c.theory||[]).length,0);
   const pct = total>0 ? Math.round(viewed/total*100) : 0;
-  const bm = Object.keys(p.bookmarks||{}).length;
+  const bm = getBookmarks ? getBookmarks().length : 0;
   const sbQ = document.getElementById('sb-questions');
   const sbMcq = document.getElementById('sb-mcq');
   const sbProg = document.getElementById('sb-progress');
@@ -2561,55 +2561,45 @@ function renderProgress(){
 function resetMcqScores(){ mcqAnswers={}; renderView('progress'); }
 
 function renderBookmarks(){
-  const p = loadProgress();
-  const bk = p.bookmarks || {};
-  const keys = Object.keys(bk);
-  if(keys.length===0){
+  const bm = getBookmarks();
+  if(bm.length===0){
     return '<div style="text-align:center;padding:60px 20px;">' +
       '<div style="font-size:40px;margin-bottom:12px;">🔖</div>' +
       '<div style="font-family:var(--font-head);font-size:18px;font-weight:700;margin-bottom:8px;">No Bookmarks Yet</div>' +
-      '<div style="font-size:13px;color:var(--text2);">Click the ★ bookmark icon on any question to save it here for quick review.</div>' +
+      '<div style="font-size:13px;color:var(--text2);">Click the 🔖 bookmark icon on any question answer to save it here for quick review.</div>' +
       '</div>';
   }
-  let html = '<div style="font-family:var(--font-head);font-size:20px;font-weight:800;margin-bottom:18px;">🔖 Bookmarked Questions</div>';
+  let html = '<div style="font-family:var(--font-head);font-size:20px;font-weight:800;margin-bottom:18px;">🔖 Bookmarked Questions <span style="font-family:var(--font-mono);font-size:13px;color:var(--text3);font-weight:400;">' + bm.length + ' saved</span></div>';
   html += '<div style="display:flex;justify-content:flex-end;margin-bottom:12px;">' +
     '<button onclick="clearBookmarks()" style="font-family:var(--font-mono);font-size:11px;padding:6px 14px;border-radius:8px;border:1px solid rgba(248,113,113,0.3);background:rgba(248,113,113,0.06);color:var(--red);cursor:pointer;">Clear All</button></div>';
-  keys.forEach(key=>{
-    const [chKey, qIdx] = key.split('_q');
-    const ch = chapters[chKey];
+  bm.forEach(key=>{
+    const parts = key.split('_');
+    const chKey = parts[0]+'_'+(parts.length>2?parts[1]:'');
+    // key format is 'ch1_0' -> chKey='ch1', qIdx=0
+    const underscore = key.lastIndexOf('_');
+    const ch_key = key.substring(0, underscore);
+    const qIdx = parseInt(key.substring(underscore+1));
+    const ch = chapters[ch_key];
     if(!ch) return;
-    const q = ch.theory[parseInt(qIdx)];
+    const q = ch.theory[qIdx];
     if(!q) return;
-    const hasAns = answerData[chKey+'_'+qIdx] !== undefined;
+    const hasAns = answerData[key] !== undefined;
     html += '<div class="q-card" style="border-left:3px solid var(--yellow);">' +
       '<div class="q-header">' +
-        '<span class="q-num">' + ch.tag + '·Q' + (parseInt(qIdx)+1) + '</span>' +
-        '<span class="q-text">' + q.q + '</span>' +
+        '<span class="q-num">' + ch.tag + '·Q' + (qIdx+1) + '</span>' +
+        '<span class="q-text">' + q.q.substring(0,200) + (q.q.length>200?'...':'') + '</span>' +
       '</div>' +
       '<div class="q-meta">' +
         '<span class="marks-pill">[' + q.marks + ' marks]</span>' +
-        '<button class="bookmark-btn active" onclick="toggleBookmark(\'' + chKey + '\',\'' + qIdx + '\',this)">★</button>' +
-        (hasAns ? '<button class="view-ans-btn" onclick="showAnswer(\'' + chKey + '\',' + parseInt(qIdx) + ')">📖 View Answer</button>' : '') +
+        (hasAns ? '<button class="view-ans-btn" onclick="showAnswer(\'' + ch_key + '\',' + qIdx + ')">📖 View Answer</button>' : '') +
       '</div>' +
     '</div>';
   });
   return html;
 }
 
-function toggleBookmark(chKey, qIdx, btn){
-  const p = loadProgress();
-  if(!p.bookmarks) p.bookmarks = {};
-  const k = chKey+'_q'+qIdx;
-  if(p.bookmarks[k]){ delete p.bookmarks[k]; if(btn){ btn.classList.remove('active'); btn.textContent='☆'; } }
-  else { p.bookmarks[k]=1; if(btn){ btn.classList.add('active'); btn.textContent='★'; } }
-  saveProgress(p);
-  updateSidebarStats();
-}
-
 function clearBookmarks(){
-  const p = loadProgress();
-  p.bookmarks = {};
-  saveProgress(p);
+  saveBookmarks([]);
   updateSidebarStats();
   renderView('bookmarks');
 }
@@ -2779,7 +2769,9 @@ function renderReferences(){
 
 function typesettMath(){
   if(window.MathJax && MathJax.typesetPromise){
-    MathJax.typesetPromise().catch(err => console.log('MathJax error:', err));
+    const modalBody = document.getElementById('ans-body');
+    const target = modalBody ? [modalBody] : undefined;
+    MathJax.typesetPromise(target).catch(err => console.log('MathJax error:', err));
   }
 }
 
@@ -5312,6 +5304,586 @@ Applications: Grid-scale energy shifting, utility storage, microgrids. Not yet w
 <h4>Limitations and Energy Security Implications</h4>
 <ul><li><strong>Seasonal variability:</strong> Flow drops 60-80% in dry season (Oct-May) → power generation drops proportionally → seasonal blackouts</li><li><strong>No storage:</strong> Cannot shift generation to peak demand periods (evening)</li><li><strong>Climate vulnerability:</strong> Glacier retreat and erratic monsoons will alter flow patterns</li><li><strong>Over-dependence risk:</strong> Nepal's 90%+ RoR dependence means a single drought year can cripple the entire grid</li></ul>
 <div class="kp">Conclusion: RoR is excellent as BASE LOAD in a diverse mix but should NOT be the sole source. Nepal needs reservoir hydro (Upper Tamakoshi model), PHES, and solar PV to complement RoR seasonally.</div>` },
+
+  // ─── NEW 2019 ANSWERS ───
+
+  'ch1_6': { marks:"4", refs:['ku-slides','wecs-2024'], content:`<h4>The Energy Trilemma & Nepal's Situation</h4>
+<h4>What is the Energy Trilemma?</h4>
+<p>The Energy Trilemma, defined by the World Energy Council, refers to three competing objectives that every nation must balance in its energy system:</p>
+<div class="vis-box">
+<svg viewBox="0 0 560 220" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;background:#0d1318;">
+  <!-- Triangle -->
+  <polygon points="280,30 80,190 480,190" fill="none" stroke="rgba(34,211,160,0.25)" stroke-width="2"/>
+  <!-- Corner circles -->
+  <circle cx="280" cy="30" r="46" fill="rgba(34,211,160,0.12)" stroke="#22d3a0" stroke-width="1.5"/>
+  <circle cx="80" cy="190" r="46" fill="rgba(56,189,248,0.12)" stroke="#38bdf8" stroke-width="1.5"/>
+  <circle cx="480" cy="190" r="46" fill="rgba(251,191,36,0.12)" stroke="#fbbf24" stroke-width="1.5"/>
+  <!-- Labels -->
+  <text x="280" y="24" fill="#22d3a0" font-size="10" font-family="JetBrains Mono,monospace" text-anchor="middle" font-weight="600">ENERGY SECURITY</text>
+  <text x="280" y="36" fill="#7a9ab0" font-size="8.5" font-family="DM Sans,sans-serif" text-anchor="middle">Reliable supply</text>
+  <text x="280" y="46" fill="#7a9ab0" font-size="8.5" font-family="DM Sans,sans-serif" text-anchor="middle">No interruptions</text>
+  <text x="80" y="185" fill="#38bdf8" font-size="10" font-family="JetBrains Mono,monospace" text-anchor="middle" font-weight="600">ENERGY EQUITY</text>
+  <text x="80" y="197" fill="#7a9ab0" font-size="8.5" font-family="DM Sans,sans-serif" text-anchor="middle">Affordable access</text>
+  <text x="80" y="207" fill="#7a9ab0" font-size="8.5" font-family="DM Sans,sans-serif" text-anchor="middle">for all citizens</text>
+  <text x="480" y="185" fill="#fbbf24" font-size="10" font-family="JetBrains Mono,monospace" text-anchor="middle" font-weight="600">SUSTAINABILITY</text>
+  <text x="480" y="197" fill="#7a9ab0" font-size="8.5" font-family="DM Sans,sans-serif" text-anchor="middle">Low carbon</text>
+  <text x="480" y="207" fill="#7a9ab0" font-size="8.5" font-family="DM Sans,sans-serif" text-anchor="middle">emissions</text>
+  <!-- Center label -->
+  <circle cx="280" cy="130" r="28" fill="rgba(167,139,250,0.12)" stroke="rgba(167,139,250,0.4)" stroke-width="1" stroke-dasharray="3,3"/>
+  <text x="280" y="127" fill="#a78bfa" font-size="9" font-family="JetBrains Mono,monospace" text-anchor="middle">IDEAL</text>
+  <text x="280" y="139" fill="#a78bfa" font-size="9" font-family="JetBrains Mono,monospace" text-anchor="middle">BALANCE</text>
+</svg></div>
+<h4>Nepal's Situation Against Each Dimension</h4>
+<div class="step"><strong>1. Energy Security — ❌ WEAK:</strong> Nepal generates >90% of electricity from Run-of-River (RoR) hydropower. In the dry season (Oct–May), river flows drop 60–80%, causing severe power shortages. The grid is vulnerable to a single drought year or monsoon failure. No significant storage capacity exists.</div>
+<div class="step"><strong>2. Energy Equity — ⚠️ IMPROVING:</strong> Electrification reached 98% (2023), but per capita consumption is only 369 kWh/year — far below global average of ~3,000 kWh/year. 51% of households still use firewood for cooking. Energy poverty persists in rural and mountain regions.</div>
+<div class="step"><strong>3. Environmental Sustainability — ✅ RELATIVELY GOOD:</strong> Nepal's electricity grid is almost entirely renewable (hydro). However, traditional biomass (63.87% of total energy) causes indoor air pollution and deforestation. Transport sector uses petroleum. Overall CO₂ per capita is low at ~0.5 tonnes/year.</div>
+<div class="kp">Nepal's Trilemma Challenge: Strong sustainability in electricity but poor security (RoR dependence) and poor equity (biomass dominance for cooking). The solution: diversify with solar PV + PHES + reservoir hydro to improve security; promote clean cooking fuels to improve equity.</div>` },
+
+  'ch1_7': { marks:"3", refs:['ku-slides','wecs-2024'], content:`<h4>Sankey Diagram & Nepal's Energy Flow</h4>
+<h4>What is a Sankey Diagram?</h4>
+<p>A Sankey diagram is a flow diagram where the width of the arrows is proportional to the quantity being represented. It shows how energy flows from primary sources through conversion processes to final end uses, with losses visible as branches leaving the main flow.</p>
+<h4>Nepal's Energy Flow (FY 2079/80) — Approximate</h4>
+<div class="vis-box">
+<svg viewBox="0 0 560 260" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;background:#0d1318;">
+  <!-- Primary Sources (left) -->
+  <text x="10" y="14" fill="#3a5568" font-size="8" font-family="JetBrains Mono,monospace" letter-spacing="0.1em">PRIMARY SOURCES</text>
+  <!-- Firewood bar 63.87% -->
+  <rect x="10" y="20" width="14" height="128" rx="3" fill="rgba(251,146,60,0.8)" stroke="#fb923c" stroke-width="1"/>
+  <text x="28" y="88" fill="#fb923c" font-size="9" font-family="DM Sans,sans-serif">Firewood 63.87%</text>
+  <!-- Petroleum 13.52% -->
+  <rect x="10" y="152" width="14" height="28" rx="3" fill="rgba(248,113,113,0.8)" stroke="#f87171" stroke-width="1"/>
+  <text x="28" y="168" fill="#f87171" font-size="9" font-family="DM Sans,sans-serif">Petroleum 13.52%</text>
+  <!-- Coal 9.09% -->
+  <rect x="10" y="184" width="14" height="18" rx="3" fill="rgba(100,116,139,0.8)" stroke="#64748b" stroke-width="1"/>
+  <text x="28" y="196" fill="#64748b" font-size="9" font-family="DM Sans,sans-serif">Coal 9.09%</text>
+  <!-- Hydro/RE 13.52% -->
+  <rect x="10" y="206" width="14" height="27" rx="3" fill="rgba(34,211,160,0.8)" stroke="#22d3a0" stroke-width="1"/>
+  <text x="28" y="222" fill="#22d3a0" font-size="9" font-family="DM Sans,sans-serif">Hydro + RE 13.52%</text>
+  <!-- Arrow label -->
+  <text x="200" y="14" fill="#3a5568" font-size="8" font-family="JetBrains Mono,monospace" letter-spacing="0.1em">END USES</text>
+  <!-- Residential 60.75% -->
+  <rect x="380" y="20" width="14" height="122" rx="3" fill="rgba(34,211,160,0.7)" stroke="#22d3a0" stroke-width="1"/>
+  <text x="398" y="84" fill="#22d3a0" font-size="9" font-family="DM Sans,sans-serif">Residential 60.75%</text>
+  <!-- Industrial 20.91% -->
+  <rect x="380" y="146" width="14" height="42" rx="3" fill="rgba(56,189,248,0.7)" stroke="#38bdf8" stroke-width="1"/>
+  <text x="398" y="170" fill="#38bdf8" font-size="9" font-family="DM Sans,sans-serif">Industrial 20.91%</text>
+  <!-- Transport 10.43% -->
+  <rect x="380" y="192" width="14" height="21" rx="3" fill="rgba(251,191,36,0.7)" stroke="#fbbf24" stroke-width="1"/>
+  <text x="398" y="205" fill="#fbbf24" font-size="9" font-family="DM Sans,sans-serif">Transport 10.43%</text>
+  <!-- Other 7.91% -->
+  <rect x="380" y="217" width="14" height="16" rx="3" fill="rgba(167,139,250,0.7)" stroke="#a78bfa" stroke-width="1"/>
+  <text x="398" y="228" fill="#a78bfa" font-size="9" font-family="DM Sans,sans-serif">Other 7.91%</text>
+  <!-- Flow lines -->
+  <path d="M24,84 Q200,84 380,84" fill="none" stroke="rgba(251,146,60,0.3)" stroke-width="40"/>
+  <path d="M24,166 Q200,166 380,190" fill="none" stroke="rgba(248,113,113,0.2)" stroke-width="10"/>
+  <path d="M24,193 Q200,193 380,200" fill="none" stroke="rgba(100,116,139,0.2)" stroke-width="7"/>
+  <path d="M24,220 Q200,210 380,175" fill="none" stroke="rgba(34,211,160,0.2)" stroke-width="10"/>
+  <!-- Total label -->
+  <text x="280" y="252" fill="#3a5568" font-size="8.5" font-family="JetBrains Mono,monospace" text-anchor="middle">Total: ~532 PJ/year (FY 2079/80) | Source: WECS 2024</text>
+</svg></div>
+<h4>Key Observations from Nepal's Energy Flow</h4>
+<ul>
+<li>Firewood (~64%) dominates — mostly used in residential sector for cooking, causing indoor air pollution</li>
+<li>Residential sector (60.75%) is the largest consumer — dominated by traditional biomass use</li>
+<li>Modern renewable energy (hydro + solar + wind) accounts for only ~13.5% of total primary energy</li>
+<li>Petroleum (13.52%) is mostly imported — a major source of energy insecurity and trade deficit</li>
+</ul>
+<div class="kp">Implication: Nepal's energy system is heavily biomass-dependent and unsustainable. The priority is transitioning residential cooking from firewood to clean alternatives (LPG, biogas, electric induction) and expanding the renewable energy base.</div>` },
+
+  'ch2_8': { marks:"2+5+4", refs:['ku-slides','basu'], content:`<h4>ICS, Biofuel from Waste Plastics, and FDC/Gasification</h4>
+<h4>Improved Cook Stove (ICS)</h4>
+<p>An Improved Cook Stove is a stove designed to burn fuel more efficiently than traditional open fires, reducing fuel consumption by 30–60%, cutting indoor air pollution, and decreasing cooking time. Key features: insulated combustion chamber, grate for better airflow, chimney for smoke removal. Nepal has distributed over 800,000 ICS units through AEPC programs.</p>
+<h4>Biofuel Production from Waste Plastics (Pyrolysis)</h4>
+<div class="vis-box">
+<svg viewBox="0 0 560 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;background:#0d1318;">
+  <!-- Process flow boxes -->
+  <!-- Box 1: Waste Plastics -->
+  <rect x="10" y="50" width="90" height="60" rx="6" fill="rgba(248,113,113,0.12)" stroke="#f87171" stroke-width="1.5"/>
+  <text x="55" y="75" fill="#f87171" font-size="9" font-family="JetBrains Mono,monospace" text-anchor="middle" font-weight="600">WASTE</text>
+  <text x="55" y="87" fill="#f87171" font-size="9" font-family="JetBrains Mono,monospace" text-anchor="middle" font-weight="600">PLASTICS</text>
+  <text x="55" y="99" fill="#4a5470" font-size="7.5" font-family="DM Sans,sans-serif" text-anchor="middle">PE, PP, PS</text>
+  <!-- Arrow -->
+  <line x1="100" y1="80" x2="118" y2="80" stroke="#3a5568" stroke-width="1.5" marker-end="url(#arr1)"/>
+  <defs><marker id="arr1" markerWidth="6" markerHeight="6" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6" fill="none" stroke="#3a5568" stroke-width="1"/></marker></defs>
+  <!-- Box 2: Shredding -->
+  <rect x="120" y="50" width="80" height="60" rx="6" fill="rgba(251,191,36,0.1)" stroke="#fbbf24" stroke-width="1.5"/>
+  <text x="160" y="75" fill="#fbbf24" font-size="9" font-family="JetBrains Mono,monospace" text-anchor="middle">SHREDDING</text>
+  <text x="160" y="87" fill="#fbbf24" font-size="9" font-family="JetBrains Mono,monospace" text-anchor="middle">& DRYING</text>
+  <text x="160" y="99" fill="#4a5470" font-size="7.5" font-family="DM Sans,sans-serif" text-anchor="middle">&lt;10% moisture</text>
+  <!-- Arrow -->
+  <line x1="200" y1="80" x2="218" y2="80" stroke="#3a5568" stroke-width="1.5" marker-end="url(#arr1)"/>
+  <!-- Box 3: Pyrolysis Reactor -->
+  <rect x="220" y="40" width="100" height="80" rx="6" fill="rgba(167,139,250,0.12)" stroke="#a78bfa" stroke-width="2"/>
+  <text x="270" y="65" fill="#a78bfa" font-size="9" font-family="JetBrains Mono,monospace" text-anchor="middle" font-weight="600">PYROLYSIS</text>
+  <text x="270" y="77" fill="#a78bfa" font-size="9" font-family="JetBrains Mono,monospace" text-anchor="middle" font-weight="600">REACTOR</text>
+  <text x="270" y="89" fill="#7a9ab0" font-size="7.5" font-family="DM Sans,sans-serif" text-anchor="middle">350–500°C</text>
+  <text x="270" y="101" fill="#7a9ab0" font-size="7.5" font-family="DM Sans,sans-serif" text-anchor="middle">No oxygen</text>
+  <text x="270" y="112" fill="#7a9ab0" font-size="7.5" font-family="DM Sans,sans-serif" text-anchor="middle">catalyst: clay/zeolite</text>
+  <!-- Arrows to products -->
+  <line x1="320" y1="65" x2="345" y2="45" stroke="#3a5568" stroke-width="1.5" marker-end="url(#arr1)"/>
+  <line x1="320" y1="80" x2="345" y2="80" stroke="#3a5568" stroke-width="1.5" marker-end="url(#arr1)"/>
+  <line x1="320" y1="95" x2="345" y2="115" stroke="#3a5568" stroke-width="1.5" marker-end="url(#arr1)"/>
+  <!-- Products -->
+  <rect x="347" y="28" width="100" height="30" rx="5" fill="rgba(56,189,248,0.12)" stroke="#38bdf8" stroke-width="1"/>
+  <text x="397" y="43" fill="#38bdf8" font-size="8.5" font-family="DM Sans,sans-serif" text-anchor="middle">Pyrolysis Gas (~10%)</text>
+  <text x="397" y="53" fill="#4a5470" font-size="7.5" font-family="JetBrains Mono,monospace" text-anchor="middle">Fuel for reactor heating</text>
+  <rect x="347" y="65" width="100" height="30" rx="5" fill="rgba(34,211,160,0.12)" stroke="#22d3a0" stroke-width="1.5"/>
+  <text x="397" y="80" fill="#22d3a0" font-size="8.5" font-family="DM Sans,sans-serif" text-anchor="middle" font-weight="600">Pyrolysis Oil (~70%) ⭐</text>
+  <text x="397" y="90" fill="#4a5470" font-size="7.5" font-family="JetBrains Mono,monospace" text-anchor="middle">Diesel substitute</text>
+  <rect x="347" y="100" width="100" height="30" rx="5" fill="rgba(251,191,36,0.1)" stroke="#fbbf24" stroke-width="1"/>
+  <text x="397" y="115" fill="#fbbf24" font-size="8.5" font-family="DM Sans,sans-serif" text-anchor="middle">Char (~20%)</text>
+  <text x="397" y="125" fill="#4a5470" font-size="7.5" font-family="JetBrains Mono,monospace" text-anchor="middle">Solid fuel / carbon black</text>
+</svg></div>
+<p>Waste plastics (PE, PP, PS) are shredded, dried, then fed into a pyrolysis reactor at 350–500°C in absence of oxygen. Long polymer chains thermally crack into shorter hydrocarbon chains — producing a diesel-like pyrolysis oil (~70%), combustible gas (~10%), and char (~20%). The oil can substitute diesel in generators and boilers.</p>
+<h4>Flow Duration Curve (FDC)</h4>
+<p>An FDC shows the percentage of time a river's flow equals or exceeds a given value. It is constructed by ranking all flow measurements from highest to lowest and plotting against exceedance probability. Used in microhydro design: design flow at Q₄₀–Q₆₀ (flow exceeded 40–60% of the time) and firm power at Q₉₀.</p>
+<h4>Gasification Process</h4>
+<p>Gasification is partial oxidation of biomass at 700–1000°C with restricted air (25–35% of stoichiometric), producing syngas (CO + H₂ + CH₄ + CO₂ + N₂). The syngas can drive IC engines for electricity generation. Downdraft gasifiers (low tar) are preferred for engine applications. Thermal efficiency: 70–80%.</p>` },
+
+  'ch2_9': { marks:"3+4+4", refs:['ku-slides','twidell','basu'], content:`<h4>Wind Power Extraction, Weibull/Wind Rose, and Updraft Gasifier</h4>
+<h4>Power Extraction from Wind</h4>
+<p>Wind possesses kinetic energy: KE = ½mv². For a wind turbine with rotor swept area A, the power in the wind is:</p>
+<div class="math-eq">$$P_{wind} = \\frac{1}{2}\\rho A v^3$$</div>
+<p>The <strong>Betz Limit</strong> (Albert Betz, 1919) proves that no turbine can extract more than 16/27 ≈ 59.3% of the wind's kinetic energy. If all energy were extracted, the air would stop and block the rotor. Modern turbines achieve Cp = 0.40–0.48.</p>
+<div class="step">Key insight: P ∝ v³ → doubling wind speed gives 8× more power. A 10% increase in wind speed gives 33% more power (1.1³ = 1.331).</div>
+<h4>Weibull Distribution for Wind Resource Assessment</h4>
+<p>Wind speed is not constant — it varies continuously. The <strong>Weibull distribution</strong> describes the statistical frequency of wind speeds at a site:</p>
+<div class="math-eq small">$$f(v) = \\frac{k}{c}\\left(\\frac{v}{c}\\right)^{k-1} \\exp\\left[-\\left(\\frac{v}{c}\\right)^k\\right]$$</div>
+<p>Where k = shape factor (k≈2 = Rayleigh, special case), c = scale factor (related to mean wind speed). Importance: allows calculation of mean power output, capacity factor, and annual energy production without measuring every hour for decades.</p>
+<h4>Wind Rose</h4>
+<p>A wind rose is a circular diagram showing the frequency and speed of winds from each direction (N, NE, E, SE, S, SW, W, NW). It is essential for: (1) turbine orientation — rotors face the prevailing wind direction; (2) wind farm layout — turbines spaced further downwind of prevailing direction (7–9D) to minimize wake losses; (3) identifying terrain channelling effects.</p>
+<h4>Updraft (Counter-flow) Gasifier — Working Principle</h4>
+<div class="vis-box">
+<svg viewBox="0 0 560 240" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;background:#0d1318;">
+  <!-- Reactor body -->
+  <rect x="190" y="20" width="180" height="200" rx="8" fill="rgba(13,19,24,0.8)" stroke="#243040" stroke-width="2"/>
+  <!-- Zones from top to bottom -->
+  <rect x="192" y="22" width="176" height="40" rx="6" fill="rgba(56,189,248,0.08)" stroke="rgba(56,189,248,0.2)" stroke-width="1"/>
+  <text x="280" y="38" fill="#38bdf8" font-size="9" font-family="JetBrains Mono,monospace" text-anchor="middle" font-weight="600">DRYING ZONE</text>
+  <text x="280" y="50" fill="#4a5470" font-size="8" font-family="DM Sans,sans-serif" text-anchor="middle">Moisture evaporated ~100°C</text>
+  <rect x="192" y="64" width="176" height="40" rx="0" fill="rgba(167,139,250,0.08)" stroke="rgba(167,139,250,0.2)" stroke-width="1"/>
+  <text x="280" y="80" fill="#a78bfa" font-size="9" font-family="JetBrains Mono,monospace" text-anchor="middle" font-weight="600">PYROLYSIS ZONE</text>
+  <text x="280" y="92" fill="#4a5470" font-size="8" font-family="DM Sans,sans-serif" text-anchor="middle">150–700°C — volatiles released</text>
+  <rect x="192" y="106" width="176" height="40" rx="0" fill="rgba(34,211,160,0.08)" stroke="rgba(34,211,160,0.2)" stroke-width="1"/>
+  <text x="280" y="122" fill="#22d3a0" font-size="9" font-family="JetBrains Mono,monospace" text-anchor="middle" font-weight="600">REDUCTION ZONE</text>
+  <text x="280" y="134" fill="#4a5470" font-size="8" font-family="DM Sans,sans-serif" text-anchor="middle">CO₂+C→2CO | H₂O+C→CO+H₂</text>
+  <rect x="192" y="148" width="176" height="40" rx="0" fill="rgba(251,146,60,0.1)" stroke="rgba(251,146,60,0.3)" stroke-width="1"/>
+  <text x="280" y="164" fill="#fb923c" font-size="9" font-family="JetBrains Mono,monospace" text-anchor="middle" font-weight="600">COMBUSTION ZONE</text>
+  <text x="280" y="176" fill="#4a5470" font-size="8" font-family="DM Sans,sans-serif" text-anchor="middle">1000–1400°C | C + O₂ → CO₂</text>
+  <!-- Grate -->
+  <line x1="192" y1="190" x2="368" y2="190" stroke="#243040" stroke-width="3"/>
+  <text x="280" y="202" fill="#3a5568" font-size="8" font-family="JetBrains Mono,monospace" text-anchor="middle">GRATE — ASH REMOVAL</text>
+  <!-- Air inlet arrow (bottom) -->
+  <line x1="100" y1="180" x2="188" y2="180" stroke="#38bdf8" stroke-width="2" marker-end="url(#arrBlue)"/>
+  <defs><marker id="arrBlue" markerWidth="6" markerHeight="6" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6" fill="none" stroke="#38bdf8" stroke-width="1.5"/></marker></defs>
+  <text x="80" y="175" fill="#38bdf8" font-size="8.5" font-family="JetBrains Mono,monospace" text-anchor="middle">AIR IN</text>
+  <!-- Biomass input (top) -->
+  <line x1="280" y1="10" x2="280" y2="20" stroke="#fb923c" stroke-width="2" marker-end="url(#arrOrange)"/>
+  <defs><marker id="arrOrange" markerWidth="6" markerHeight="6" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6" fill="none" stroke="#fb923c" stroke-width="1.5"/></marker></defs>
+  <text x="280" y="8" fill="#fb923c" font-size="8.5" font-family="JetBrains Mono,monospace" text-anchor="middle">BIOMASS IN</text>
+  <!-- Gas out (top) -->
+  <line x1="370" y1="42" x2="450" y2="42" stroke="#22d3a0" stroke-width="2" marker-end="url(#arrGreen)"/>
+  <defs><marker id="arrGreen" markerWidth="6" markerHeight="6" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6" fill="none" stroke="#22d3a0" stroke-width="1.5"/></marker></defs>
+  <text x="470" y="38" fill="#22d3a0" font-size="8.5" font-family="JetBrains Mono,monospace">SYNGAS OUT</text>
+  <text x="470" y="50" fill="#f87171" font-size="8" font-family="JetBrains Mono,monospace">HIGH TAR ~50g/Nm³</text>
+</svg></div>
+<p>In an updraft gasifier, biomass enters from the top and slowly descends while air enters from the bottom through the grate. The gas flows upward counter-currently — hence "updraft". The hot syngas exits at the top but passes through the drying and pyrolysis zones, picking up tars. This gives <strong>high thermal efficiency but very high tar content (~50 g/Nm³)</strong>, making it suitable only for direct heat applications — not IC engines.</p>
+<div class="kp">Comparison: Updraft → high efficiency, high tar (direct heat). Downdraft → lower efficiency, low tar &lt;1 g/Nm³ (IC engines). For rural electrification: always use downdraft.</div>` },
+
+  'ch3_9': { marks:"3+6+2", refs:['ku-slides','ku-exam-2019','werner'], content:`<h4>Anaerobic Digestion Biochemistry + 100 kg/day Plant Design (Biratnagar)</h4>
+<h4>Importance of Biochemical Process in Anaerobic Digestion</h4>
+<p>Anaerobic digestion (AD) occurs through four sequential biochemical stages carried out by distinct microbial communities:</p>
+<div class="vis-box" style="padding:0;overflow:hidden;border-radius:10px;">
+<svg viewBox="0 0 560 80" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;background:#0d1318;">
+  <defs><marker id="a4" markerWidth="5" markerHeight="5" refX="5" refY="2.5" orient="auto"><path d="M0,0 L5,2.5 L0,5" fill="none" stroke="#3a5568" stroke-width="1.2"/></marker></defs>
+  <rect x="8" y="18" width="108" height="44" rx="5" fill="rgba(34,211,160,0.1)" stroke="#22d3a0" stroke-width="1.5"/>
+  <text x="62" y="36" fill="#22d3a0" font-size="9" font-family="JetBrains Mono,monospace" text-anchor="middle" font-weight="600">HYDROLYSIS</text>
+  <text x="62" y="48" fill="#7a9ab0" font-size="8" font-family="DM Sans,sans-serif" text-anchor="middle">Polymers → Monomers</text>
+  <text x="62" y="58" fill="#4a5470" font-size="7.5" font-family="JetBrains Mono,monospace" text-anchor="middle">cellulose → glucose</text>
+  <line x1="116" y1="40" x2="130" y2="40" stroke="#3a5568" stroke-width="1.5" marker-end="url(#a4)"/>
+  <rect x="132" y="18" width="108" height="44" rx="5" fill="rgba(56,189,248,0.1)" stroke="#38bdf8" stroke-width="1.5"/>
+  <text x="186" y="36" fill="#38bdf8" font-size="9" font-family="JetBrains Mono,monospace" text-anchor="middle" font-weight="600">ACIDOGENESIS</text>
+  <text x="186" y="48" fill="#7a9ab0" font-size="8" font-family="DM Sans,sans-serif" text-anchor="middle">Monomers → VFAs</text>
+  <text x="186" y="58" fill="#4a5470" font-size="7.5" font-family="JetBrains Mono,monospace" text-anchor="middle">+ CO₂ + H₂</text>
+  <line x1="240" y1="40" x2="254" y2="40" stroke="#3a5568" stroke-width="1.5" marker-end="url(#a4)"/>
+  <rect x="256" y="18" width="108" height="44" rx="5" fill="rgba(167,139,250,0.1)" stroke="#a78bfa" stroke-width="1.5"/>
+  <text x="310" y="36" fill="#a78bfa" font-size="9" font-family="JetBrains Mono,monospace" text-anchor="middle" font-weight="600">ACETOGENESIS</text>
+  <text x="310" y="48" fill="#7a9ab0" font-size="8" font-family="DM Sans,sans-serif" text-anchor="middle">VFAs → Acetate</text>
+  <text x="310" y="58" fill="#4a5470" font-size="7.5" font-family="JetBrains Mono,monospace" text-anchor="middle">+ H₂</text>
+  <line x1="364" y1="40" x2="378" y2="40" stroke="#3a5568" stroke-width="1.5" marker-end="url(#a4)"/>
+  <rect x="380" y="18" width="172" height="44" rx="5" fill="rgba(251,191,36,0.1)" stroke="#fbbf24" stroke-width="2"/>
+  <text x="466" y="36" fill="#fbbf24" font-size="9" font-family="JetBrains Mono,monospace" text-anchor="middle" font-weight="600">METHANOGENESIS ⭐</text>
+  <text x="466" y="48" fill="#7a9ab0" font-size="8" font-family="DM Sans,sans-serif" text-anchor="middle">Acetate → CH₄ + CO₂</text>
+  <text x="466" y="58" fill="#f87171" font-size="7.5" font-family="JetBrains Mono,monospace" text-anchor="middle">RATE-LIMITING STEP</text>
+</svg></div>
+<h4>Plant Design Calculation — 100 kg/day cattle dung, 16% VS, Biratnagar</h4>
+<div class="derivation">
+  <span class="step-num">Given Data</span>
+  Daily dung input W = 100 kg/day | VS content = 16% | Location: Biratnagar (Terai — warm climate)<br>
+  Assume: HRT = 40 days (Terai), dung:water = 1:1 dilution ratio, biogas yield = 0.24 m³/kg VS, fertilizer = 75% of input
+</div>
+<div class="derivation">
+  <span class="step-num">Step 1 — Plant Size (Digester Volume)</span>
+  $$V = W \\times HRT \\times (1 + dilution\\ ratio) / 1000$$
+  $$V = 100\\ kg/day \\times 40\\ days \\times 2 / 1000 = \\boxed{8\\ m^3}$$
+  (Total slurry = 200 kg/day × 40 days = 8000 L = 8 m³)
+</div>
+<div class="derivation">
+  <span class="step-num">Step 2 — Daily Water Requirement</span>
+  With 1:1 dung to water ratio: Water = W × dilution = 100 × 1 = <strong>100 L/day (100 kg/day)</strong>
+</div>
+<div class="derivation">
+  <span class="step-num">Step 3 — Daily Biogas Production</span>
+  VS per day = 100 × 0.16 = 16 kg VS/day<br>
+  $$Q_{biogas} = VS \\times yield = 16 \\times 0.24 = \\boxed{3.84\\ m^3/day}$$
+  LPG equivalent = 3.84 × 0.45 = <strong>1.73 kg LPG/day</strong>
+</div>
+<div class="derivation">
+  <span class="step-num">Step 4 — Daily Fertilizer Production</span>
+  Total slurry in = 200 kg/day. Fertilizer (digested slurry) ≈ 75% of input = <strong>150 kg/day</strong><br>
+  (Rich in N, P, K — better than raw dung as nutrients are mineralised)
+</div>
+<h4>Operation & Maintenance for Efficient Operation</h4>
+<ul>
+<li><strong>Regular feeding:</strong> Feed dung-water slurry daily at consistent rate and time</li>
+<li><strong>pH monitoring:</strong> Maintain pH 6.8–7.2; add lime if acidic (pH &lt;6)</li>
+<li><strong>Temperature:</strong> Biratnagar Terai climate (25–35°C) is ideal for mesophilic digestion — insulate in winter</li>
+<li><strong>Remove grit:</strong> Clean inlet pipe regularly to prevent blockage</li>
+<li><strong>Check for leaks:</strong> Apply soap solution to pipes and connections weekly</li>
+<li><strong>Avoid antibiotics:</strong> Do not feed dung from animals treated with antibiotics — kills methanogens</li>
+</ul>` },
+
+  'ch3_10': { marks:"1+3+3+4", refs:['ku-slides','ku-exam-2019','werner'], content:`<h4>Anaerobic Digestion, National Relevance, Digester Types & 100 kg/day Calculation (Morang)</h4>
+<h4>What is Anaerobic Digestion?</h4>
+<p>Anaerobic digestion is the biological decomposition of organic matter by microorganisms in the <strong>absence of oxygen</strong>, producing biogas (55–70% CH₄, 30–45% CO₂) and digested slurry (biofertilizer). It occurs through four stages: hydrolysis → acidogenesis → acetogenesis → methanogenesis.</p>
+<h4>Relevance of Domestic Biogas for National Development</h4>
+<ul>
+<li><strong>Energy access:</strong> 3.84 m³ biogas/day from 100 kg dung replaces ~1.7 kg LPG/day — reducing import dependency</li>
+<li><strong>Deforestation reduction:</strong> Each biogas plant saves ~2–3 tonnes of firewood/year, protecting Nepal's forests</li>
+<li><strong>Women's health:</strong> Eliminates indoor smoke from firewood cooking — Nepal's leading cause of respiratory disease</li>
+<li><strong>Agriculture:</strong> Digested slurry is a superior organic fertilizer, increasing crop yields 15–30%</li>
+<li><strong>Employment:</strong> GGC-2047 program created jobs for masons, technicians; 450,000+ plants installed</li>
+<li><strong>Climate:</strong> Methane capture from dung reduces direct GHG emissions</li>
+</ul>
+<h4>Types of Biodigesters</h4>
+<div class="step"><strong>1. Fixed Dome (Chinese Model / GGC-2047):</strong> Underground concrete dome with fixed volume. Gas accumulates causing pressure to push slurry into compensation chamber. Variable gas pressure. No moving parts, 20+ year life. Most common in Nepal — low cost, insulated by soil.</div>
+<div class="step"><strong>2. Floating Dome (Indian KVIC Model):</strong> Steel or fiberglass drum floats on slurry, rises and falls with gas production. Constant gas pressure — better for cooking. Higher cost, drum corrodes, requires regular painting. Less common in Nepal.</div>
+<div class="step"><strong>3. Bag Type (Flexible Digester):</strong> Polyethylene/PVC bag. Very cheap, portable, easy to install. Short life (2–5 years), susceptible to physical damage and temperature fluctuations. Used in warmer tropical climates; not ideal for Nepal's cold mountain regions.</div>
+<h4>Design Calculation — 100 kg/day Cattle Manure, Morang</h4>
+<div class="derivation">
+  <span class="step-num">Assumptions for Morang (Terai plain, warm climate)</span>
+  HRT = 40 days | dung:water = 1:1 | VS content ≈ 16% | biogas yield = 0.24 m³/kg VS
+</div>
+<div class="derivation">
+  <span class="step-num">Plant Size</span>
+  V = 100 × 1 L/kg × (1+1) × 40 / 1000 = <strong>8 m³</strong>
+</div>
+<div class="derivation">
+  <span class="step-num">Daily Water Requirement</span>
+  1:1 ratio → <strong>100 L/day</strong> (100 kg/day water)
+</div>
+<div class="derivation">
+  <span class="step-num">Daily Biogas Production</span>
+  VS = 100 × 0.16 = 16 kg/day → Biogas = 16 × 0.24 = <strong>3.84 m³/day</strong><br>
+  LPG equivalent = 3.84 × 0.45 = <strong>1.73 kg LPG/day saved</strong>
+</div>
+<div class="derivation">
+  <span class="step-num">Daily Fertilizer (Digested Slurry)</span>
+  Total input = 200 kg/day slurry → Outflow ≈ <strong>200 kg/day</strong> (volume conserved, enriched biofertilizer)
+</div>
+<div class="kp">A fixed dome GGC-2047 plant of 8 m³ is recommended for Morang. The warm Terai climate ensures year-round optimal digestion at 25–35°C without any insulation requirements.</div>` },
+
+  'ch4_8': { marks:"3+4+4", refs:['ku-slides','ku-exam-2019','duffie'], content:`<h4>Vacuum Tube SWH + FPC Efficiency + Collector Area (50 persons)</h4>
+<h4>Vacuum Tube Solar Water Heating System</h4>
+<div class="vis-box">
+<svg viewBox="0 0 560 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;background:#0d1318;">
+  <!-- Evacuated tubes -->
+  <text x="10" y="14" fill="#3a5568" font-size="8" font-family="JetBrains Mono,monospace" letter-spacing="0.08em">EVACUATED TUBE COLLECTOR</text>
+  <!-- Tube group -->
+  <rect x="10" y="25" width="30" height="100" rx="15" fill="rgba(56,189,248,0.06)" stroke="#38bdf8" stroke-width="1.5"/>
+  <rect x="15" y="30" width="20" height="90" rx="10" fill="rgba(0,0,0,0.6)" stroke="rgba(34,211,160,0.4)" stroke-width="1"/>
+  <text x="25" y="80" fill="#22d3a0" font-size="7" font-family="JetBrains Mono,monospace" text-anchor="middle" transform="rotate(-90,25,80)">ABSORBER</text>
+  <rect x="48" y="25" width="30" height="100" rx="15" fill="rgba(56,189,248,0.06)" stroke="#38bdf8" stroke-width="1.5"/>
+  <rect x="53" y="30" width="20" height="90" rx="10" fill="rgba(0,0,0,0.6)" stroke="rgba(34,211,160,0.4)" stroke-width="1"/>
+  <rect x="86" y="25" width="30" height="100" rx="15" fill="rgba(56,189,248,0.06)" stroke="#38bdf8" stroke-width="1.5"/>
+  <rect x="91" y="30" width="20" height="90" rx="10" fill="rgba(0,0,0,0.6)" stroke="rgba(34,211,160,0.4)" stroke-width="1"/>
+  <text x="65" y="145" fill="#38bdf8" font-size="8" font-family="DM Sans,sans-serif" text-anchor="middle">Vacuum annulus</text>
+  <text x="65" y="155" fill="#4a5470" font-size="7.5" font-family="JetBrains Mono,monospace" text-anchor="middle">eliminates convection losses</text>
+  <!-- Header manifold -->
+  <rect x="8" y="18" width="120" height="12" rx="4" fill="rgba(251,191,36,0.2)" stroke="#fbbf24" stroke-width="1.5"/>
+  <text x="68" y="27" fill="#fbbf24" font-size="7.5" font-family="JetBrains Mono,monospace" text-anchor="middle">HEADER MANIFOLD</text>
+  <!-- Storage tank -->
+  <rect x="220" y="30" width="80" height="110" rx="10" fill="rgba(56,189,248,0.08)" stroke="#38bdf8" stroke-width="1.5"/>
+  <text x="260" y="75" fill="#38bdf8" font-size="9" font-family="JetBrains Mono,monospace" text-anchor="middle">INSULATED</text>
+  <text x="260" y="87" fill="#38bdf8" font-size="9" font-family="JetBrains Mono,monospace" text-anchor="middle">STORAGE</text>
+  <text x="260" y="99" fill="#38bdf8" font-size="9" font-family="JetBrains Mono,monospace" text-anchor="middle">TANK</text>
+  <text x="260" y="115" fill="#4a5470" font-size="7.5" font-family="JetBrains Mono,monospace" text-anchor="middle">55–80°C</text>
+  <!-- Pump -->
+  <circle cx="180" cy="130" r="16" fill="rgba(167,139,250,0.1)" stroke="#a78bfa" stroke-width="1.5"/>
+  <text x="180" y="134" fill="#a78bfa" font-size="8" font-family="JetBrains Mono,monospace" text-anchor="middle">PUMP</text>
+  <!-- Pipes -->
+  <path d="M130,24 Q175,24 175,115" fill="none" stroke="#fbbf24" stroke-width="2"/>
+  <path d="M175,145 Q175,155 220,155" fill="none" stroke="#38bdf8" stroke-width="2"/>
+  <path d="M300,155 Q400,155 400,130 Q400,50 350,30 Q300,20 260,18 Q200,10 130,18" fill="none" stroke="#22d3a0" stroke-width="2" stroke-dasharray="5,3"/>
+  <!-- Labels -->
+  <text x="150" y="80" fill="#fbbf24" font-size="8" font-family="DM Sans,sans-serif">Hot fluid up</text>
+  <text x="155" y="160" fill="#38bdf8" font-size="8" font-family="DM Sans,sans-serif">Cold return</text>
+  <!-- Advantages list -->
+  <text x="390" y="50" fill="#22d3a0" font-size="9" font-family="JetBrains Mono,monospace" font-weight="600">ADVANTAGES</text>
+  <text x="390" y="63" fill="#7a9ab0" font-size="8" font-family="DM Sans,sans-serif">✓ No convection losses</text>
+  <text x="390" y="75" fill="#7a9ab0" font-size="8" font-family="DM Sans,sans-serif">✓ Works in cold climates</text>
+  <text x="390" y="87" fill="#7a9ab0" font-size="8" font-family="DM Sans,sans-serif">✓ Temp: 60–200°C</text>
+  <text x="390" y="99" fill="#7a9ab0" font-size="8" font-family="DM Sans,sans-serif">✓ Each tube independent</text>
+  <text x="390" y="111" fill="#f87171" font-size="8" font-family="DM Sans,sans-serif">✗ Higher cost than FPC</text>
+</svg></div>
+<h4>Estimating Efficiency of Flat Plate Collector (HWB Equation)</h4>
+<p>The Hottel-Whillier-Bliss (HWB) equation defines collector efficiency as:</p>
+<div class="math-eq">$$\\eta = F_R\\left[\\tau\\alpha - U_L\\frac{T_i - T_a}{G}\\right]$$</div>
+<p>Plotting η vs. (Tᵢ−Tₐ)/G gives a straight line: y-intercept = F_R·τα (optical efficiency), slope = −F_R·U_L (negative = efficiency drops with increasing temperature difference).</p>
+<h4>Collector Area Calculation</h4>
+<div class="derivation">
+  <span class="step-num">Given</span>
+  Hot water demand = 50 L/person/day × 50 people = 2500 L/day<br>
+  T_cold = 20°C, T_hot = 55°C, G = 4.5 kWh/m²/day, η_sys = 80%, η_coll = 60%
+</div>
+<div class="derivation">
+  <span class="step-num">Step 1 — Daily Heat Demand</span>
+  $$Q_{demand} = \\dot{m} \\cdot C_p \\cdot \\Delta T = 2500 \\times 4.18 \\times (55-20) / 3600 = \\boxed{101.7\\ kWh/day}$$
+</div>
+<div class="derivation">
+  <span class="step-num">Step 2 — Useful Energy per m²</span>
+  $$Q_{avail} = G \\times \\eta_{sys} \\times \\eta_{coll} = 4.5 \\times 0.80 \\times 0.60 = \\boxed{2.16\\ kWh/m^2/day}$$
+</div>
+<div class="derivation">
+  <span class="step-num">Step 3 — Required Collector Area</span>
+  $$A_c = \\frac{Q_{demand}}{Q_{avail}} = \\frac{101.7}{2.16} = \\boxed{47.1\\ m^2 \\approx 48\\ m^2}$$
+</div>
+<div class="note-box">ℹ️ This is a large institutional system. In practice, a flat plate collector array of ~48 m² would be arranged in 2–3 rows with proper inter-row spacing to avoid self-shading, connected to an insulated storage tank of ~2500 L.</div>` },
+
+  'ch4_9': { marks:"4", refs:['ku-slides','ku-exam-2019','duffie'], content:`<h4>Collector Area Estimation — 1000 L/d Institution (May/Jun 2019)</h4>
+<div class="derivation">
+  <span class="step-num">Given</span>
+  Hot water demand = 1000 L/d at T_hot = 55°C | Cold water = 15°C<br>
+  Collector efficiency η_coll = 65% | System efficiency η_sys = 75%<br>
+  Assume: G = 4.5 kWh/m²/day (reasonable for Nepal hills/Kathmandu)
+</div>
+<div class="derivation">
+  <span class="step-num">Step 1 — Daily Heat Demand</span>
+  $$Q_{demand} = \\dot{m} \\cdot C_p \\cdot \\Delta T = 1000\\ L \\times 4.18\\ kJ/kg\\cdot K \\times (55-15)\\ K$$
+  $$Q_{demand} = 1000 \\times 4.18 \\times 40 = 167{,}200\\ kJ = \\boxed{46.4\\ kWh/day}$$
+</div>
+<div class="derivation">
+  <span class="step-num">Step 2 — Available Solar Energy per m² per Day</span>
+  $$Q_{avail} = G \\times \\eta_{sys} \\times \\eta_{coll} = 4.5 \\times 0.75 \\times 0.65 = \\boxed{2.19\\ kWh/m^2/day}$$
+</div>
+<div class="derivation">
+  <span class="step-num">Step 3 — Required Collector Area</span>
+  $$A_c = \\frac{Q_{demand}}{Q_{avail}} = \\frac{46.4}{2.19} = \\boxed{21.2\\ m^2 \\approx 22\\ m^2}$$
+</div>
+<div class="kp">Answer: ~22 m² collector area required. If the question asks you to assume your own G value, state it clearly: "Assuming G = 4.5 kWh/m²/day for Nepal average." The answer changes proportionally with G — for G=5: Ac=18 m², for G=4: Ac=24 m².</div>
+<div class="note-box">ℹ️ Verify: 22 m² × 4.5 × 0.75 × 0.65 = 22 × 2.19 = 48.2 kWh/day ≥ 46.4 kWh/day demand ✓</div>` },
+
+  'ch5_10': { marks:"2+3+6", refs:['ku-slides','ku-exam-2019','masters'], content:`<h4>3 Generations of PV + IV Characteristics + Off-grid PV Sizing</h4>
+<h4>Three Generations of Solar PV</h4>
+<div class="step"><strong>1st Generation — Crystalline Silicon:</strong> Monocrystalline (η=18–24%) and polycrystalline (η=15–20%). Market share >80%. Proven, reliable, 25+ year lifetime. High purity silicon wafers. Used in most rooftop and utility-scale systems.</div>
+<div class="step"><strong>2nd Generation — Thin Film:</strong> CdTe (η=10–16%), CIGS (η=12–15%), amorphous Si (η=6–10%). Deposited on glass/flexible substrates. Lower efficiency but lower cost, flexible, better in diffuse light. Used in building-integrated PV.</div>
+<div class="step"><strong>3rd Generation — Advanced/Emerging:</strong> Multi-junction cells (η=30–46%, space applications), perovskite (η up to 33% in lab, commercializing), organic PV, concentrator PV (CPV). Goal: exceed Shockley-Queisser single-junction limit of 33%.</div>
+<h4>IV Characteristics & Temperature Effect</h4>
+<p>The ideal IV curve shows: Isc (short-circuit current, max current at V=0), Voc (open-circuit voltage, max voltage at I=0), and Pmax = Imp × Vmp at the knee of the curve. Fill Factor FF = Pmax/(Isc×Voc) quantifies cell quality.</p>
+<p><strong>Temperature effect:</strong> Voc decreases ~2.3 mV/°C per cell (dominant loss). Isc increases slightly (+0.06%/°C). Net: efficiency drops ~0.4–0.5%/°C above STC (25°C). For Nepal's hot Terai summers (45°C cell temp): efficiency loss = (45–25)×0.45% = 9% loss.</p>
+<p><strong>Irradiance effect:</strong> Isc proportional to G. Voc increases logarithmically with G. Higher irradiance → higher power output.</p>
+<h4>Off-grid PV Sizing — Household Load (May/Jun 2019)</h4>
+<div class="derivation">
+  <span class="step-num">Step 1 — Daily Energy Load</span>
+  Kitchen: 115W × 3h = 345 Wh<br>
+  Living: 100W × 4h = 400 Wh<br>
+  Bedroom: 140W × 2h = 280 Wh<br>
+  TV: 80W × 4h = 320 Wh<br>
+  Refrigerator: 60W × 2h = 120 Wh<br>
+  <strong>Total DC load = 1465 Wh/day</strong><br>
+  AC system losses (inverter η=90%): Total AC load = 1465/0.90 = <strong>1628 Wh/day</strong>
+</div>
+<div class="derivation">
+  <span class="step-num">Step 2 — PV Array Size</span>
+  Assume G = 4.5 kWh/m²/day (PSH), PR = 0.80<br>
+  $$P_{PV} = \\frac{E_{daily}}{PSH \\times PR} = \\frac{1628}{4.5 \\times 0.80} = \\frac{1628}{3.6} = \\boxed{452\\ W_p \\approx 500\\ W_p}$$
+  Use 2 × 250 Wp modules (or similar configuration)
+</div>
+<div class="derivation">
+  <span class="step-num">Step 3 — Battery Bank (3 days autonomy)</span>
+  System voltage V = 24V, DOD = 80%, autonomy N = 3 days<br>
+  $$Ah = \\frac{E_{daily} \\times N}{V_{sys} \\times DOD} = \\frac{1628 \\times 3}{24 \\times 0.80} = \\frac{4884}{19.2} = \\boxed{254\\ Ah}$$
+  Use 2 × 150 Ah batteries in series (24V system) ≈ 300 Ah (satisfies 254 Ah requirement)
+</div>
+<div class="derivation">
+  <span class="step-num">Step 4 — Charge Controller</span>
+  I_cc = P_PV / V_sys × 1.25 (safety factor) = 500/24 × 1.25 = <strong>26 A → use 30 A MPPT controller</strong>
+</div>
+<div class="derivation">
+  <span class="step-num">Step 5 — Inverter</span>
+  Peak load = 115+100+140+80+60 = 495 W (all loads on simultaneously)<br>
+  Inverter size = 495 × 1.25 = <strong>619 W → use 700 W or 1 kW inverter</strong>
+</div>` },
+
+  'ch5_11': { marks:"2+4+5", refs:['ku-slides','ku-exam-2019','masters','duffie'], content:`<h4>3 Generations of PV + Grid/Off-grid Schematics + 1 MW Row Spacing (Feb/Mar 2019)</h4>
+<h4>Three Generations of Solar PV</h4>
+<p>See ch5_10 for detailed description. Summary: 1st gen = crystalline Si (80%+ market, η=15–24%); 2nd gen = thin film (CdTe/CIGS, η=8–16%, flexible); 3rd gen = multi-junction/perovskite (η up to 46%, emerging).</p>
+<h4>Grid-Connected vs Off-Grid PV Systems</h4>
+<div class="vis-box">
+<svg viewBox="0 0 560 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;background:#0d1318;">
+  <!-- Grid-tied left side -->
+  <text x="130" y="14" fill="#22d3a0" font-size="9" font-family="JetBrains Mono,monospace" text-anchor="middle" font-weight="600">GRID-CONNECTED SYSTEM</text>
+  <rect x="10" y="25" width="50" height="35" rx="4" fill="rgba(251,191,36,0.1)" stroke="#fbbf24" stroke-width="1.5"/>
+  <text x="35" y="40" fill="#fbbf24" font-size="8" font-family="JetBrains Mono,monospace" text-anchor="middle">PV</text>
+  <text x="35" y="52" fill="#fbbf24" font-size="8" font-family="JetBrains Mono,monospace" text-anchor="middle">ARRAY</text>
+  <line x1="60" y1="42" x2="80" y2="42" stroke="#3a5568" stroke-width="1.5"/>
+  <rect x="82" y="25" width="50" height="35" rx="4" fill="rgba(34,211,160,0.1)" stroke="#22d3a0" stroke-width="1.5"/>
+  <text x="107" y="40" fill="#22d3a0" font-size="8" font-family="JetBrains Mono,monospace" text-anchor="middle">GRID-TIE</text>
+  <text x="107" y="52" fill="#22d3a0" font-size="8" font-family="JetBrains Mono,monospace" text-anchor="middle">INVERTER</text>
+  <line x1="132" y1="42" x2="152" y2="42" stroke="#3a5568" stroke-width="1.5"/>
+  <rect x="154" y="25" width="50" height="35" rx="4" fill="rgba(56,189,248,0.1)" stroke="#38bdf8" stroke-width="1.5"/>
+  <text x="179" y="40" fill="#38bdf8" font-size="8" font-family="JetBrains Mono,monospace" text-anchor="middle">UTILITY</text>
+  <text x="179" y="52" fill="#38bdf8" font-size="8" font-family="JetBrains Mono,monospace" text-anchor="middle">GRID ⚡</text>
+  <line x1="179" y1="60" x2="179" y2="80" stroke="#38bdf8" stroke-width="1.5"/>
+  <rect x="154" y="82" width="50" height="30" rx="4" fill="rgba(56,189,248,0.08)" stroke="#38bdf8" stroke-width="1"/>
+  <text x="179" y="100" fill="#38bdf8" font-size="8" font-family="DM Sans,sans-serif" text-anchor="middle">AC LOADS</text>
+  <text x="130" y="135" fill="#4a5470" font-size="7.5" font-family="DM Sans,sans-serif" text-anchor="middle">No battery. Surplus exported. Import when needed.</text>
+  <text x="130" y="147" fill="#22d3a0" font-size="7.5" font-family="JetBrains Mono,monospace" text-anchor="middle">Net metering / feed-in tariff</text>
+  <!-- Off-grid right side -->
+  <text x="420" y="14" fill="#a78bfa" font-size="9" font-family="JetBrains Mono,monospace" text-anchor="middle" font-weight="600">OFF-GRID SYSTEM</text>
+  <rect x="300" y="25" width="50" height="35" rx="4" fill="rgba(251,191,36,0.1)" stroke="#fbbf24" stroke-width="1.5"/>
+  <text x="325" y="42" fill="#fbbf24" font-size="8" font-family="JetBrains Mono,monospace" text-anchor="middle">PV ARRAY</text>
+  <line x1="350" y1="42" x2="370" y2="42" stroke="#3a5568" stroke-width="1.5"/>
+  <rect x="372" y="25" width="55" height="35" rx="4" fill="rgba(34,211,160,0.1)" stroke="#22d3a0" stroke-width="1.5"/>
+  <text x="399" y="36" fill="#22d3a0" font-size="8" font-family="JetBrains Mono,monospace" text-anchor="middle">CHARGE</text>
+  <text x="399" y="46" fill="#22d3a0" font-size="8" font-family="JetBrains Mono,monospace" text-anchor="middle">CONTROLLER</text>
+  <text x="399" y="56" fill="#22d3a0" font-size="8" font-family="JetBrains Mono,monospace" text-anchor="middle">(MPPT)</text>
+  <line x1="427" y1="42" x2="445" y2="42" stroke="#3a5568" stroke-width="1.5"/>
+  <rect x="447" y="25" width="50" height="35" rx="4" fill="rgba(167,139,250,0.1)" stroke="#a78bfa" stroke-width="1.5"/>
+  <text x="472" y="40" fill="#a78bfa" font-size="8" font-family="JetBrains Mono,monospace" text-anchor="middle">BATTERY</text>
+  <text x="472" y="52" fill="#a78bfa" font-size="8" font-family="JetBrains Mono,monospace" text-anchor="middle">BANK</text>
+  <line x1="472" y1="60" x2="472" y2="80" stroke="#a78bfa" stroke-width="1.5"/>
+  <rect x="410" y="82" width="60" height="30" rx="4" fill="rgba(167,139,250,0.08)" stroke="#a78bfa" stroke-width="1"/>
+  <text x="440" y="97" fill="#a78bfa" font-size="8" font-family="JetBrains Mono,monospace" text-anchor="middle">INVERTER</text>
+  <line x1="440" y1="112" x2="440" y2="125" stroke="#a78bfa" stroke-width="1.5"/>
+  <rect x="410" y="127" width="60" height="25" rx="4" fill="rgba(56,189,248,0.08)" stroke="#38bdf8" stroke-width="1"/>
+  <text x="440" y="143" fill="#38bdf8" font-size="8" font-family="DM Sans,sans-serif" text-anchor="middle">AC LOADS</text>
+  <text x="420" y="165" fill="#4a5470" font-size="7.5" font-family="DM Sans,sans-serif" text-anchor="middle">Battery stores energy. No grid connection.</text>
+</svg></div>
+<h4>Inter-Row Spacing + Total Area — 1 MW Plant</h4>
+<div class="derivation">
+  <span class="step-num">Given</span>
+  Module: 315 Wp, 1.95m × 0.96m | Latitude φ = 27°N | Min sun angle α_min = 25° | 22 panels/row
+</div>
+<div class="derivation">
+  <span class="step-num">Step 1 — Module tilt and height</span>
+  Tilt β ≈ φ = 27° (optimal fixed tilt = latitude)<br>
+  h = L × sin β = 1.95 × sin 27° = 1.95 × 0.454 = <strong>0.885 m</strong>
+</div>
+<div class="derivation">
+  <span class="step-num">Step 2 — Inter-row Shadow-free Gap</span>
+  $$D = \\frac{h}{\\tan(\\alpha_{min})} = \\frac{0.885}{\\tan(25°)} = \\frac{0.885}{0.466} = \\boxed{1.90\\ m}$$
+</div>
+<div class="derivation">
+  <span class="step-num">Step 3 — Row Pitch (centre to centre)</span>
+  Pitch = L·cos β + D = 1.95 × cos 27° + 1.90 = 1.95 × 0.891 + 1.90 = 1.737 + 1.90 = <strong>3.64 m</strong>
+</div>
+<div class="derivation">
+  <span class="step-num">Step 4 — Total Modules and Rows</span>
+  Total modules = 1,000,000 W / 315 W = <strong>3175 modules</strong><br>
+  Number of rows = 3175 / 22 = <strong>145 rows</strong>
+</div>
+<div class="derivation">
+  <span class="step-num">Step 5 — Total Area</span>
+  Row length = 22 × 0.96 m = 21.12 m<br>
+  Total length (rows) = 145 × 3.64 m pitch = 527.8 m<br>
+  $$A_{total} = 21.12 \\times 527.8 = \\boxed{11{,}147\\ m^2 \\approx 1.11\\ ha}$$
+</div>` },
+
+  'ch6_8': { marks:"4+4+3", refs:['ku-slides','ku-exam-2019','twidell'], content:`<h4>Wind Turbine Power Curve + Dhulikhel Height Calculation + Wind Farm</h4>
+<h4>Idealized Wind Turbine Power Curve</h4>
+<div class="vis-box" style="padding:0;overflow:hidden;border-radius:10px;">
+<svg viewBox="0 0 560 210" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;background:#0d1318;">
+  <defs>
+    <marker id="axArr" markerWidth="6" markerHeight="6" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L6,3 L0,6" fill="none" stroke="#3a5568" stroke-width="1.2"/>
+    </marker>
+  </defs>
+  <!-- Axes -->
+  <line x1="55" y1="170" x2="520" y2="170" stroke="#3a5568" stroke-width="1.5" marker-end="url(#axArr)"/>
+  <line x1="55" y1="170" x2="55" y2="20" stroke="#3a5568" stroke-width="1.5" marker-end="url(#axArr)"/>
+  <!-- Axis labels -->
+  <text x="525" y="175" fill="#4a5470" font-size="10" font-family="JetBrains Mono,monospace">v (m/s)</text>
+  <text x="15" y="100" fill="#4a5470" font-size="10" font-family="JetBrains Mono,monospace" transform="rotate(-90,15,100)">Power (kW)</text>
+  <!-- Key speed markers -->
+  <text x="100" y="185" fill="#3a5568" font-size="8" font-family="JetBrains Mono,monospace" text-anchor="middle">3-5</text>
+  <text x="100" y="195" fill="#38bdf8" font-size="7.5" font-family="DM Sans,sans-serif" text-anchor="middle">Cut-in</text>
+  <text x="280" y="185" fill="#3a5568" font-size="8" font-family="JetBrains Mono,monospace" text-anchor="middle">11-13</text>
+  <text x="280" y="195" fill="#22d3a0" font-size="7.5" font-family="DM Sans,sans-serif" text-anchor="middle">Rated</text>
+  <text x="450" y="185" fill="#3a5568" font-size="8" font-family="JetBrains Mono,monospace" text-anchor="middle">25</text>
+  <text x="450" y="195" fill="#f87171" font-size="7.5" font-family="DM Sans,sans-serif" text-anchor="middle">Cut-out</text>
+  <!-- Power curve -->
+  <!-- Zero region: 0 to cut-in -->
+  <line x1="55" y1="170" x2="100" y2="170" stroke="#3a5568" stroke-width="2.5"/>
+  <!-- Rising cubic region: cut-in to rated -->
+  <polyline points="100,170 130,162 160,148 190,128 220,105 250,82 270,62 280,42" fill="none" stroke="#22d3a0" stroke-width="2.5" stroke-linejoin="round"/>
+  <!-- Flat rated power region -->
+  <line x1="280" y1="42" x2="450" y2="42" stroke="#22d3a0" stroke-width="2.5"/>
+  <!-- Drop to zero at cut-out -->
+  <line x1="450" y1="42" x2="452" y2="170" stroke="#f87171" stroke-width="2.5" stroke-dasharray="4,3"/>
+  <line x1="452" y1="170" x2="520" y2="170" stroke="#3a5568" stroke-width="2.5"/>
+  <!-- Rated power reference line -->
+  <line x1="55" y1="42" x2="450" y2="42" stroke="rgba(34,211,160,0.2)" stroke-width="1" stroke-dasharray="3,3"/>
+  <text x="58" y="38" fill="#22d3a0" font-size="8" font-family="JetBrains Mono,monospace">P_rated</text>
+  <!-- Annotations -->
+  <text x="78" y="155" fill="#3a5568" font-size="8" font-family="DM Sans,sans-serif" text-anchor="middle">No</text>
+  <text x="78" y="165" fill="#3a5568" font-size="8" font-family="DM Sans,sans-serif" text-anchor="middle">output</text>
+  <text x="190" y="90" fill="#22d3a0" font-size="8.5" font-family="DM Sans,sans-serif">P ∝ v³</text>
+  <text x="360" y="35" fill="#22d3a0" font-size="8.5" font-family="DM Sans,sans-serif" text-anchor="middle">Rated power (pitch control)</text>
+  <text x="475" y="120" fill="#f87171" font-size="8" font-family="DM Sans,sans-serif">Storm</text>
+  <text x="475" y="132" fill="#f87171" font-size="8" font-family="DM Sans,sans-serif">shutdown</text>
+</svg></div>
+<p><strong>Cut-in (3–5 m/s):</strong> Minimum speed to generate useful power. <strong>Rated speed (11–13 m/s):</strong> Turbine reaches full rated output. Power increases as v³ between cut-in and rated. <strong>Cut-out (25 m/s):</strong> Emergency shutdown to protect turbine from storm damage. Between rated and cut-out, pitch control limits output to rated power.</p>
+<h4>Dhulikhel Height Calculation (10 m → 80 m)</h4>
+<div class="derivation">
+  <span class="step-num">Given</span>
+  Power at 10m: P₁/A = 132 W/m² at 15°C, 1 atm | Terrain: high crops, hedge, shrubs → α = 0.20<br>
+  Air density at 15°C, 1 atm: ρ = 1.225 kg/m³
+</div>
+<div class="derivation">
+  <span class="step-num">Step 1 — Wind speed at 10m from power density</span>
+  $$P_1/A = \\frac{1}{2}\\rho v_1^3 \\Rightarrow v_1 = \\left(\\frac{2 \\times 132}{1.225}\\right)^{1/3} = (215.5)^{1/3} = \\boxed{5.99 \\approx 6\\ m/s}$$
+</div>
+<div class="derivation">
+  <span class="step-num">Step 2 — Wind speed at 80m (Power Law)</span>
+  $$v_2 = v_1 \\times \\left(\\frac{h_2}{h_1}\\right)^{\\alpha} = 6 \\times \\left(\\frac{80}{10}\\right)^{0.20} = 6 \\times 8^{0.20} = 6 \\times 1.516 = \\boxed{9.10\\ m/s}$$
+</div>
+<div class="derivation">
+  <span class="step-num">Step 3 — Power density at 80m</span>
+  $$\\frac{P_2}{A} = \\frac{1}{2} \\times 1.225 \\times 9.10^3 = 0.6125 \\times 753.6 = \\boxed{461.6\\ W/m^2}$$
+  Increase = 461.6/132 = <strong>3.50× more power (250% increase)</strong>
+</div>
+<div class="kp">Key message: Raising the tower from 10m to 80m increases wind power by 3.5× — a massive gain. This demonstrates why modern turbines use tall towers (80–120m). Every metre of extra height costs money but returns significant energy. The cube law and power law together make hub height one of the most critical design parameters.</div>
+<h4>Wind Farm — Brief Discussion</h4>
+<p>A wind farm is a group of wind turbines in the same location. Key design considerations: turbine spacing (5–7D crosswind, 7–9D downwind) to minimize wake losses, connection via underground cables to a substation, prevailing wind direction from wind rose analysis, and micrositing to exploit terrain effects. Wind farms achieve economies of scale — shared O&M, grid connection, and monitoring infrastructure reduces levelized cost.</p>` },
+
+  'ch6_9': { marks:"3+4+4", refs:['ku-slides','ku-exam-2019','twidell','basu'], content:`<h4>Wind Power Extraction + Weibull/Wind Rose + Updraft Gasifier (Feb/Mar 2019)</h4>
+<h4>Power Extraction from Wind</h4>
+<p>The kinetic energy in wind is converted to mechanical rotation by turbine blades. Power available in the wind:</p>
+<div class="math-eq">$$P = \\frac{1}{2}\\rho A v^3$$</div>
+<p>The <strong>Betz Limit</strong> (16/27 ≈ 59.3%) is the theoretical maximum extractable fraction. Modern large turbines achieve Cp = 0.40–0.48. Since P ∝ v³, a 20% increase in wind speed gives 72.8% more power (1.2³ = 1.728). This extreme sensitivity to wind speed makes proper site selection and resource assessment critical.</p>
+<h4>Weibull Distribution</h4>
+<p>Wind speed varies continuously and is characterised by the Weibull probability distribution. The two-parameter Weibull function f(v) with scale parameter c and shape parameter k describes the frequency of each wind speed. The special case k=2 is the Rayleigh distribution. Importance for WRA:</p>
+<ul>
+<li>Allows calculation of mean annual power from just two parameters</li>
+<li>Enables long-term energy yield prediction from short measurement campaigns</li>
+<li>Used in turbine class selection (IEC classes based on mean speed and turbulence)</li>
+</ul>
+<h4>Wind Rose</h4>
+<p>A wind rose is a polar histogram showing wind speed frequency by direction (usually 8 or 16 compass sectors). Each "petal" length represents frequency; colour bands represent speed ranges. Uses: (1) orient turbines toward prevailing wind; (2) layout turbines further apart in prevailing direction to reduce wake losses; (3) identify terrain channelling; (4) assess extreme wind directions for structural loads.</p>
+<h4>Updraft Gasifier — Working Principle</h4>
+<p>In the updraft (counter-flow) gasifier, biomass enters from the top and air enters from the bottom. As material descends, it passes through: <strong>Drying zone</strong> (moisture evaporated, ~100°C) → <strong>Pyrolysis zone</strong> (volatiles released, 150–700°C) → <strong>Reduction zone</strong> (CO₂ + C → 2CO, H₂O + C → H₂ + CO, endothermic) → <strong>Combustion zone</strong> (C + O₂ → CO₂, exothermic, 1000–1400°C). Gas exits from the TOP, after passing through the cool pyrolysis and drying zones — picking up condensable tars.</p>
+<div class="kp">Result: High thermal efficiency (~85%) because the hot gas preheats incoming biomass. BUT tar content is very high (~50 g/Nm³) — the gas cannot be used directly in IC engines. Suitable for direct combustion in boilers and kilns only. Contrast with downdraft: tar &lt;1 g/Nm³, lower efficiency but engine-compatible.</div>` },
 
 };
 
