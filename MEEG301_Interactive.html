@@ -3983,6 +3983,11 @@ var answerData = {
   'ch1_7': { marks:'[2]', steps:[
     { title:'Forces in Fluid Statics', body:`<p>In fluid statics (fluid at rest), only <strong>gravity and pressure forces</strong> are significant. Viscous forces vanish because there is no relative motion between fluid layers, so no velocity gradient, hence no shear stress.</p>`}
   ]},
+  'ch1_8': { marks:'[5]', steps:[
+    { title:'Modeling in Fluid Mechanics', body:`<p><strong>Dimensional Analysis:</strong> A mathematical technique used to reduce the number of variables affecting a physical phenomenon into a smaller set of dimensionless groups (e.g., using Buckingham-π theorem). It simplifies experimental design and data presentation.</p>
+    <p><strong>Model Testing:</strong> Conducting experiments on a scaled-down (or scaled-up) version of a prototype to predict its performance. To ensure the model accurately predicts prototype behavior, the model must achieve <em>geometric, kinematic, and dynamic similarity</em>.</p>
+    <p>Using dimensionless parameters (like Reynolds, Froude, or Mach numbers) allows data measured on the model to directly scale to the prototype.</p>`}
+  ]},
   'ch2_0': { marks:'[4]', steps:[
     { title:'Hydrostatic Force on Submerged Plane', body:`<p>For an inclined plane surface submerged at angle θ:</p>
     <p>Total force: $$F = \\rho g \\bar{h} A = \\rho g (\\bar{y}\\sin\\theta) A$$</p>
@@ -4020,6 +4025,15 @@ var answerData = {
     <p><strong>Nosebleed:</strong> Blood pressure inside nasal vessels exceeds lower atmospheric pressure → capillaries burst.</p>
     <p><strong>Shortness of breath:</strong> Lower atmospheric pressure means fewer O₂ molecules per breath (lower partial pressure of O₂ → less O₂ absorbed in lungs → hypoxia).</p>`}
   ]},
+  'ch2_6': { marks:'[5]', steps:[
+    { title:'Buoyancy & Archimedes\' Principle', body:`<p><strong>Buoyancy:</strong> The upward force exerted by a fluid on a body immersed in it. It is caused by the increase of fluid pressure with depth.</p>
+    <p><strong>Archimedes' Principle:</strong> The buoyant force on a submerged body is equal to the weight of the fluid displaced by the body, and it acts upward through the centroid of the displaced volume.</p>
+    <p><strong>Proof:</strong> Consider a vertical cylinder of area A and height h submerged in liquid. 
+    <br>Downward force on top: $F_{top} = P_{top} A = \\rho g h_1 A$
+    <br>Upward force on bottom: $F_{bot} = P_{bot} A = \\rho g h_2 A$
+    <br>Buoyant force: $F_B = F_{bot} - F_{top} = \\rho g (h_2 - h_1) A = \\rho g h A = \\rho g V_{displaced}$
+    <br>Since $\\rho g V_{displaced}$ is the weight of the displaced liquid, the principle is proved.</p>`}
+  ]},
   'ch3_0': { marks:'[3]', steps:[
     { title:'Flow Lines', body:`<p><strong>Streamline:</strong> Line tangent to velocity vector at every point at a given instant. No flow across streamlines. Equation: dx/u = dy/v = dz/w.</p>
     <p><strong>Pathline:</strong> Trajectory traced by a single fluid particle over time. Lagrangian concept.</p>
@@ -4036,11 +4050,33 @@ var answerData = {
     <p>For <strong>incompressible flow</strong> (ρ = const): $$\\frac{\\partial u}{\\partial x} + \\frac{\\partial v}{\\partial y} + \\frac{\\partial w}{\\partial z} = 0 \\quad \\Rightarrow \\quad \\nabla \\cdot \\mathbf{V} = 0$$</p>
     <p>For 1D steady frictionless flow: A₁V₁ = A₂V₂ (continuity, flow rate Q = AV = const)</p>`}
   ]},
+  'ch3_3': { marks:'[4]', steps:[
+    { title:'Velocity Potential & Stream Function', body:`<p><strong>Velocity Potential ($\\phi$):</strong> A scalar function whose negative derivative yields velocity: $u = -\\frac{\\partial\\phi}{\\partial x}$, $v = -\\frac{\\partial\\phi}{\\partial y}$, $w = -\\frac{\\partial\\phi}{\\partial z}$. If $\\phi$ exists, the flow is <strong>irrotational</strong>.</p>
+    <p><strong>Stream Function ($\\psi$):</strong> Exists for 2D steady, incompressible flow. Defined such that continuity is automatically satisfied: $u = \\frac{\\partial\\psi}{\\partial y}$, $v = -\\frac{\\partial\\psi}{\\partial x}$. Lines of constant $\\psi$ are streamlines.</p>
+    <p><strong>Relationship (Cauchy-Riemann):</strong> $\\frac{\\partial\\phi}{\\partial x} = \\frac{\\partial\\psi}{\\partial y}$ and $\\frac{\\partial\\phi}{\\partial y} = -\\frac{\\partial\\psi}{\\partial x}$. They form an orthogonal grid (flow net). </p>`}
+  ]},
+  'ch3_4': { marks:'[3]', steps:[
+    { title:'Circulation', body:`<p><strong>Circulation ($\\Gamma$):</strong> The line integral of the tangential velocity component around a closed curve C. It measures the macroscopic rotation of the fluid.</p>
+    <p>$$\\Gamma = \\oint_C \\mathbf{V} \\cdot d\\mathbf{s}$$</p>
+    <p><strong>Stokes' Theorem:</strong> Relates circulation to vorticity ($\\zeta$). Circulation is the area integral of vorticity enclosed by the curve: $\\Gamma = \\iint_A (\\nabla \\times \\mathbf{V}) \\cdot \\mathbf{n}\\ dA$. If flow is irrotational ($\\nabla \\times \\mathbf{V} = 0$), circulation is zero for any path not enclosing a singularity.</p>`}
+  ]},
   'ch3_5': { marks:'[4.5]', steps:[
     { title:'Acceleration in Fluid Flow', body:`<p>Total (material/substantial) acceleration = local + convective:</p>
     <p>$$\\mathbf{a} = \\frac{D\\mathbf{V}}{Dt} = \\underbrace{\\frac{\\partial\\mathbf{V}}{\\partial t}}_{\\text{local}} + \\underbrace{(\\mathbf{V}\\cdot\\nabla)\\mathbf{V}}_{\\text{convective}}$$</p>
     <p><strong>Local acceleration:</strong> ∂V/∂t — changes velocity due to time variation at a fixed point. Zero in steady flow.</p>
     <p><strong>Convective acceleration:</strong> (V·∇)V — due to spatial variation in velocity field. Even in steady flow, a particle can accelerate if it moves into a region of higher/lower velocity (e.g., pipe contraction).</p>`}
+  ]},
+  'ch3_6': { marks:'[4]', steps:[
+    { title:'Flow Nets', body:`<p><strong>Flow Net:</strong> A graphical representation of 2D irrotational flow consisting of a family of streamlines ($\\psi = C$) and equipotential lines ($\\phi = K$) that intersect orthogonally.</p>
+    <p><strong>Uses:</strong> Used to determine flow pattern, velocity, and pressure distribution analytically or graphically when mathematical solutions are difficult (e.g., flow under a dam, seepage).</p>
+    <p><strong>Conditions:</strong> Flow must be steady, 2D, incompressible, and <em>irrotational</em> (so both $\\psi$ and $\\phi$ satisfy Laplace's equation: $\\nabla^2\\psi = 0$, $\\nabla^2\\phi = 0$).</p>`}
+  ]},
+  'ch3_7': { marks:'[5]', steps:[
+    { title:'Different Types of Fluid Flow', body:`<p><strong>Steady vs Unsteady:</strong> Steady means velocity at a point does not change with time ($\\partial\\mathbf{V}/\\partial t = 0$).</p>
+    <p><strong>Uniform vs Non-uniform:</strong> Uniform means velocity vector is constant over a given length of flow ($\\partial\\mathbf{V}/\\partial s = 0$, e.g., long straight pipe).</p>
+    <p><strong>Laminar vs Turbulent:</strong> Laminar is orderly flow in parallel layers (low Re). Turbulent is chaotic, mixing flow with eddies (high Re).</p>
+    <p><strong>Compressible vs Incompressible:</strong> Incompressible means density $\\rho$ is constant (liquids, low-M gases). Compressible means density changes with pressure (high-speed gases).</p>
+    <p><strong>Rotational vs Irrotational:</strong> Irrotational means fluid particles do not rotate about their own mass centers ($\\nabla \\times \\mathbf{V} = 0$).</p>`}
   ]},
   'ch4_0': { marks:'[6]', steps:[
     { title:'Bernoulli\'s Equation Derivation', body:`<p>Apply Newton's 2nd law to a fluid particle along a streamline (Euler's equation along streamline):</p>
@@ -4049,6 +4085,14 @@ var answerData = {
     <p>$$\\frac{P}{\\rho g} + \\frac{V^2}{2g} + z = \\text{constant}$$</p>
     <p>Or: $$P + \\frac{1}{2}\\rho V^2 + \\rho g z = \\text{constant}$$</p>
     <p><strong>Assumptions:</strong> (1) Steady flow, (2) Incompressible (ρ = const), (3) Inviscid (no friction), (4) Along a streamline, (5) No heat transfer or work done between sections.</p>`}
+  ]},
+  'ch4_1': { marks:'[4]', steps:[
+    { title:'Integration of Euler\'s Equation', body:`<p>Euler's equation of motion along a streamline is:</p>
+    <p>$$\\frac{dP}{\\rho} + g\\ dz + V\\ dV = 0$$</p>
+    <p>To integrate this into Bernoulli's equation, we must assume the fluid is <strong>incompressible</strong> (so density $\\rho$ is constant and can be taken out of the integral of $dP$).</p>
+    <p>$$\\int \\frac{dP}{\\rho} + \\int g\\ dz + \\int V\\ dV = \\text{constant}$$
+    <br>$$\\frac{P}{\\rho} + gz + \\frac{V^2}{2} = \\text{constant}$$</p>
+    <p>Dividing by $g$ yields the standard head form.</p>`}
   ]},
   'ch4_2': { marks:'[3+3]', steps:[
     { title:'Venturimeter Derivation', body:`<p>Apply Bernoulli + continuity between inlet (1) and throat (2):</p>
@@ -4068,6 +4112,30 @@ var answerData = {
     <p>$$P_0 = P + \\frac{1}{2}\\rho V^2$$</p>
     <p>Measured using a <strong>pitot tube</strong> (faces upstream). The difference (P₀ − P_static) = dynamic pressure = ½ρV². A pitot-static tube measures both, allowing V to be calculated.</p>`}
   ]},
+  'ch4_5': { marks:'[5]', steps:[
+    { title:'Discharge through Orifice Meter', body:`<p>An orifice meter is a flat plate with a hole, placed in a pipe to measure flow. It creates a larger head loss than a venturimeter but is cheaper and takes less space.</p>
+    <p>Applying Bernoulli between upstream (1) and the <em>vena contracta</em> (fully contracted jet, 2):</p>
+    <p>$$Q = C_d a_0 \\sqrt{\\frac{2g\\Delta h}{1 - (a_0/a_1)^2}}$$</p>
+    <p>where $a_0$ is the area of the orifice. The coefficient of discharge $C_d$ is much lower for an orifice (~0.62) than a venturimeter (~0.98) due to significant flow separation and eddy formation downstream of the plate.</p>`}
+  ]},
+  'ch4_6': { marks:'[4]', steps:[
+    { title:'Pitot Tube Velocity Measurement', body:`<p>A Pitot tube measures the local velocity of fluid flow by bringing the fluid to rest (stagnation point) at the tip of the tube.</p>
+    <p>Applying Bernoulli's equation between a point in the free stream (1) and the stagnation point (2):</p>
+    <p>$$\\frac{P_1}{\\rho g} + \\frac{V_1^2}{2g} + z_1 = \\frac{P_2}{\\rho g} + \\frac{V_2^2}{2g} + z_2$$</p>
+    <p>Since $z_1 = z_2$ and $V_2 = 0$ (stagnation point), we get:</p>
+    <p>$$\\frac{V_1^2}{2g} = \\frac{P_2 - P_1}{\\rho g} = h$$</p>
+    <p>$$V_{actual} = C_v \\sqrt{2gh}$$</p>
+    <p>where $h$ is the dynamic head measured by the manometer connected to the Pitot tube, and $C_v \\approx 0.98$ is the coefficient of velocity.</p>`}
+  ]},
+  'ch4_7': { marks:'[4]', steps:[
+    { title:'Flow over Weirs and Notches', body:`<p>Weirs and notches are structures used to measure discharge in open channels. A notch is usually smaller and sharp-edged (used in tanks/small channels), while a weir is larger (used across rivers).</p>
+    <p><strong>Rectangular Notch:</strong></p>
+    <p>$$Q = \\frac{2}{3} C_d L \\sqrt{2g} H^{3/2}$$</p>
+    <p>where L is the width, and H is the head of water above the crest.</p>
+    <p><strong>V-Notch (Triangular):</strong> Preferred for low/variable flow rates because the area changes with head, maintaining accuracy.</p>
+    <p>$$Q = \\frac{8}{15} C_d \\sqrt{2g} \\tan(\\theta/2) H^{5/2}$$</p>
+    <p>where $\\theta$ is the angle of the V-notch.</p>`}
+  ]},
   'ch5_0': { marks:'[5]', steps:[
     { title:'Parabolic Velocity Profile in Laminar Pipe Flow', body:`<p>Start with Navier-Stokes in x-direction (fully developed, steady):</p>
     <p>$$\\frac{dP}{dx} = \\mu \\frac{1}{r}\\frac{d}{dr}\\left(r\\frac{du}{dr}\\right)$$</p>
@@ -4080,6 +4148,15 @@ var answerData = {
     <p>Key features: (1) Laminar zone (Re<2000): f = 64/Re, straight line, roughness irrelevant. (2) Transition zone (2000–4000): unstable. (3) Turbulent smooth pipe: f decreases with Re. (4) Fully rough turbulent: f levels off, constant for given ε/D, independent of Re. (5) Higher roughness → higher f in turbulent zone.</p>
     <p>Used with Darcy-Weisbach: $$h_f = f\\frac{L}{D}\\frac{V^2}{2g}$$</p>`}
   ]},
+  'ch5_2': { marks:'[5]', steps:[
+    { title:'Major and Minor Losses', body:`<p><strong>Major Loss:</strong> Friction loss in straight pipes. Calculated using the Darcy-Weisbach equation: $h_f = f\\frac{L}{D}\\frac{V^2}{2g}$.</p>
+    <p><strong>Minor Losses:</strong> Head losses due to changes in geometry or fittings (valves, bends, expansions, contractions). They cause flow separation and eddying.</p>
+    <ul>
+    <li>Sudden enlargement: $h_L = \\frac{(V_1 - V_2)^2}{2g}$</li>
+    <li>Sudden contraction: $h_L = k_c\\frac{V_2^2}{2g}$ (where $k_c \\approx 0.5$ if $C_c \\approx 0.62$)</li>
+    <li>Entrance/Exit: $h_e = 0.5\\frac{V^2}{2g}$ (entrance), $h_{exit} = 1.0\\frac{V^2}{2g}$ (exit into tank)</li>
+    </ul>`}
+  ]},
   'ch5_3': { marks:'[3]', steps:[
     { title:'Turbulent Flow Regions', body:`<p>Turbulent flow near a wall has distinct regions:</p>
     <ul>
@@ -4088,10 +4165,84 @@ var answerData = {
     <li><strong>Log-law region (turbulent core):</strong> y⁺ > 30. u⁺ = (1/κ)ln(y⁺) + B where κ≈0.41 (von Kármán constant).</li>
     </ul>`}
   ]},
+  'ch5_4': { marks:'[4]', steps:[
+    { title:'Pipes in Series and Equivalent Pipe', body:`<p><strong>Pipes in Series:</strong> Connected end-to-end. Total discharge is constant ($Q = Q_1 = Q_2 = Q_3$). Total head loss is the sum of individual losses ($H = h_{f1} + h_{f2} + h_{f3} + \\dots$).</p>
+    <p><strong>Equivalent Pipe:</strong> A uniform pipe of length $L_e$ and diameter $D_e$ that replaces a compound system (series), having the same constant discharge and same total head loss.</p>
+    <p><strong>Dupuit's Equation:</strong> $$\\frac{L_e}{D_e^5} = \\frac{L_1}{D_1^5} + \\frac{L_2}{D_2^5} + \\frac{L_3}{D_3^5}$$</p>`}
+  ]},
+  'ch5_5': { marks:'[3]', steps:[
+    { title:'Pipes in Parallel', body:`<p><strong>Pipes in Parallel:</strong> A main pipe splits into multiple parallel branches which then rejoin. Used to increase discharge capacity.</p>
+    <p><strong>Conditions:</strong></p>
+    <p>1. Total discharge is the sum of branch discharges: $Q = Q_1 + Q_2 + \\dots$</p>
+    <p>2. The head loss across each parallel branch is <strong>equal</strong>: $h_f = h_{f1} = h_{f2} = \\dots$</p>`}
+  ]},
+  'ch5_6': { marks:'[3]', steps:[
+    { title:'Principle of Siphon', body:`<p>A siphon is a bent pipe used to transfer liquid from a higher elevation to a lower elevation over a physical obstacle (like a hill). The highest point of the siphon is called the <strong>summit</strong>.</p>
+    <p><strong>Working Principle:</strong> The pressure at the summit drops below atmospheric pressure (creates a vacuum/suction). To prevent cavitation (liquid boiling at low pressure causing vapor lock), the pressure at the summit must not fall below the liquid's vapor pressure ($P_v$). In water, the maximum theoretical height of the summit above the upper reservoir is about 10.3m (in practice, < 7.5m).</p>`}
+  ]},
+  'ch5_7': { marks:'[3]', steps:[
+    { title:'Water Hammer', body:`<p><strong>Water Hammer:</strong> A sudden rise in pressure caused by the rapid change of momentum of flowing water, typically when a valve is closed suddenly.</p>
+    <p>This pressure surge traveling back and forth through the pipe creates a knocking sound (hammering) and can burst the pipe.</p>
+    <p><strong>Prevention/Relief:</strong> Reduced by closing valves slowly, or installing surge tanks, air chambers, or pressure relief valves near the source of disturbance.</p>`}
+  ]},
+  'ch5_8': { marks:'[4]', steps:[
+    { title:'Derivation of Chezy\'s Formula', body:`<p>Used for open channel flow or partially full pipes. Equate the gravity driving force to the shear resisting force along a length L.</p>
+    <p>Gravity component parallel to bed: $W \\sin\\theta = (\\rho g A L) \\cdot S$ where $S$ is bed slope ($S = \\tan\\theta \\approx \\sin\\theta$).</p>
+    <p>Shear force at boundary: $F_s = \\tau_0 \\cdot P \\cdot L$ (where P is wetted perimeter).</p>
+    <p>Equating them: $\\rho g A L S = \\tau_0 P L$. Since $\\tau_0 \\propto V^2$ (say $\\tau_0 = k V^2$), we get:</p>
+    <p>$\\rho g A S = k V^2 P  \\implies V = \\sqrt{\\frac{\\rho g}{k}} \\sqrt{\\frac{A}{P} S}$</p>
+    <p>Let $m = A/P$ (hydraulic mean depth) and $C = \\sqrt{\\frac{\\rho g}{k}}$ (Chezy's constant). Then <strong>$V = C\\sqrt{mS}$</strong>.</p>`}
+  ]},
   'ch6_0': { marks:'[3+5]', steps:[
     { title:'Laminar BL Velocity Profile', body:`<p>Assume u = a + by + cy². Apply BCs: (1) u=0 at y=0 → a=0; (2) u=U at y=δ → U=bδ+cδ²; (3) du/dy=0 at y=δ → b+2cδ=0.</p>
     <p>Solving: b=2U/δ, c=−U/δ². So: $$\\frac{u}{U} = 2\\eta - \\eta^2 \\quad \\text{where } \\eta = y/\\delta$$</p>
     <p><strong>Energy loss:</strong> Energy thickness δ₃ = ∫₀^δ (u/U)(1−(u/U)²)dy. For Q=6 m³/s per meter width, the kinetic energy correction gives energy loss per unit width = ρU³δ₃ (in watts per meter). Express as head: h_E = energy loss/(ρgQ).</p>`}
+  ]},
+    <p><strong>Energy loss:</strong> Energy thickness δ₃ = ∫₀^δ (u/U)(1−(u/U)²)dy. For Q=6 m³/s per meter width, the kinetic energy correction gives energy loss per unit width = ρU³δ₃ (in watts per meter). Express as head: h_E = energy loss/(ρgQ).</p>`}
+  ]},
+  'ch6_1': { marks:'[4]', steps:[
+    { title:'Boundary Layer Thicknesses', body:`<p><strong>1. Nominal Thickness ($\\delta$):</strong> Distance from the wall where velocity $u$ reaches 99% of free-stream velocity $U$ ($u = 0.99U$).</p>
+    <p><strong>2. Displacement Thickness ($\\delta^*$):</strong> Distance the solid boundary would need to be displaced outward to compensate for the reduction in mass flow rate due to boundary layer formation.</p>
+    <p>$$\\delta^* = \\int_0^\\delta \\left(1 - \\frac{u}{U}\\right) dy$$</p>
+    <p><strong>3. Momentum Thickness ($\\theta$):</strong> Distance the boundary would need to be displaced to compensate for the reduction in momentum flow rate.</p>
+    <p>$$\\theta = \\int_0^\\delta \\frac{u}{U}\\left(1 - \\frac{u}{U}\\right) dy$$</p>`}
+  ]},
+  'ch6_2': { marks:'[5]', steps:[
+    { title:'Von Kármán Momentum Integral Equation', body:`<p>Derived by applying the momentum equation to a control volume encompassing a section of the boundary layer on a flat plate.</p>
+    <p>It relates the wall shear stress ($\\tau_w$) to the rate of change of momentum thickness ($\\theta$) along the plate:</p>
+    <p>$$\\frac{\\tau_w}{\\rho U^2} = \\frac{d\\theta}{dx}$$</p>
+    <p><strong>Significance:</strong> It is universally applicable to both laminar and turbulent boundary layers over flat plates (zero pressure gradient). If a velocity profile $u/U = f(y/\\delta)$ is assumed, this equation allows calculation of $\\delta$, $\\tau_w$, and drag coefficient $C_D$ without solving the complex Navier-Stokes equations.</p>`}
+  ]},
+  'ch6_3': { marks:'[4]', steps:[
+    { title:'Boundary Layer Separation', body:`<p><strong>Separation:</strong> Occurs when the fluid in the boundary layer is continuously decelerated by an <em>adverse pressure gradient</em> ($dP/dx > 0$) until the velocity profile near the wall reverses ($u < 0$).</p>
+    <p>The separation point is defined where the velocity gradient at the wall becomes zero: $$\\left(\\frac{\\partial u}{\\partial y}\\right)_{y=0} = 0$$</p>
+    <p><strong>Conditions:</strong></p>
+    <ul>
+    <li>$dp/dx < 0$: Favorable gradient (attached flow)</li>
+    <li>$dp/dx = 0$: Constant pressure (flat plate, attached)</li>
+    <li>$dp/dx > 0$: Adverse gradient (separation possible)</li>
+    </ul>`}
+  ]},
+  'ch6_4': { marks:'[4]', steps:[
+    { title:'Boundary Layer Control Methods', body:`<p>Separation causes large energy losses and wake formation. It can be delayed or prevented by:</p>
+    <ol>
+    <li><strong>Streamlining:</strong> Designing shapes (like airfoils) that minimize adverse pressure gradients.</li>
+    <li><strong>Suction:</strong> Sucking away the slow-moving fluid near the wall through a porous surface before it separates.</li>
+    <li><strong>Fluid Injection:</strong> Blowing high-velocity fluid tangential to the surface to re-energize the boundary layer.</li>
+    <li><strong>Surface Roughness:</strong> Artificially inducing transition to turbulence (like dimples on a golf ball) because turbulent boundary layers have more momentum and resist separation better.</li>
+    </ol>`}
+  ]},
+  'ch6_5': { marks:'[3]', steps:[
+    { title:'Lift and Drag Definitions', body:`<p>When fluid flows past a body, the total force $F_R$ acting on it has two components:</p>
+    <p><strong>Drag ($F_D$):</strong> Component of force <em>parallel</em> to the direction of free-stream velocity.</p>
+    <p>$$F_D = \\int p \\cos\\theta\\ dA + \\int \\tau_w \\sin\\theta\\ dA$$</p>
+    <p><strong>Lift ($F_L$):</strong> Component of force <em>perpendicular</em> to the direction of free-stream velocity (caused by pressure differences, e.g., above and below an airfoil).</p>
+    <p>$$F_L = \\int p \\sin\\theta\\ dA - \\int \\tau_w \\cos\\theta\\ dA$$</p>`}
+  ]},
+  'ch6_6': { marks:'[4]', steps:[
+    { title:'Pressure Drag vs Friction Drag', body:`<p><strong>Friction Drag (Skin Friction):</strong> Created by viscous shear stresses ($\\tau_w$) acting tangential to the body surface. Dominant for thin, flat shapes aligned with the flow (like a flat plate).</p>
+    <p><strong>Pressure Drag (Form Drag):</strong> Created by the difference in pressure between the front (high pressure, stagnation) and the back (low pressure, wake) of the body. Caused by flow separation.</p>
+    <p><strong>Profile combination:</strong> Total drag = Friction Drag + Pressure Drag. For a blunt body (like a sphere), pressure drag is dominant. For a streamlined body, friction drag is dominant.</p>`}
   ]},
   'ch7_0': { marks:'[3]', steps:[
     { title:'Types of Similarity', body:`<p><strong>Geometric similarity:</strong> Model and prototype have same shape — all length ratios equal (Lm/Lp = λ = constant).</p>
@@ -4108,13 +4259,50 @@ var answerData = {
     <p>6. Each π must be dimensionless — solve exponents by equating dimensions.</p>
     <p>7. Express as: f(π₁, π₂, ..., π_{n−m}) = 0.</p>`}
   ]},
-  'ch8_0': { marks:'[3]', steps:[
-    { title:'Diverging Tube Usage', body:`<p>A diverging tube (area increases in flow direction):</p>
-    <ul>
-    <li><strong>Subsonic diffuser (M<1):</strong> Area increase → velocity decreases, pressure increases. Used to decelerate subsonic flow. ✓</li>
-    <li><strong>Supersonic nozzle (M>1):</strong> Area increase → velocity increases further (supersonic). dA/A = (M²−1)du/u; for M>1, dA and du have same sign. ✓</li>
-    </ul>
+  'ch7_2': { marks:'[4]', steps:[
+    { title:'Rayleigh\'s Method', body:`<p>An older, simpler method of dimensional analysis evaluating functional dependency.</p>
+    <p>If a variable $X$ depends on $X_1, X_2, X_3$, we express it as an exponential equation:</p>
+    <p>$$X = k \\cdot X_1^a \\cdot X_2^b \\cdot X_3^c$$</p>
+    <p>where $k$ is a dimensionless constant. We substitute the dimensions (M, L, T) for each variable and equate the exponents of M, L, and T on both sides to solve for $a, b,$ and $c$.</p>
+    <p><em>Limitation:</em> It becomes very cumbersome if the number of independent variables exceeds 3 or 4, which is why Buckingham-$\\pi$ is preferred.</p>`}
+  ]},
+  'ch7_3': { marks:'[5]', steps:[
+    { title:'Reynolds, Froude, and Mach Numbers', body:`<p><strong>Reynolds Number ($Re$):</strong> Ratio of inertia force to viscous force. $Re = \\frac{\\rho V L}{\\mu}$. Important when viscous forces are dominant (pipe flow, submarines, airplanes at low speeds).</p>
+    <p><strong>Froude Number ($Fr$):</strong> Ratio of square root of inertia force to gravity force. $Fr = \\frac{V}{\\sqrt{gL}}$. Important for flows with a free surface where gravity causes waves (ships, open channels, spillways).</p>
+    <p><strong>Mach Number ($Ma$):</strong> Ratio of square root of inertia force to elastic (compressibility) force. $Ma = \\frac{V}{c}$ (where c is speed of sound). Important for high-speed gas flows (rockets, jets) where density changes significantly.</p>`}
+  ]},
+  'ch7_4': { marks:'[3]', steps:[
+    { title:'Weber and Euler Numbers', body:`<p><strong>Weber Number ($We$):</strong> Ratio of square root of inertia force to surface tension force. $We = \\frac{V}{\\sqrt{\\sigma / \\rho L}}$. Important in flows where surface tension is significant (capillary flows, droplet formation, thin liquid films).</p>
+    <p><strong>Euler Number ($Eu$):</strong> Ratio of pressure force to inertia force. $Eu = \\frac{\\Delta P}{\\rho V^2}$. Important in flows driven by pressure differences (flow through pipes, enclosed machines like pumps/turbines). If pressure drives the flow, $Eu$ is often constant.</p>`}
+  ]},
+  'ch7_5': { marks:'[3]', steps:[
+    { title:'Distorted Models', body:`<p><strong>Distorted Model:</strong> A model that is not geometrically similar to the prototype in all directions. Usually, the horizontal scale ($L_{rh}$) and vertical scale ($L_{rv}$) are different.</p>
+    <p><strong>Why use them?</strong> For large horizontal expanses like rivers or harbors. If a true geometric scale is used (e.g., 1:1000), the model water depth would be too shallow (e.g., a 5m river becomes 5mm deep in the model), destroying kinematic/dynamic similarity (viscosity/surface tension take over). Distorted models maintain realistic depths and turbulent flow.</p>`}
+  ]},
     <p>Therefore, a diverging tube can be used as <strong>1 (supersonic nozzle) and 4 (subsonic diffuser)</strong>.</p>`}
+  ]},
+  'ch8_1': { marks:'[5]', steps:[
+    { title:'Stagnation Properties', body:`<p>Stagnation state is reached when a moving fluid is brought to rest reversibly and adiabatically (isentropically).</p>
+    <p><strong>Stagnation Enthalpy ($h_0$):</strong> From energy equation: $h_0 = h + V^2/2$. For an ideal gas ($h = c_p T$), $T_0 = T + V^2/(2c_p)$.</p>
+    <p>Using $c_p = kR/(k-1)$ and $c = \\sqrt{kRT}$, this becomes:</p>
+    <p>$$\\frac{T_0}{T} = 1 + \\frac{k-1}{2} M^2$$</p>
+    <p>Using isentropic relations ($P \\propto T^{k/(k-1)}$, $\\rho \\propto T^{1/(k-1)}$):</p>
+    <p>$$\\frac{P_0}{P} = \\left(1 + \\frac{k-1}{2} M^2\\right)^{\\frac{k}{k-1}}$$</p>
+    <p>$$\\frac{\\rho_0}{\\rho} = \\left(1 + \\frac{k-1}{2} M^2\\right)^{\\frac{1}{k-1}}$$</p>`}
+  ]},
+  'ch8_2': { marks:'[4]', steps:[
+    { title:'Velocity of Sound Wave', body:`<p>A sound wave is an infinitesimally small pressure disturbance propagating through a medium.</p>
+    <p>Applying continuity and momentum equations to a control volume moving with the wave (velocity $c$):</p>
+    <p>$$c^2 = \\frac{dp}{d\\rho}$$</p>
+    <p>Because acoustic waves are rapid and cause negligible heat transfer, the process is considered <strong>isentropic</strong> ($p\\rho^{-k} = constant$).</p>
+    <p>Differentiating $p\\rho^{-k} = C$ gives $\\frac{dp}{d\\rho} = k\\frac{p}{\\rho}$.</p>
+    <p>For an ideal gas, $p/\\rho = RT$, so: <strong>$c = \\sqrt{kRT}$</strong>.</p>`}
+  ]},
+  'ch8_3': { marks:'[3]', steps:[
+    { title:'Mach Cone', body:`<p>When an object moves through a fluid at <em>supersonic</em> speeds ($V > c$), the sound waves (disturbances) it emits cannot travel forward as fast as the object itself.</p>
+    <p>The disturbances pile up behind the object, creating a conical envelope called a <strong>Mach cone</strong>.</p>
+    <p><strong>Mach Angle ($\\alpha$):</strong> Half-angle of the cone. $$\\sin\\alpha = \\frac{c\\cdot t}{V\\cdot t} = \\frac{c}{V} = \\frac{1}{M}$$</p>
+    <p>The region inside the cone is the "zone of action" (feels disturbance); the region outside is the "zone of silence" (aware of nothing).</p>`}
   ]},
   'ch8_4': { marks:'[4]', steps:[
     { title:'Area-Velocity Relation & C-D Nozzle Design', body:`<p>From continuity and isentropic flow:</p>
@@ -4126,7 +4314,28 @@ var answerData = {
     <li>M > 1: dA and du have same sign → diverging section accelerates supersonic flow</li>
     </ul>
     <p>This leads to the <strong>converging-diverging (de Laval) nozzle</strong>: converging section accelerates flow to sonic at throat, then diverging section continues acceleration to supersonic. Used in rockets and supersonic wind tunnels.</p>`}
+    <p>This leads to the <strong>converging-diverging (de Laval) nozzle</strong>: converging section accelerates flow to sonic at throat, then diverging section continues acceleration to supersonic. Used in rockets and supersonic wind tunnels.</p>`}
   ]},
+  'ch8_5': { marks:'[3]', steps:[
+    { title:'Adiabatic vs Isentropic Flow', body:`<p><strong>Adiabatic Flow:</strong> A flow where no heat is transferred to or from the fluid ($q = 0$). Friction may be present. Thus, entropy can increase (due to friction/irreversibilities).</p>
+    <p><strong>Isentropic Flow:</strong> A flow that is both adiabatic <em>and</em> reversible (frictionless). Entropy remains constant ($ds = 0$).</p>
+    <p>All isentropic flows are adiabatic, but not all adiabatic flows are isentropic. For example, flow across a shock wave is adiabatic but highly irreversible, therefore non-isentropic.</p>`}
+  ]},
+  'ch8_6': { marks:'[4]', steps:[
+    { title:'Normal Shock Wave', body:`<p>A normal shock is a stationary, abrupt disturbance perpendicular to the flow direction where fluid properties change drastically over a tiny distance (~10⁻⁵ m).</p>
+    <p><strong>Characteristics across the shock:</strong></p>
+    <ul>
+    <li>Velocity drops abruptly from <em>supersonic</em> to <em>subsonic</em> ($M_1 > 1$, $M_2 < 1$).</li>
+    <li>Pressure, temperature, and density suddenly increase.</li>
+    <li>Stagnation temperature ($T_0$) remains constant (adiabatic process).</li>
+    <li>Stagnation pressure ($P_0$) drastically drops (due to irreversibilities/entropy increase).</li>
+    </ul>`}
+  ]},
+  'ch8_7': { marks:'[4]', steps:[
+    { title:'Fanno vs Rayleigh Flow', body:`<p>Both models simplify 1D compressible pipe flow.</p>
+    <p><strong>Fanno Flow:</strong> Flow in a constant-area duct with <em>friction</em>, but <em>adiabatic</em> (no heat transfer). Examples: long gas pipelines. Friction drives subsonic flow towards Mach 1 (accelerates) and supersonic flow towards Mach 1 (decelerates). The state path on a T-s diagram is a Fanno line.</p>
+    <p><strong>Rayleigh Flow:</strong> Flow in a constant-area duct with <em>heat transfer</em>, but <em>frictionless</em>. Examples: combustion chambers. Heating drives both subsonic and supersonic flow towards Mach 1. The state path on a T-s diagram is a Rayleigh line.</p>`}
+  ]}
 };
 
 
