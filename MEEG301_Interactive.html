@@ -1968,7 +1968,7 @@ function renderView(view){
 
   const ch = chapters[view];
   if(!ch){ area.innerHTML='<p style="color:var(--text3)">Coming soon...</p>'; return; }
-  bc.textContent = ch.tag + ' — ' + ch.title;
+  bc.textContent = (ch.tag||('Ch '+(view.replace('ch','')))) + ' — ' + ch.title;
 
   tabBar.innerHTML = `
     <button class="tab-btn active" id="tab-summary" onclick="switchTab('summary',this,'${view}')">🗺️ Chapter Summary</button>
@@ -1988,12 +1988,13 @@ function switchTab(tab, el, view){
 function renderChapterTab(view, tab){
   const area = document.getElementById('content-area');
   const ch = chapters[view];
+  const chTag = ch.tag || ('Ch '+(view.replace('ch','')));
   let html = `
     <div class="chapter-hero">
-      <div class="hero-tag">${ch.tag}</div>
+      <div class="hero-tag">${chTag}</div>
       <h2>${ch.title}</h2>
       <p>${ch.desc}</p>
-      <div class="hero-pills">${ch.pills.map(p=>`<span class="hero-pill">${p}</span>`).join('')}</div>
+      <div class="hero-pills">${(ch.pills||[]).map(p=>`<span class="hero-pill">${p}</span>`).join('')}</div>
     </div>
     <div class="trust-bar">
       <span class="verified-icon">✅</span>
@@ -2012,19 +2013,19 @@ function renderChapterTab(view, tab){
       const key = view+'_'+i;
       const hasAns = answerData[key] !== undefined;
       const isViewed = viewed[key];
-      const years = q.years||[];
+      const years = q.years||q.tags||[];
       const yearTags = years.map(y=>{
         const cls = y.includes('2022')?'y2022':y.includes('2024')?'y2024':y.includes('2025')?'y2025':y.includes('2019')?'y2019':'yposs';
         return `<span class="year-tag ${cls}">${y}</span>`;
       }).join('');
       return `<div class="q-card" id="qcard-${key}">
         <div class="q-header">
-          <span class="q-num">${ch.tag}·Q${i+1}</span>
+          <span class="q-num">${chTag}·Q${i+1}</span>
           <span class="q-text">${q.q}</span>
         </div>
         ${q.figure ? `<div class="q-figure"><div class="fig-placeholder">📷 Figure: ${q.figure}<br><span class="upload-figure-hint">Upload screenshot to display here</span></div></div>` : ''}
         <div class="q-meta">
-          <span class="marks-pill">[${q.marks} marks]</span>
+          ${(hasAns&&answerData[key].marks)?`<span class="marks-pill">${answerData[key].marks}</span>`:(q.marks?`<span class="marks-pill">[${q.marks} marks]</span>`:'')}
           ${yearTags}
           ${q.or ? `<span class="or-divider">OR</span>` : ''}
           ${hasAns ? `<button class="view-ans-btn" onclick="showAnswer('${view}',${i})">📖 View Answer</button>` : ''}
@@ -2054,7 +2055,7 @@ function renderChapterTab(view, tab){
     html += renderSummary(view);
   }
   else if(tab==='concepts'){
-    html += `<div class="concept-grid">${ch.concepts.map(c=>`
+    html += `<div class="concept-grid">${(ch.concepts||[]).map(c=>`
       <div class="concept-card">
         <div class="concept-label">${c.label}</div>
         <div class="concept-title">${c.title}</div>
@@ -3048,7 +3049,7 @@ const chapterSummaries = {
   ch1: {
     hours: 4, totalMarks: '8–11', examFreq: 'Every paper (properties MCQs)',
     syllabus: [
-      { main: 'Fluid Properties & Classification', subs: ['Ideal vs real fluid, Newtonian vs non-Newtonian', 'Dynamic viscosity μ, kinematic viscosity ν = μ/ρ', 'Newton's law of viscosity: τ = μ(du/dy)'] },
+      { main: 'Fluid Properties & Classification', subs: ['Ideal vs real fluid, Newtonian vs non-Newtonian', 'Dynamic viscosity μ, kinematic viscosity ν = μ/ρ', 'Newton\'s law of viscosity: τ = μ(du/dy)'] },
       { main: 'Surface Tension & Capillarity', subs: ['Cohesion vs adhesion', 'Capillary rise: h = 4σcosθ/(ρgd)', 'Pressure in droplet vs bubble'] },
       { main: 'Fluid Pressure & Types', subs: ['Absolute, gauge, vacuum pressure', 'P_abs = P_gauge + P_atm', 'Barometer, Bourdon gauge'] },
       { main: 'Non-Newtonian Fluids', subs: ['Pseudoplastic (ketchup, blood)', 'Dilatant (cornstarch)', 'Bingham plastic (toothpaste)', 'Power law: τ = K(du/dy)^n'] },
@@ -3070,10 +3071,10 @@ const chapterSummaries = {
   ch2: {
     hours: 6, totalMarks: '11–16', examFreq: 'Every paper — heavy marks',
     syllabus: [
-      { main: 'Hydrostatic Pressure', subs: ['P = P₀ + ρgh', 'Pascal's law', 'Pressure variation in static fluid'] },
+      { main: 'Hydrostatic Pressure', subs: ['P = P₀ + ρgh', 'Pascal\'s law', 'Pressure variation in static fluid'] },
       { main: 'Manometry', subs: ['Simple U-tube, differential manometer', 'Inverted U-tube manometer', 'Inclined manometer calculation'] },
       { main: 'Hydrostatic Forces on Surfaces', subs: ['F = ρgȳA on inclined plane', 'Centre of pressure: y_cp = ȳ + I_xx/(ȳA)', 'Curved surface: horizontal + vertical components'] },
-      { main: 'Buoyancy & Floating Bodies', subs: ['Archimedes' principle: F_B = ρ_fluid × g × V_sub', 'Metacentre & stability: GM = I/V - BG', 'Stable: M above G; Unstable: M below G'] },
+      { main: 'Buoyancy & Floating Bodies', subs: ['Archimedes\' principle: F_B = ρ_fluid × g × V_sub', 'Metacentre & stability: GM = I/V - BG', 'Stable: M above G; Unstable: M below G'] },
     ],
     memcards: [
       { label:'⚖️ Centre of Pressure', color:'red', content:'y_cp = ȳ + I_xx/(ȳA)<br>Always <strong>below centroid</strong><br>For rectangle: I_xx = bh³/12<br>For circle: I_xx = πd⁴/64' },
@@ -3114,7 +3115,7 @@ const chapterSummaries = {
   ch4: {
     hours: 6, totalMarks: '11–16', examFreq: 'Every paper — derivation + numerical',
     syllabus: [
-      { main: 'Bernoulli's Equation', subs: ['Derivation from Euler's equation along streamline', 'P/ρg + V²/2g + z = const', 'Assumptions: steady, incompressible, inviscid, along streamline'] },
+      { main: 'Bernoulli\'s Equation', subs: ['Derivation from Euler\'s equation along streamline', 'P/ρg + V²/2g + z = const', 'Assumptions: steady, incompressible, inviscid, along streamline'] },
       { main: 'Flow Measurement', subs: ['Venturimeter: Q = Cd·A₂√(2gΔh/(1-(A₂/A₁)²))', 'Pitot tube: V = √(2(P₀−P)/ρ)', 'Orifice meter, Rotameter'] },
       { main: 'HGL and EGL', subs: ['EGL = P/ρg + V²/2g + z (total head)', 'HGL = P/ρg + z (piezometric head)', 'EGL − HGL = V²/2g (velocity head)'] },
       { main: 'Vortex Flow', subs: ['Free vortex: V·r = const (no energy input)', 'Forced vortex: V = ωr (solid body rotation)', 'Bernoulli applies to free vortex along streamline'] },
@@ -3126,7 +3127,7 @@ const chapterSummaries = {
     ],
     strategy: [
       { icon:'🎯', text:'Venturimeter numerical — appears in almost every paper. Remember Δh formula for inclined pipes.' },
-      { icon:'📝', text:'Bernoulli derivation — 6 marks. Start from Euler's equation, integrate, get P/ρg + V²/2g + z = const.' },
+      { icon:'📝', text:'Bernoulli derivation — 6 marks. Start from Euler\'s equation, integrate, get P/ρg + V²/2g + z = const.' },
       { icon:'💡', text:'HGL/EGL sketch + explanation — 4–5 marks short answer. Know what happens at contractions, expansions, losses.' },
     ],
     keyFormulas: ['P/ρg + V²/2g + z = H', 'Q = CdA₂√(2gΔh/(1−(D₂/D₁)⁴))', 'Δh = x(S_m/S_f − 1)', 'P₀ = P + ½ρV²'],
@@ -4198,8 +4199,7 @@ var answerData = {
     <p>Solving: b=2U/δ, c=−U/δ². So: $$\\frac{u}{U} = 2\\eta - \\eta^2 \\quad \\text{where } \\eta = y/\\delta$$</p>
     <p><strong>Energy loss:</strong> Energy thickness δ₃ = ∫₀^δ (u/U)(1−(u/U)²)dy. For Q=6 m³/s per meter width, the kinetic energy correction gives energy loss per unit width = ρU³δ₃ (in watts per meter). Express as head: h_E = energy loss/(ρgQ).</p>`}
   ]},
-    <p><strong>Energy loss:</strong> Energy thickness δ₃ = ∫₀^δ (u/U)(1−(u/U)²)dy. For Q=6 m³/s per meter width, the kinetic energy correction gives energy loss per unit width = ρU³δ₃ (in watts per meter). Express as head: h_E = energy loss/(ρgQ).</p>`}
-  ]},
+
   'ch6_1': { marks:'[4]', steps:[
     { title:'Boundary Layer Thicknesses', body:`<p><strong>1. Nominal Thickness ($\\delta$):</strong> Distance from the wall where velocity $u$ reaches 99% of free-stream velocity $U$ ($u = 0.99U$).</p>
     <p><strong>2. Displacement Thickness ($\\delta^*$):</strong> Distance the solid boundary would need to be displaced outward to compensate for the reduction in mass flow rate due to boundary layer formation.</p>
